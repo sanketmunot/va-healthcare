@@ -1,47 +1,96 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+<section class="collection-page" style="padding-block: {{ section.settings.padding }}px;">
+  <header class="collection-page__header">
+    <h1 class="section-heading">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="section-subheading rte">{{ collection.description }}</div>
+    {% endif %}
+  </header>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+  {% paginate collection.products by section.settings.products_per_page %}
+    <div class="collection-page__grid" style="--columns: {{ section.settings.columns }};">
+      {% for product in collection.products %}
+        {% render 'product-card', product: product %}
+      {% else %}
+        <p class="collection-page__empty">No products found in this collection.</p>
+      {% endfor %}
+    </div>
 
-<h1>{{ collection.title }}</h1>
-
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
-      </div>
-    {% endfor %}
-
-    {{ paginate | default_pagination }}
+    {% if paginate.pages > 1 %}
+      <nav class="collection-page__pagination" aria-label="Pagination">
+        {{ paginate | default_pagination }}
+      </nav>
+    {% endif %}
   {% endpaginate %}
-</div>
+</section>
 
 {% stylesheet %}
-  .collection-products {
+  .collection-page__header {
+    margin-bottom: 2rem;
+    max-width: 42rem;
+  }
+
+  .collection-page__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .collection-page__empty {
+    grid-column: 1 / -1;
+    color: var(--color-muted);
+  }
+
+  .collection-page__pagination {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .collection-page__pagination a,
+  .collection-page__pagination span {
+    margin: 0 0.35rem;
+    text-decoration: none;
+  }
+
+  @media (min-width: 900px) {
+    .collection-page__grid {
+      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+    }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "label": "Products per page",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Desktop columns",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 48
+    }
+  ]
 }
 {% endschema %}

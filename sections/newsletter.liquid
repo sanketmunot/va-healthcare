@@ -1,0 +1,142 @@
+<section class="newsletter full-width" style="padding-block: {{ section.settings.padding }}px;">
+  <div class="newsletter__inner page-width">
+    <div class="newsletter__copy">
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      {% if section.settings.heading != blank %}
+        <h2 class="section-heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.text != blank %}
+        <p class="section-subheading">{{ section.settings.text }}</p>
+      {% endif %}
+    </div>
+
+    {% form 'customer', class: 'newsletter__form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <label class="visually-hidden" for="NewsletterForm-email">Email</label>
+      <input
+        id="NewsletterForm-email"
+        type="email"
+        name="contact[email]"
+        value="{{ form.email }}"
+        placeholder="{{ section.settings.placeholder }}"
+        required
+        autocomplete="email"
+      >
+      <button type="submit" class="button">{{ section.settings.button_label }}</button>
+      {% if form.posted_successfully? %}
+        <p class="newsletter__success" role="status">Thanks for subscribing.</p>
+      {% endif %}
+      {{ form.errors | default_errors }}
+    {% endform %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .newsletter {
+    background:
+      linear-gradient(135deg, #1c3a31 0%, #2f6b57 55%, #4f8f78 100%);
+    color: #f4faf7;
+  }
+
+  .newsletter .eyebrow {
+    color: #cfe7da;
+  }
+
+  .newsletter .section-subheading {
+    color: rgba(244, 250, 247, 0.8);
+  }
+
+  .newsletter__inner {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .newsletter__form {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 34rem;
+  }
+
+  .newsletter__form input[type='email'] {
+    min-height: 3rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(244, 250, 247, 0.25);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  .newsletter__form input::placeholder {
+    color: rgba(244, 250, 247, 0.7);
+  }
+
+  .newsletter__success {
+    color: #d8f5e7;
+  }
+
+  @media (min-width: 760px) {
+    .newsletter__form {
+      grid-template-columns: 1fr auto;
+      align-items: start;
+    }
+
+    .newsletter__success,
+    .errors {
+      grid-column: 1 / -1;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Stay in the loop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Wellness notes, quietly delivered"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "New arrivals, seasonal rituals, and gentle routines — no noise."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email placeholder",
+      "default": "Email address"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 32,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 72
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

@@ -1,57 +1,183 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer class="site-footer full-width">
+  <div class="site-footer__inner page-width">
+    <div class="site-footer__brand">
+      <p class="site-footer__logo">{{ shop.name }}</p>
+      {% if section.settings.blurb != blank %}
+        <p class="site-footer__blurb">{{ section.settings.blurb }}</p>
+      {% endif %}
+    </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
+    <div class="site-footer__columns">
+      {% for block in section.blocks %}
+        <div class="site-footer__column" {{ block.shopify_attributes }}>
+          {% if block.settings.heading != blank %}
+            <h3 class="site-footer__heading">{{ block.settings.heading }}</h3>
+          {% endif %}
+          {% if block.settings.menu != blank %}
+            <ul class="site-footer__links">
+              {% for link in block.settings.menu.links %}
+                <li>
+                  <a href="{{ link.url }}">{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
       {% endfor %}
+    </div>
+  </div>
+
+  <div class="site-footer__bottom page-width">
+    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+    {% if section.settings.show_payment_icons %}
+      <div class="site-footer__payment">
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag }}
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
+  .site-footer {
+    margin-top: 4rem;
+    padding: 3.5rem 0 1.5rem;
+    background: #13241f;
+    color: #e7efe9;
   }
-  footer a {
+
+  .site-footer__inner {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .site-footer__logo {
+    font-family: var(--font-heading--family);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .site-footer__blurb {
+    max-width: 28rem;
+    color: rgba(231, 239, 233, 0.75);
+  }
+
+  .site-footer__columns {
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+
+  .site-footer__heading {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .site-footer__links {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .site-footer__links a {
+    color: rgba(231, 239, 233, 0.78);
     text-decoration: none;
-    color: var(--color-foreground);
   }
-  footer .footer__links,
-  footer .footer__payment {
+
+  .site-footer__links a:hover {
+    color: #fff;
+  }
+
+  .site-footer__bottom {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     gap: 1rem;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(231, 239, 233, 0.15);
+    color: rgba(231, 239, 233, 0.65);
+    font-size: 0.9rem;
+  }
+
+  .site-footer__payment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .site-footer__payment svg {
+    width: 2.4rem;
+    height: auto;
+  }
+
+  @media (min-width: 900px) {
+    .site-footer__inner {
+      grid-template-columns: 1.2fr 2fr;
+      align-items: start;
+    }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.footer",
+  "name": "Footer",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "textarea",
+      "id": "blurb",
+      "label": "Brand blurb",
+      "default": "Thoughtful wellness essentials for calm routines, recovery, and everyday care."
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
-      "label": "t:labels.show_payment_icons",
+      "label": "Show payment icons",
       "default": true
     }
-  ]
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Explore"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "menu",
+        "settings": {
+          "heading": "Shop",
+          "menu": "main-menu"
+        }
+      },
+      {
+        "type": "menu",
+        "settings": {
+          "heading": "Support",
+          "menu": "footer"
+        }
+      }
+    ]
+  }
 }
 {% endschema %}

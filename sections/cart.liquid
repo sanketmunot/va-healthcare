@@ -1,37 +1,181 @@
-{% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
+<section class="cart-page" style="padding-block: {{ section.settings.padding }}px;">
+  <h1 class="section-heading">{{ 'cart.title' | t }}</h1>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
-{% endcomment %}
+  {% if cart.item_count == 0 %}
+    <p class="cart-page__empty">Your cart is empty.</p>
+    <a class="button" href="{{ routes.all_products_collection_url }}">Continue shopping</a>
+  {% else %}
+    <form action="{{ routes.cart_url }}" method="post" class="cart-page__form">
+      <div class="cart-page__items">
+        {% for item in cart.items %}
+          <article class="cart-page__item">
+            <a class="cart-page__media" href="{{ item.url }}">
+              {% if item.image %}
+                {{
+                  item.image
+                  | image_url: width: 240
+                  | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '96px'
+                }}
+              {% endif %}
+            </a>
+            <div class="cart-page__details">
+              <h2>
+                <a href="{{ item.url }}">{{ item.product.title }}</a>
+              </h2>
+              {% unless item.product.has_only_default_variant %}
+                <p class="cart-page__variant">{{ item.variant.title }}</p>
+              {% endunless %}
+              <p class="cart-page__line-price">{{ item.final_line_price | money }}</p>
+              <label class="visually-hidden" for="updates_{{ item.key }}">Quantity</label>
+              <input
+                id="updates_{{ item.key }}"
+                type="number"
+                name="updates[]"
+                value="{{ item.quantity }}"
+                min="0"
+              >
+              <a class="cart-page__remove" href="{{ item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
 
-<h1>{{ 'cart.title' | t }}</h1>
+      <aside class="cart-page__summary">
+        <p class="cart-page__subtotal">
+          <span>Subtotal</span>
+          <strong>{{ cart.total_price | money }}</strong>
+        </p>
+        {% if section.settings.show_cart_note %}
+          <label for="CartNote">{{ section.settings.cart_note_label }}</label>
+          <textarea id="CartNote" name="note">{{ cart.note }}</textarea>
+        {% endif %}
+        <button type="submit" name="update" class="button button--secondary">{{ 'cart.update' | t }}</button>
+        <button type="submit" name="checkout" class="button">{{ 'cart.checkout' | t }}</button>
+      </aside>
+    </form>
+  {% endif %}
+</section>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+{% stylesheet %}
+  .cart-page__empty {
+    margin: 1rem 0 1.5rem;
+    color: var(--color-muted);
+  }
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+  .cart-page__form {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .cart-page__items {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .cart-page__item {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .cart-page__media {
+    border-radius: calc(var(--radius) - 2px);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  }
+
+  .cart-page__details h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .cart-page__details a {
+    text-decoration: none;
+  }
+
+  .cart-page__variant,
+  .cart-page__line-price {
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .cart-page__details input[type='number'] {
+    width: 5rem;
+    min-height: 2.4rem;
+    margin-right: 0.75rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+  }
+
+  .cart-page__remove {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+  }
+
+  .cart-page__summary {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius) + 4px);
+  }
+
+  .cart-page__subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+  }
+
+  .cart-page__summary textarea {
+    min-height: 6rem;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    resize: vertical;
+  }
+
+  @media (min-width: 900px) {
+    .cart-page__form {
+      grid-template-columns: 1.4fr 0.8fr;
+      align-items: start;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.cart",
-  "settings": []
+  "name": "Cart",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_cart_note",
+      "label": "Enable cart note",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cart_note_label",
+      "label": "Cart note label",
+      "default": "Order note"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 48
+    }
+  ]
 }
 {% endschema %}

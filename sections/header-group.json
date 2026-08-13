@@ -9,14 +9,23 @@
  */
 {
   "type": "header",
-  "name": "t:general.header",
+  "name": "Header",
   "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Free shipping on wellness essentials over $75",
+        "background": "#1C2B26",
+        "text_color": "#F4F7F5"
+      }
+    },
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "menu": "main-menu",
+        "sticky": true
+      }
     }
   },
-  "order": [
-    "header"
-  ],
+  "order": ["announcement", "header"]
 }

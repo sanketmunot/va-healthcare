@@ -1,50 +1,302 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+  Product page with gallery, details, tabs, and add-to-cart.
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+<section class="product-page" style="padding-block: {{ section.settings.padding }}px;">
+  <div class="product-page__grid">
+    <div class="product-page__gallery">
+      {% if product.media.size > 0 %}
+        {% for media in product.media %}
+          <div class="product-page__media">
+            {% if media.media_type == 'image' %}
+              {% if forloop.first %}
+                {{
+                  media
+                  | image_url: width: 1400
+                  | image_tag:
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    widths: '480, 720, 960, 1200, 1400',
+                    sizes: '(min-width: 900px) 48vw, 100vw',
+                    class: 'product-page__image'
+                }}
+              {% else %}
+                {{
+                  media
+                  | image_url: width: 1400
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '480, 720, 960, 1200, 1400',
+                    sizes: '(min-width: 900px) 48vw, 100vw',
+                    class: 'product-page__image'
+                }}
+              {% endif %}
+            {% else %}
+              {{ media | media_tag }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="product-page__placeholder" aria-hidden="true"></div>
+      {% endif %}
+    </div>
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+    <div class="product-page__info">
+      {% if section.settings.show_vendor and product.vendor != blank %}
+        <p class="eyebrow">{{ product.vendor }}</p>
+      {% endif %}
+      <h1 class="product-page__title">{{ product.title }}</h1>
+      <p class="product-page__price">
+        {% if product.compare_at_price > product.selected_or_first_available_variant.price %}
+          <s>{{ product.compare_at_price | money }}</s>
+        {% endif %}
+        <span>{{ product.selected_or_first_available_variant.price | money }}</span>
+      </p>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+      {% if product.description != blank and section.settings.show_description %}
+        <div class="product-page__description rte">
+          {{ product.description }}
+        </div>
+      {% endif %}
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
+      {% form 'product', product, class: 'product-page__form' %}
+        {% assign current_variant = product.selected_or_first_available_variant %}
+
+        {% unless product.has_only_default_variant %}
+          <label class="product-page__label" for="ProductSelect-{{ section.id }}">Options</label>
+          <select id="ProductSelect-{{ section.id }}" name="id">
+            {% for variant in product.variants %}
+              <option
+                value="{{ variant.id }}"
+                {% if variant == current_variant %}selected{% endif %}
+                {% unless variant.available %}disabled{% endunless %}
+              >
+                {{ variant.title }} — {{ variant.price | money }}
+              </option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {% endunless %}
+
+        <label class="product-page__label" for="Quantity-{{ section.id }}">Quantity</label>
+        <input
+          id="Quantity-{{ section.id }}"
+          type="number"
+          name="quantity"
+          min="1"
+          value="1"
         >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
 
-    <input type="text" name="quantity" min="1" value="1">
+        <button
+          type="submit"
+          class="button product-page__submit"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          {% if current_variant.available %}
+            {{ section.settings.add_to_cart_label }}
+          {% else %}
+            Sold out
+          {% endif %}
+        </button>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+        {% if section.settings.show_dynamic_checkout %}
+          {{ form | payment_button }}
+        {% endif %}
+      {% endform %}
+
+      {% if section.blocks.size > 0 %}
+        <div class="product-page__tabs">
+          {% for block in section.blocks %}
+            <details class="product-page__tab" {{ block.shopify_attributes }} {% if forloop.first %}open{% endif %}>
+              <summary>{{ block.settings.title }}</summary>
+              <div class="rte">{{ block.settings.content }}</div>
+            </details>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .product-page__grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .product-page__gallery {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .product-page__media,
+  .product-page__placeholder {
+    border-radius: calc(var(--radius) + 6px);
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .product-page__image {
+    width: 100%;
+    height: auto;
+  }
+
+  .product-page__placeholder {
+    min-height: 24rem;
+    background: linear-gradient(145deg, rgba(47, 107, 87, 0.2), transparent);
+  }
+
+  .product-page__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .product-page__price {
+    display: flex;
+    gap: 0.65rem;
+    align-items: baseline;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+
+  .product-page__price s {
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  .product-page__description {
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .product-page__form {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .product-page__label {
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .product-page__form select,
+  .product-page__form input[type='number'] {
+    min-height: 2.85rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .product-page__submit {
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  .product-page__tabs {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .product-page__tab {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: 0 1rem;
+  }
+
+  .product-page__tab summary {
+    cursor: pointer;
+    padding: 0.95rem 0;
+    font-weight: 650;
+    list-style: none;
+  }
+
+  .product-page__tab summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-page__tab .rte {
+    padding-bottom: 1rem;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 900px) {
+    .product-page__grid {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .product-page__info {
+      position: sticky;
+      top: 5.5rem;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.product",
-  "settings": [],
+  "name": "Product information",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout buttons",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "Add to cart label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Ingredients"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Add ingredient or usage details for this product.</p>"
+        }
+      ]
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

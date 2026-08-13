@@ -1,0 +1,204 @@
+<section class="promo-tiles" style="padding-block: {{ section.settings.padding }}px;">
+  {% if section.settings.heading != blank %}
+    <h2 class="section-heading">{{ section.settings.heading }}</h2>
+  {% endif %}
+  <div class="promo-tiles__grid">
+    {% for block in section.blocks %}
+      <a
+        class="promo-tiles__card"
+        href="{{ block.settings.link }}"
+        {{ block.shopify_attributes }}
+      >
+        {% if block.settings.image != blank %}
+          {{
+            block.settings.image
+            | image_url: width: 1200
+            | image_tag: loading: 'lazy', class: 'promo-tiles__image', widths: '480, 720, 960, 1200', sizes: '(min-width: 900px) 33vw, 100vw'
+          }}
+        {% else %}
+          <div class="promo-tiles__fallback" aria-hidden="true"></div>
+        {% endif %}
+        <div class="promo-tiles__content">
+          {% if block.settings.eyebrow != blank %}
+            <p class="eyebrow">{{ block.settings.eyebrow }}</p>
+          {% endif %}
+          {% if block.settings.title != blank %}
+            <h3>{{ block.settings.title }}</h3>
+          {% endif %}
+          {% if block.settings.text != blank %}
+            <p>{{ block.settings.text }}</p>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .promo-tiles .section-heading {
+    margin-bottom: 1.5rem;
+  }
+
+  .promo-tiles__grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .promo-tiles__card {
+    position: relative;
+    display: block;
+    min-height: 18rem;
+    border-radius: calc(var(--radius) + 8px);
+    overflow: hidden;
+    text-decoration: none;
+    color: #f7faf8;
+  }
+
+  .promo-tiles__image,
+  .promo-tiles__fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .promo-tiles__fallback {
+    background:
+      linear-gradient(145deg, #244f42, #6f9f8c);
+  }
+
+  .promo-tiles__card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 20, 17, 0.1), rgba(10, 20, 17, 0.7));
+  }
+
+  .promo-tiles__content {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 1.4rem;
+  }
+
+  .promo-tiles__content .eyebrow {
+    color: #cfe7da;
+  }
+
+  .promo-tiles__content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .promo-tiles__content p {
+    color: rgba(247, 250, 248, 0.86);
+  }
+
+  .promo-tiles__card:hover .promo-tiles__image {
+    transform: scale(1.04);
+  }
+
+  .promo-tiles__image {
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (min-width: 900px) {
+    .promo-tiles__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Promo tiles",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by ritual"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tile",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Sleep & unwind"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Evening essentials for deeper rest."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo tiles",
+      "blocks": [
+        {
+          "type": "tile",
+          "settings": {
+            "eyebrow": "Morning",
+            "title": "Daily balance",
+            "text": "Light support for focused days."
+          }
+        },
+        {
+          "type": "tile",
+          "settings": {
+            "eyebrow": "Body",
+            "title": "Recovery care",
+            "text": "Soothe sore muscles and tension."
+          }
+        },
+        {
+          "type": "tile",
+          "settings": {
+            "eyebrow": "Mind",
+            "title": "Calm rituals",
+            "text": "Small habits that quiet the noise."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

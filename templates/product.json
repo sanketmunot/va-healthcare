@@ -11,10 +11,38 @@
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "blocks": {
+        "ingredients": {
+          "type": "tab",
+          "settings": {
+            "title": "Ingredients",
+            "content": "<p>Add ingredient details for this product in the theme editor.</p>"
+          }
+        },
+        "usage": {
+          "type": "tab",
+          "settings": {
+            "title": "How to use",
+            "content": "<p>Share simple usage guidance for daily routines.</p>"
+          }
+        },
+        "shipping": {
+          "type": "tab",
+          "settings": {
+            "title": "Shipping",
+            "content": "<p>Orders typically ship within 1–2 business days.</p>"
+          }
+        }
+      },
+      "block_order": ["ingredients", "usage", "shipping"],
+      "settings": {
+        "show_vendor": true,
+        "show_description": true,
+        "show_dynamic_checkout": true,
+        "add_to_cart_label": "Add to cart",
+        "padding": 48
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

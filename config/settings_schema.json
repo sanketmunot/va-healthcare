@@ -1,82 +1,126 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_name": "VA Wellness",
+    "theme_version": "1.0.0",
+    "theme_author": "VA Healthcare",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
   {
-    "name": "t:general.typography",
+    "name": "Typography",
     "settings": [
-      {
-        "type": "header",
-        "content": "t:general.fonts"
-      },
       {
         "type": "font_picker",
         "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "default": "assistant_n4",
+        "label": "Body font"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_heading_font",
+        "default": "domine_n4",
+        "label": "Heading font"
       }
     ]
   },
   {
-    "name": "t:general.layout",
+    "name": "Layout",
     "settings": [
       {
         "type": "select",
         "id": "max_page_width",
-        "label": "t:labels.page_width",
+        "label": "Page width",
         "options": [
-          {
-            "value": "90rem",
-            "label": "t:options.page_width.narrow"
-          },
-          {
-            "value": "110rem",
-            "label": "t:options.page_width.wide"
-          }
+          { "value": "72rem", "label": "Narrow" },
+          { "value": "80rem", "label": "Standard" },
+          { "value": "90rem", "label": "Wide" }
         ],
-        "default": "90rem"
+        "default": "80rem"
       },
       {
         "type": "range",
         "id": "min_page_margin",
-        "min": 10,
-        "max": 100,
-        "step": 1,
+        "min": 16,
+        "max": 48,
+        "step": 2,
         "unit": "px",
-        "label": "t:labels.page_margin",
-        "default": 20
+        "label": "Page margin",
+        "default": 24
       }
     ]
   },
   {
-    "name": "t:general.colors",
+    "name": "Colors",
     "settings": [
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
-        "label": "t:labels.background"
+        "default": "#F4F7F5",
+        "label": "Background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
-        "label": "t:labels.foreground"
+        "default": "#1C2B26",
+        "label": "Text"
+      },
+      {
+        "type": "color",
+        "id": "accent_color",
+        "default": "#2F6B57",
+        "label": "Accent"
+      },
+      {
+        "type": "color",
+        "id": "accent_contrast",
+        "default": "#FFFFFF",
+        "label": "Accent contrast"
+      },
+      {
+        "type": "color",
+        "id": "surface_color",
+        "default": "#FFFFFF",
+        "label": "Surface"
+      },
+      {
+        "type": "color",
+        "id": "muted_color",
+        "default": "#5E736A",
+        "label": "Muted text"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "default": "#D5E0DA",
+        "label": "Border"
       },
       {
         "type": "range",
         "id": "input_corner_radius",
         "min": 0,
-        "max": 10,
+        "max": 24,
         "step": 1,
         "unit": "px",
-        "label": "t:labels.input_corner_radius",
-        "default": 4
+        "label": "Corner radius",
+        "default": 10
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "product_card_show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "product_card_show_quick_add",
+        "label": "Show quick add",
+        "default": true
       }
     ]
   }
