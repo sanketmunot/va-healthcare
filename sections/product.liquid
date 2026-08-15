@@ -11,6 +11,7 @@
   - Sticky information panel
   - Responsive mobile layout
   - Existing gallery/lightbox/variant functionality retained
+  - Sold out variants show a Notify Me lead-capture form
 {% endcomment %}
 
 {% assign current_variant = product.selected_or_first_available_variant %}
@@ -466,79 +467,151 @@
             </select>
 
 
-            <!-- PURCHASE -->
+            <!-- =============================================
+                 PURCHASE / NOTIFY ME
+            ============================================== -->
 
-            <div class="luxury-product__purchase">
+            <div class="luxury-product__purchase-wrap" data-purchase-wrap>
 
-              <div class="luxury-product__quantity">
-
-                <button
-                  type="button"
-                  data-quantity-minus
-                  aria-label="Decrease quantity"
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M5 12h14"/>
-                  </svg>
-                </button>
-
-                <input
-                  id="Quantity-{{ section.id }}"
-                  type="number"
-                  name="quantity"
-                  min="1"
-                  value="1"
-                  inputmode="numeric"
-                  aria-label="Quantity"
-                >
-
-                <button
-                  type="button"
-                  data-quantity-plus
-                  aria-label="Increase quantity"
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 5v14M5 12h14"/>
-                  </svg>
-                </button>
-
-              </div>
-
-
-              <button
-                type="submit"
-                class="luxury-product__add"
-                data-add-to-cart
-                {% unless current_variant.available %}disabled{% endunless %}
+              <!-- BUY STATE -->
+              <div
+                class="luxury-product__purchase-buy {% unless current_variant.available %}is-hidden{% endunless %}"
+                data-purchase-buy
               >
 
-                <span data-add-label>
+                <div class="luxury-product__purchase">
 
-                  {% if current_variant.available %}
-                    {{ section.settings.add_to_cart_label }}
-                  {% else %}
-                    Sold out
-                  {% endif %}
+                  <div class="luxury-product__quantity">
 
-                </span>
+                    <button
+                      type="button"
+                      data-quantity-minus
+                      aria-label="Decrease quantity"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h14"/>
+                      </svg>
+                    </button>
 
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
+                    <input
+                      id="Quantity-{{ section.id }}"
+                      type="number"
+                      name="quantity"
+                      min="1"
+                      value="1"
+                      inputmode="numeric"
+                      aria-label="Quantity"
+                    >
 
-              </button>
+                    <button
+                      type="button"
+                      data-quantity-plus
+                      aria-label="Increase quantity"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5v14M5 12h14"/>
+                      </svg>
+                    </button>
 
-            </div>
+                  </div>
 
 
-            {% if section.settings.show_dynamic_checkout %}
+                  <button
+                    type="submit"
+                    class="luxury-product__add"
+                    data-add-to-cart
+                  >
 
-              <div class="luxury-product__dynamic-checkout">
-                {{ form | payment_button }}
+                    <span data-add-label>
+                      {{ section.settings.add_to_cart_label }}
+                    </span>
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 12h14"/>
+                      <path d="m13 6 6 6-6 6"/>
+                    </svg>
+
+                  </button>
+
+                </div>
+
+
+                {% if section.settings.show_dynamic_checkout %}
+
+                  <div class="luxury-product__dynamic-checkout">
+                    {{ form | payment_button }}
+                  </div>
+
+                {% endif %}
+
               </div>
 
-            {% endif %}
+
+              <!-- SOLD OUT / NOTIFY STATE -->
+              <div
+                class="luxury-product__notify {% if current_variant.available %}is-hidden{% endif %}"
+                data-purchase-notify
+              >
+
+                <button
+                  type="button"
+                  class="luxury-product__notify-toggle"
+                  data-notify-toggle
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  <span>{{ section.settings.notify_button_label | default: 'Notify me when available' }}</span>
+                </button>
+
+                <div class="luxury-product__notify-form is-hidden" data-notify-form>
+
+                  <p class="luxury-product__notify-text">
+                    {{ section.settings.notify_text | default: "Leave your email or phone number and we'll let you know as soon as this is back in stock." }}
+                  </p>
+
+                  <div class="luxury-product__notify-fields">
+
+                    <input
+                      type="email"
+                      inputmode="email"
+                      placeholder="Email address"
+                      data-notify-email
+                      autocomplete="email"
+                    >
+
+                    <input
+                      type="tel"
+                      inputmode="tel"
+                      placeholder="Phone number"
+                      data-notify-phone
+                      autocomplete="tel"
+                    >
+
+                  </div>
+
+                  <p class="luxury-product__notify-error is-hidden" data-notify-error>
+                    Please enter your email or phone number.
+                  </p>
+
+                  <button
+                    type="button"
+                    class="luxury-product__notify-submit"
+                    data-notify-submit
+                  >
+                    Submit
+                  </button>
+
+                  <p class="luxury-product__notify-success is-hidden" data-notify-success>
+                    {{ section.settings.notify_success_message | default: "Thanks — we'll notify you as soon as it's back!" }}
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
 
 
           {% endform %}
@@ -1552,6 +1625,11 @@
    PURCHASE AREA
 ============================================================ */
 
+.luxury-product__purchase-buy {
+  display: grid;
+  gap: 9px;
+}
+
 .luxury-product__purchase {
 
   display: grid;
@@ -1805,6 +1883,131 @@
 .luxury-product__dynamic-checkout {
 
   margin-top: 9px;
+}
+
+
+/* ============================================================
+   NOTIFY ME
+============================================================ */
+
+.is-hidden {
+  display: none !important;
+}
+
+.luxury-product__notify-toggle {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 28px;
+  color: #171717;
+  background: #fff;
+  border: 1px solid #171717;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+
+.luxury-product__notify-toggle:hover {
+  background: #171717;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.luxury-product__notify-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+.luxury-product__notify-form {
+  margin-top: 14px;
+  padding: 18px;
+  background: #f7f6f3;
+  border: 1px solid #e9e7e3;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  animation: notify-expand .3s ease;
+}
+
+@keyframes notify-expand {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.luxury-product__notify-text {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.luxury-product__notify-fields {
+  display: grid;
+  gap: 8px;
+}
+
+.luxury-product__notify-fields input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #d9d7d2;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #222;
+  background: #fff;
+  transition: border-color .2s ease;
+}
+
+.luxury-product__notify-fields input:focus-visible {
+  outline: none;
+  border-color: #171717;
+}
+
+.luxury-product__notify-error {
+  margin: 0;
+  font-size: 11px;
+  color: #b3261e;
+}
+
+.luxury-product__notify-submit {
+  min-height: 48px;
+  padding: 0 24px;
+  color: #fff;
+  background: #171717;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .2s ease;
+}
+
+.luxury-product__notify-submit:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+}
+
+.luxury-product__notify-submit:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.luxury-product__notify-success {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a7a3c;
 }
 
 
@@ -3045,6 +3248,12 @@
   const addLabel =
     root.querySelector('[data-add-label]');
 
+  const purchaseBuy =
+    root.querySelector('[data-purchase-buy]');
+
+  const purchaseNotify =
+    root.querySelector('[data-purchase-notify]');
+
 
   const formatMoney = (cents) => {
 
@@ -3190,17 +3399,42 @@
     }
 
 
-if (addLabel) {
+    if (addLabel) {
 
-  const defaultAddLabel =
-    root.dataset.addToCartLabel || 'Add to cart';
+      const defaultAddLabel =
+        root.dataset.addToCartLabel || 'Add to cart';
 
-  addLabel.textContent =
-    available
-      ? defaultAddLabel
-      : 'Sold out';
+      addLabel.textContent =
+        defaultAddLabel;
 
-}
+    }
+
+
+    if (purchaseBuy && purchaseNotify) {
+
+      purchaseBuy.classList.toggle(
+        'is-hidden',
+        !available
+      );
+
+      purchaseNotify.classList.toggle(
+        'is-hidden',
+        available
+      );
+
+
+      if (!available) {
+
+        notifyFormPanel?.classList.add('is-hidden');
+        notifySuccess?.classList.add('is-hidden');
+        notifyError?.classList.add('is-hidden');
+
+        if (notifyEmail) notifyEmail.value = '';
+        if (notifyPhone) notifyPhone.value = '';
+
+      }
+
+    }
 
   };
 
@@ -3213,6 +3447,168 @@ if (addLabel) {
     );
 
   });
+
+
+  /* ==========================================================
+     NOTIFY ME
+  ========================================================== */
+
+  const notifyToggle =
+    root.querySelector('[data-notify-toggle]');
+
+  const notifyFormPanel =
+    root.querySelector('[data-notify-form]');
+
+  const notifyEmail =
+    root.querySelector('[data-notify-email]');
+
+  const notifyPhone =
+    root.querySelector('[data-notify-phone]');
+
+  const notifyError =
+    root.querySelector('[data-notify-error]');
+
+  const notifySubmit =
+    root.querySelector('[data-notify-submit]');
+
+  const notifySuccess =
+    root.querySelector('[data-notify-success]');
+
+
+  notifyToggle?.addEventListener(
+    'click',
+    () => {
+
+      notifyFormPanel?.classList.toggle(
+        'is-hidden'
+      );
+
+    }
+  );
+
+
+  notifySubmit?.addEventListener(
+    'click',
+    async () => {
+
+      const email =
+        notifyEmail?.value.trim() || '';
+
+      const phone =
+        notifyPhone?.value.trim() || '';
+
+
+      if (!email && !phone) {
+
+        notifyError.textContent =
+          'Please enter your email or phone number.';
+
+        notifyError?.classList.remove(
+          'is-hidden'
+        );
+
+        return;
+
+      }
+
+
+      notifyError?.classList.add(
+        'is-hidden'
+      );
+
+      notifySubmit.disabled = true;
+
+      notifySubmit.textContent =
+        'Submitting…';
+
+
+      try {
+
+        const selectedVariant =
+          variantSelect?.options[
+            variantSelect.selectedIndex
+          ];
+
+        const variantTitle =
+          selectedVariant?.textContent.trim() ||
+          '';
+
+        const body =
+          new URLSearchParams();
+
+        body.append(
+          'form_type',
+          'contact'
+        );
+
+        body.append(
+          'utf8',
+          '✓'
+        );
+
+        body.append(
+          'contact[email]',
+          email
+        );
+
+        body.append(
+          'contact[phone]',
+          phone
+        );
+
+        body.append(
+          'contact[body]',
+          `Back-in-stock request — Product: ${document.title} | Variant: ${variantTitle} | Variant ID: ${variantSelect?.value || 'n/a'} | Email: ${email || 'n/a'} | Phone: ${phone || 'n/a'}`
+        );
+
+
+        await fetch(
+          '/contact',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type':
+                'application/x-www-form-urlencoded'
+            },
+            body: body.toString()
+          }
+        );
+
+
+        notifyFormPanel?.classList.add(
+          'is-hidden'
+        );
+
+        notifySuccess?.classList.remove(
+          'is-hidden'
+        );
+
+        notifyEmail.value = '';
+
+        notifyPhone.value = '';
+
+
+      } catch (error) {
+
+        notifyError.textContent =
+          'Something went wrong. Please try again.';
+
+        notifyError?.classList.remove(
+          'is-hidden'
+        );
+
+
+      } finally {
+
+        notifySubmit.disabled = false;
+
+        notifySubmit.textContent =
+          'Submit';
+
+      }
+
+    }
+  );
 
 
   updateVariant();
@@ -3312,6 +3708,32 @@ if (addLabel) {
       "id": "show_dynamic_checkout",
       "label": "Show dynamic checkout",
       "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Notify me"
+    },
+
+    {
+      "type": "text",
+      "id": "notify_button_label",
+      "label": "Notify button label",
+      "default": "Notify me when available"
+    },
+
+    {
+      "type": "textarea",
+      "id": "notify_text",
+      "label": "Notify form description",
+      "default": "Leave your email or phone number and we'll let you know as soon as this is back in stock."
+    },
+
+    {
+      "type": "text",
+      "id": "notify_success_message",
+      "label": "Notify success message",
+      "default": "Thanks — we'll notify you as soon as it's back!"
     },
 
     {
