@@ -8,6 +8,7 @@ html {
 }
 
 body {
+  height: 100%;
   display: flex;
   flex-direction: column;
   min-height: 100svh;
@@ -200,4 +201,13 @@ p:empty {
 
 .rte p + p {
   margin-top: 0.75rem;
+}
+
+body.site-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.site-main {
+  flex: 1;
 }
