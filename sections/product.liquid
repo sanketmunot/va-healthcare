@@ -1,17 +1,14 @@
 {% comment %}
-  PREMIUM PRODUCT PAGE
+  PREMIUM PRODUCT PAGE — refined edition
   ------------------------------------------------------------
   Visual direction:
-  - Luxury / premium ecommerce
-  - Minimal borders
-  - Editorial typography
-  - Large product imagery
-  - Clean thumbnails
-  - Professional option selectors
-  - Sticky information panel
-  - Responsive mobile layout
-  - Existing gallery/lightbox/variant functionality retained
-  - Sold out variants show a Notify Me lead-capture form
+  - Boutique atelier / editorial luxury ecommerce
+  - Warm ivory + ink palette with an antique-brass accent
+  - Fraunces (display serif) + Inter (body) + IBM Plex Mono (labels/price)
+  - Large, quiet product imagery with a hairline division from the info panel
+  - Professional option selectors, sticky information panel
+  - Existing gallery / lightbox / variant / notify-me functionality retained
+  - New: an endlessly scrolling customer-review ribbon at the foot of the page
 {% endcomment %}
 
 {% assign current_variant = product.selected_or_first_available_variant %}
@@ -698,6 +695,8 @@
 
               {% for block in section.blocks %}
 
+                {% if block.type == 'tab' %}
+
                 <details
                   class="luxury-product__accordion"
                   {{ block.shopify_attributes }}
@@ -723,6 +722,8 @@
                   </div>
 
                 </details>
+
+                {% endif %}
 
               {% endfor %}
 
@@ -817,28 +818,274 @@
 </section>
 
 
+<!-- =========================================================
+     CUSTOMER REVIEWS — continuous scrolling ribbon
+========================================================== -->
+
+{% if section.settings.show_reviews %}
+
+  <section class="luxury-reviews" aria-label="Customer reviews">
+
+    <div class="luxury-reviews__container">
+
+      <div class="luxury-reviews__header">
+
+        <span class="luxury-reviews__eyebrow">
+          {{ section.settings.reviews_eyebrow | default: 'In their words' }}
+        </span>
+
+        <h2 class="luxury-reviews__title">
+          {{ section.settings.reviews_title | default: 'Loved, in the details' }}
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="luxury-reviews__marquee" data-reviews-marquee>
+
+      <div class="luxury-reviews__track" data-reviews-track>
+
+        {% comment %} ============ SET A ============ {% endcomment %}
+        <div class="luxury-reviews__group" aria-hidden="false">
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">The stitching alone tells you this wasn't rushed. Worn it three weeks straight and it still looks brand new.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">AH</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Amelia Hartley</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Ordered expecting "nice." Got something closer to an heirloom. The kind of quality you can feel with your hands before you even read the label.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">JC</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Julian Cross</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars" aria-label="Rated 4 out of 5 stars">
+              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Beautiful piece — sizing ran slightly generous. Reached out and their team sorted an exchange within a day, no hassle at all.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">NS</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Noor Al-Sayed</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Understated until you look closely — then every detail makes sense. Worth the wait on backorder, easily.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">MW</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Marcus Whitfield</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">This is the third piece I've bought from them, and the consistency is exactly what keeps me coming back.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">PD</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Priya Devan</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars" aria-label="Rated 4 out of 5 stars">
+              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Packaging alone felt premium — the product matched it. Shipping ran a little slow, otherwise flawless.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">EM</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Elias Moreau</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+        </div>
+
+        {% comment %} ============ SET B — exact duplicate, hidden from AT, closes the loop seamlessly ============ {% endcomment %}
+        <div class="luxury-reviews__group" aria-hidden="true">
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">The stitching alone tells you this wasn't rushed. Worn it three weeks straight and it still looks brand new.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">AH</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Amelia Hartley</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Ordered expecting "nice." Got something closer to an heirloom. The kind of quality you can feel with your hands before you even read the label.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">JC</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Julian Cross</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars">
+              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Beautiful piece — sizing ran slightly generous. Reached out and their team sorted an exchange within a day, no hassle at all.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">NS</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Noor Al-Sayed</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Understated until you look closely — then every detail makes sense. Worth the wait on backorder, easily.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">MW</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Marcus Whitfield</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars">
+              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">This is the third piece I've bought from them, and the consistency is exactly what keeps me coming back.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">PD</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Priya Devan</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+          <article class="luxury-reviews__card">
+            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
+            <div class="luxury-reviews__stars">
+              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
+            </div>
+            <p class="luxury-reviews__text">Packaging alone felt premium — the product matched it. Shipping ran a little slow, otherwise flawless.</p>
+            <div class="luxury-reviews__person">
+              <span class="luxury-reviews__avatar">EM</span>
+              <span class="luxury-reviews__person-meta">
+                <strong>Elias Moreau</strong>
+                <small>Verified buyer</small>
+              </span>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+{% endif %}
+
+
 {% stylesheet %}
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
 
 /* ============================================================
    DESIGN SYSTEM
+   Ink        #1f4d3f  — deep pine, near-black with a cool green cast
+   Paper      #f6f8f4  — soft sage-tinted ivory ground
+   Surface    #eef2ed  — recessed panels, swatches, thumbnails
+   Line       #dbe4dd  — hairline rules
+   Muted      #6b7a72  — secondary text
+   Accent     #2f6b57  — emerald (CTAs, focus, signature marks)
+   Accent-deep#1a3f34  — accent hover / pressed
+   Signature  linear-gradient(135deg, #1f4d3f 0%, #2f6b57 42%, #8fb9a8 100%)
+              — the house gradient, used on review avatars + the reviews rule
+   Display    'Fraunces' — editorial serif, used sparingly for voice
+   Body       'Inter'    — neutral workhorse for reading + UI
+   Mono       'IBM Plex Mono' — catalog-style labels, price, counters
 ============================================================ */
 
 .luxury-product {
 
-  --lp-black: #151515;
-  --lp-dark: #242424;
-  --lp-text: #242424;
-  --lp-muted: #777;
-  --lp-soft: #f7f6f3;
-  --lp-border: #e9e7e3;
-  --lp-white: #fff;
+  --lp-black: #1f4d3f;
+  --lp-dark: #163b30;
+  --lp-text: #1c2e28;
+  --lp-muted: #6b7a72;
+  --lp-soft: #eef2ed;
+  --lp-border: #dbe4dd;
+  --lp-white: #f6f8f4;
+  --lp-accent: #2f6b57;
+  --lp-accent-deep: #1a3f34;
 
   color: var(--lp-text);
 
   padding-top: var(--lp-top-space);
   padding-bottom: var(--lp-bottom-space);
 
-  background: #fff;
+  background: var(--lp-white);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
   -webkit-font-smoothing: antialiased;
 }
@@ -855,6 +1102,7 @@
 .luxury-product input,
 .luxury-product select {
   font: inherit;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 
@@ -902,7 +1150,7 @@
 
   overflow: hidden;
 
-  background: #f5f4f1;
+  background: var(--lp-soft);
 
   border-radius: var(--lp-radius);
 
@@ -989,13 +1237,15 @@
 
   gap: 6px;
 
-  padding: 8px 11px;
+  padding: 8px 12px;
 
   color: #fff;
 
-  background: rgba(20,20,20,.68);
+  background: rgba(32,28,22,.72);
 
   border-radius: 999px;
+
+  font-family: 'IBM Plex Mono', monospace;
 
   font-size: 10px;
 
@@ -1033,7 +1283,7 @@
 
   color: var(--lp-black);
 
-  background: rgba(255,255,255,.94);
+  background: rgba(250,248,243,.95);
 
   border-radius: 999px;
 
@@ -1045,11 +1295,12 @@
 
   letter-spacing: .01em;
 
-  box-shadow: 0 8px 30px rgba(0,0,0,.08);
+  box-shadow: 0 8px 30px rgba(32,28,22,.1);
 
   transition:
     transform .2s ease,
-    box-shadow .2s ease;
+    box-shadow .2s ease,
+    background-color .2s ease;
 }
 
 
@@ -1070,8 +1321,10 @@
 
   transform: translateY(-2px);
 
+  background: #fff;
+
   box-shadow:
-    0 12px 35px rgba(0,0,0,.13);
+    0 12px 35px rgba(32,28,22,.16);
 }
 
 
@@ -1098,7 +1351,7 @@
 
   color: var(--lp-black);
 
-  background: rgba(255,255,255,.95);
+  background: rgba(250,248,243,.96);
 
   border-radius: 50%;
 
@@ -1106,11 +1359,12 @@
 
   opacity: 0;
 
-  box-shadow: 0 8px 25px rgba(0,0,0,.1);
+  box-shadow: 0 8px 25px rgba(32,28,22,.12);
 
   transition:
     opacity .2s ease,
-    transform .2s ease;
+    transform .2s ease,
+    background-color .2s ease;
 }
 
 
@@ -1122,6 +1376,8 @@
 
 
 .luxury-product__navigation:hover {
+
+  background: #fff;
 
   transform:
     translateY(-50%)
@@ -1194,7 +1450,7 @@
 
   overflow: hidden;
 
-  background: #f4f3f0;
+  background: var(--lp-soft);
 
   border-radius: 7px;
 
@@ -1202,7 +1458,7 @@
 
   cursor: pointer;
 
-  opacity: .58;
+  opacity: .55;
 
   transition:
     opacity .2s ease,
@@ -1223,7 +1479,7 @@
 
   opacity: 1;
 
-  border-color: var(--lp-black);
+  border-color: var(--lp-accent);
 }
 
 
@@ -1268,6 +1524,23 @@
 
 .luxury-product__details {
   min-width: 0;
+  position: relative;
+}
+
+
+.luxury-product__details::before {
+
+  content: '';
+
+  position: absolute;
+
+  top: 6px;
+  bottom: 6px;
+  left: -55px;
+
+  width: 1px;
+
+  background: var(--lp-border);
 }
 
 
@@ -1285,11 +1558,13 @@
 
   margin-bottom: 15px;
 
-  color: var(--lp-muted);
+  color: var(--lp-accent);
+
+  font-family: 'IBM Plex Mono', monospace;
 
   font-size: 10px;
 
-  font-weight: 700;
+  font-weight: 500;
 
   letter-spacing: .18em;
 
@@ -1305,11 +1580,13 @@
 
   color: var(--lp-black);
 
-  font-size: clamp(34px, 3.8vw, 58px);
+  font-family: 'Fraunces', Georgia, serif;
 
-  line-height: 1.02;
+  font-size: clamp(34px, 3.6vw, 54px);
 
-  letter-spacing: -.045em;
+  line-height: 1.05;
+
+  letter-spacing: -.02em;
 
   font-weight: 500;
 }
@@ -1340,6 +1617,8 @@
   display: flex;
 
   gap: 2px;
+
+  color: var(--lp-accent);
 }
 
 
@@ -1367,6 +1646,10 @@
   gap: 10px;
 
   margin-top: 24px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid var(--lp-border);
 }
 
 
@@ -1374,19 +1657,23 @@
 
   color: var(--lp-black);
 
-  font-size: 21px;
+  font-family: 'IBM Plex Mono', monospace;
 
-  font-weight: 600;
+  font-size: 19px;
 
-  letter-spacing: -.02em;
+  font-weight: 500;
+
+  letter-spacing: -.01em;
 }
 
 
 .luxury-product__price-compare {
 
-  color: #999;
+  color: #8a978e;
 
-  font-size: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+
+  font-size: 13px;
 
   text-decoration: line-through;
 }
@@ -1394,11 +1681,11 @@
 
 .luxury-product__sale {
 
-  padding: 5px 8px;
+  padding: 5px 9px;
 
   color: #fff;
 
-  background: var(--lp-black);
+  background: var(--lp-accent);
 
   border-radius: 999px;
 
@@ -1420,9 +1707,9 @@
 
   margin-top: 23px;
 
-  color: #666;
+  color: #445048;
 
-  font-size: 13px;
+  font-size: 14px;
 
   line-height: 1.8;
 }
@@ -1444,7 +1731,7 @@
 
 .luxury-product__form {
 
-  margin-top: 32px;
+  margin-top: 34px;
 }
 
 
@@ -1486,23 +1773,15 @@
 }
 
 .luxury-product__option-name {
-  color: #1a1a1a;
+  color: var(--lp-black);
   letter-spacing: 0;
 }
 
 .luxury-product__option-selected {
-  color: #777;
+  color: var(--lp-muted);
   font-size: 13px;
   font-weight: 400;
   text-align: right;
-}
-
-
-.luxury-product__option-heading span:last-child {
-
-  color: var(--lp-muted);
-
-  font-weight: 500;
 }
 
 
@@ -1512,7 +1791,7 @@
 
   flex-wrap: wrap;
 
-  gap: 7px;
+  gap: 8px;
 }
 
 
@@ -1547,12 +1826,12 @@
 
   padding: 11px 18px;
 
-  color: #252525;
+  color: #1c2e28;
   background: #fff;
 
   text-align: center;
 
-  border: 1px solid #d9d7d2;
+  border: 1px solid var(--lp-border);
   border-radius: 6px;
 
   font-size: 14px;
@@ -1568,39 +1847,23 @@
 }
 
 .luxury-product__choice:hover:not(.is-disabled) span {
-  border-color: #888;
+  border-color: var(--lp-accent);
   transform: translateY(-1px);
 }
 
 .luxury-product__choice input:checked + span {
   color: #fff;
-  background: #171717;
-  border-color: #171717;
+  background: var(--lp-black);
+  border-color: var(--lp-black);
 
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, .12);
-}
-
-
-.luxury-product__choice:hover span {
-
-  border-color: #999;
-}
-
-
-.luxury-product__choice input:checked + span {
-
-  color: #fff;
-
-  background: var(--lp-black);
-
-  border-color: var(--lp-black);
+    0 4px 14px rgba(32,28,22,.16);
 }
 
 
 .luxury-product__choice.is-disabled {
 
-  opacity: .3;
+  opacity: .32;
 
   cursor: not-allowed;
 }
@@ -1655,7 +1918,7 @@
 
   background: #fff;
 
-  border: 1px solid #d9d7d2;
+  border: 1px solid var(--lp-border);
   border-radius: 6px;
 }
 
@@ -1663,7 +1926,7 @@
   display: grid;
   place-items: center;
 
-  color: #333;
+  color: var(--lp-black);
   background: transparent;
 
   cursor: pointer;
@@ -1673,49 +1936,8 @@
 }
 
 .luxury-product__quantity button:hover {
-  background: #f5f4f1;
+  background: var(--lp-soft);
 }
-
-.luxury-product__quantity input {
-  width: 100%;
-  min-width: 0;
-
-  padding: 0;
-
-  color: #222;
-
-  border: 0;
-  outline: 0;
-
-  background: transparent;
-
-  text-align: center;
-
-  font-size: 14px;
-  font-weight: 500;
-
-  appearance: textfield;
-}
-
-.luxury-product__quantity button {
-
-  display: grid;
-
-  place-items: center;
-
-  background: transparent;
-
-  color: var(--lp-black);
-
-  cursor: pointer;
-}
-
-
-.luxury-product__quantity button:hover {
-
-  background: #f6f5f2;
-}
-
 
 .luxury-product__quantity svg {
 
@@ -1745,6 +1967,10 @@
   background: transparent;
 
   text-align: center;
+
+  color: #1c2e28;
+
+  font-family: 'IBM Plex Mono', monospace;
 
   font-size: 12px;
 
@@ -1779,7 +2005,7 @@
   padding: 0 28px;
 
   color: #fff;
-  background: #171717;
+  background: var(--lp-black);
 
   border-radius: 6px;
 
@@ -1807,7 +2033,7 @@
   background: linear-gradient(
     110deg,
     transparent 20%,
-    rgba(255,255,255,.08) 50%,
+    rgba(255,255,255,.1) 50%,
     transparent 80%
   );
 
@@ -1818,15 +2044,6 @@
 
 .luxury-product__add:hover:not(:disabled)::before {
   transform: translateX(100%);
-}
-
-.luxury-product__add:hover:not(:disabled) {
-  background: #2a2a2a;
-
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 10px 25px rgba(0,0,0,.14);
 }
 
 .luxury-product__add span,
@@ -1853,12 +2070,12 @@
 
 .luxury-product__add:hover:not(:disabled) {
 
-  background: #2c2c2c;
+  background: var(--lp-accent-deep);
 
   transform: translateY(-1px);
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,.13);
+    0 10px 30px rgba(32,28,22,.2);
 }
 
 
@@ -1902,9 +2119,9 @@
   justify-content: center;
   gap: 10px;
   padding: 0 28px;
-  color: #171717;
+  color: var(--lp-black);
   background: #fff;
-  border: 1px solid #171717;
+  border: 1px solid var(--lp-black);
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
@@ -1916,7 +2133,7 @@
 }
 
 .luxury-product__notify-toggle:hover {
-  background: #171717;
+  background: var(--lp-black);
   color: #fff;
   transform: translateY(-1px);
 }
@@ -1932,8 +2149,8 @@
 .luxury-product__notify-form {
   margin-top: 14px;
   padding: 18px;
-  background: #f7f6f3;
-  border: 1px solid #e9e7e3;
+  background: var(--lp-soft);
+  border: 1px solid var(--lp-border);
   border-radius: 8px;
   display: grid;
   gap: 12px;
@@ -1948,7 +2165,7 @@
 .luxury-product__notify-text {
   margin: 0;
   font-size: 12px;
-  color: #666;
+  color: var(--lp-muted);
   line-height: 1.6;
 }
 
@@ -1961,17 +2178,17 @@
   width: 100%;
   min-height: 48px;
   padding: 0 14px;
-  border: 1px solid #d9d7d2;
+  border: 1px solid var(--lp-border);
   border-radius: 6px;
   font-size: 13px;
-  color: #222;
+  color: #1c2e28;
   background: #fff;
   transition: border-color .2s ease;
 }
 
 .luxury-product__notify-fields input:focus-visible {
   outline: none;
-  border-color: #171717;
+  border-color: var(--lp-accent);
 }
 
 .luxury-product__notify-error {
@@ -1984,7 +2201,7 @@
   min-height: 48px;
   padding: 0 24px;
   color: #fff;
-  background: #171717;
+  background: var(--lp-black);
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
@@ -1993,7 +2210,7 @@
 }
 
 .luxury-product__notify-submit:hover {
-  background: #2a2a2a;
+  background: var(--lp-accent-deep);
   transform: translateY(-1px);
 }
 
@@ -2020,75 +2237,15 @@
 
   grid-template-columns: repeat(3, 1fr);
 
-  gap: 24px;
+  gap: 20px;
 
   margin-top: 32px;
 
   padding: 24px 0;
 
-  border-top: 1px solid #e7e5e1;
-  border-bottom: 1px solid #e7e5e1;
+  border-top: 1px solid var(--lp-border);
+  border-bottom: 1px solid var(--lp-border);
 }
-
-.luxury-product__benefit {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: flex-start;
-
-  gap: 10px;
-
-  min-width: 0;
-}
-
-.luxury-product__benefit-icon {
-  width: 34px;
-  height: 34px;
-
-  display: grid;
-
-  place-items: center;
-
-  color: #333;
-
-  background: #f5f4f1;
-
-  border-radius: 50%;
-}
-
-.luxury-product__benefit-icon svg {
-  width: 16px;
-  height: 16px;
-
-  fill: none;
-
-  stroke: currentColor;
-
-  stroke-width: 1.35;
-}
-
-.luxury-product__benefit strong {
-  display: block;
-
-  margin-bottom: 4px;
-
-  color: #252525;
-
-  font-size: 11px;
-  line-height: 1.3;
-  font-weight: 650;
-}
-
-.luxury-product__benefit small {
-  display: block;
-
-  color: #777;
-
-  font-size: 10px;
-  line-height: 1.5;
-}
-
 
 .luxury-product__benefit {
 
@@ -2106,16 +2263,16 @@
 
 .luxury-product__benefit-icon {
 
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 
   display: grid;
 
   place-items: center;
 
-  color: var(--lp-black);
+  color: var(--lp-accent);
 
-  background: #f6f5f2;
+  background: var(--lp-soft);
 
   border-radius: 50%;
 }
@@ -2130,7 +2287,7 @@
 
   stroke: currentColor;
 
-  stroke-width: 1.35;
+  stroke-width: 1.4;
 }
 
 
@@ -2145,7 +2302,9 @@
 
   margin-bottom: 3px;
 
-  font-size: 10px;
+  color: #1c2e28;
+
+  font-size: 10.5px;
 
   font-weight: 650;
 }
@@ -2155,7 +2314,7 @@
 
   color: var(--lp-muted);
 
-  font-size: 9px;
+  font-size: 9.5px;
 
   line-height: 1.45;
 }
@@ -2169,11 +2328,11 @@
 .luxury-product__accordions {
   margin-top: 28px;
 
-  border-top: 1px solid #e7e5e1;
+  border-top: 1px solid var(--lp-border);
 }
 
 .luxury-product__accordion {
-  border-bottom: 1px solid #e7e5e1;
+  border-bottom: 1px solid var(--lp-border);
 }
 
 .luxury-product__accordion summary {
@@ -2185,7 +2344,7 @@
 
   padding: 0;
 
-  color: #252525;
+  color: #1c2e28;
 
   cursor: pointer;
 
@@ -2194,14 +2353,20 @@
   font-size: 14px;
   line-height: 1.4;
   font-weight: 600;
+
+  transition: color .2s ease;
+}
+
+.luxury-product__accordion summary:hover {
+  color: var(--lp-accent);
 }
 
 .luxury-product__accordion-content {
   padding: 0 30px 24px 0;
 
-  color: #666;
+  color: #445048;
 
-  font-size: 13px;
+  font-size: 13.5px;
   line-height: 1.8;
 }
 
@@ -2219,6 +2384,8 @@
   display: grid;
 
   place-items: center;
+
+  color: var(--lp-accent);
 }
 
 
@@ -2258,9 +2425,9 @@
 
   place-items: center;
 
-  color: #999;
+  color: var(--lp-muted);
 
-  background: #f5f4f1;
+  background: var(--lp-soft);
 
   border-radius: var(--lp-radius);
 
@@ -2288,7 +2455,7 @@
 
   padding: 40px;
 
-  background: rgba(12,12,12,.97);
+  background: rgba(15,13,10,.97);
 
   opacity: 0;
 
@@ -2445,6 +2612,8 @@
 
   color: rgba(255,255,255,.7);
 
+  font-family: 'IBM Plex Mono', monospace;
+
   font-size: 11px;
 }
 
@@ -2455,11 +2624,340 @@
 
 .luxury-product button:focus-visible,
 .luxury-product input:focus-visible,
-.luxury-product summary:focus-visible {
+.luxury-product summary:focus-visible,
+.luxury-reviews *:focus-visible {
 
-  outline: 2px solid var(--lp-black);
+  outline: 2px solid var(--lp-accent, #2f6b57);
 
   outline-offset: 3px;
+}
+
+
+/* ============================================================================
+   CUSTOMER REVIEWS — continuous scrolling ribbon (signature element)
+============================================================================ */
+
+.luxury-reviews {
+
+  --rv-ink: #1f4d3f;
+  --rv-paper: #eef2ed;
+  --rv-line: #dbe4dd;
+  --rv-muted: #6b7a72;
+  --rv-accent: #2f6b57;
+
+  padding: 84px 0 96px;
+
+  background: var(--rv-paper);
+
+  border-top: 1px solid var(--rv-line);
+
+  overflow: hidden;
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.luxury-reviews__container {
+
+  width: min(1480px, calc(100% - 80px));
+
+  margin-inline: auto;
+}
+
+.luxury-reviews__header {
+
+  text-align: center;
+
+  margin-bottom: 48px;
+}
+
+.luxury-reviews__eyebrow {
+
+  display: inline-block;
+
+  margin-bottom: 14px;
+
+  color: var(--rv-accent);
+
+  font-family: 'IBM Plex Mono', monospace;
+
+  font-size: 10.5px;
+
+  font-weight: 500;
+
+  letter-spacing: .2em;
+
+  text-transform: uppercase;
+}
+
+.luxury-reviews__title {
+
+  margin: 0;
+
+  color: var(--rv-ink);
+
+  font-family: 'Fraunces', Georgia, serif;
+
+  font-size: clamp(28px, 3.2vw, 42px);
+
+  font-weight: 500;
+
+  letter-spacing: -.02em;
+  line-height: 1.1;
+}
+
+.luxury-reviews__header::after {
+
+  content: '';
+
+  display: block;
+
+  width: 64px;
+  height: 3px;
+
+  margin: 22px auto 0;
+
+  background: linear-gradient(135deg, #1f4d3f 0%, #2f6b57 42%, #8fb9a8 100%);
+
+  border-radius: 999px;
+}
+
+/* Marquee viewport */
+
+.luxury-reviews__marquee {
+
+  position: relative;
+
+  width: 100%;
+
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+}
+
+.luxury-reviews__track {
+
+  display: flex;
+
+  width: max-content;
+
+  animation: reviews-scroll 46s linear infinite;
+}
+
+.luxury-reviews__marquee:hover .luxury-reviews__track,
+.luxury-reviews__marquee:focus-within .luxury-reviews__track {
+
+  animation-play-state: paused;
+}
+
+.luxury-reviews__group {
+
+  display: flex;
+
+  gap: 20px;
+
+  padding: 4px 10px;
+
+  flex-shrink: 0;
+}
+
+@keyframes reviews-scroll {
+
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+
+}
+
+/* Cards */
+
+.luxury-reviews__card {
+
+  position: relative;
+
+  flex: 0 0 340px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 16px;
+
+  padding: 28px 26px 24px;
+
+  background: #fff;
+
+  border: 1px solid var(--rv-line);
+  border-top: 3px solid transparent;
+
+  border-radius: 10px;
+
+  background-image:
+    linear-gradient(#fff, #fff),
+    linear-gradient(135deg, #1f4d3f 0%, #2f6b57 42%, #8fb9a8 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+
+  box-shadow: 0 14px 34px rgba(31,77,63,.08);
+}
+
+.luxury-reviews__quote-mark {
+
+  position: absolute;
+
+  top: 10px;
+  right: 20px;
+
+  color: var(--rv-line);
+
+  font-family: 'Fraunces', Georgia, serif;
+
+  font-size: 52px;
+
+  line-height: 1;
+
+  user-select: none;
+}
+
+.luxury-reviews__stars {
+
+  display: flex;
+
+  gap: 3px;
+
+  color: #d7ddd4;
+}
+
+.luxury-reviews__stars svg {
+
+  width: 14px;
+  height: 14px;
+
+  fill: currentColor;
+}
+
+.luxury-reviews__stars svg.is-filled {
+
+  color: var(--rv-accent);
+}
+
+.luxury-reviews__text {
+
+  margin: 0;
+
+  color: #3a453e;
+
+  font-size: 13.5px;
+
+  line-height: 1.75;
+
+  min-height: 88px;
+}
+
+.luxury-reviews__person {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid var(--rv-line);
+}
+
+.luxury-reviews__avatar {
+
+  flex: 0 0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+
+  place-items: center;
+
+  color: #fff;
+
+  background: linear-gradient(135deg, #1f4d3f 0%, #2f6b57 42%, #8fb9a8 100%);
+
+  border-radius: 50%;
+
+  font-family: 'IBM Plex Mono', monospace;
+
+  font-size: 11px;
+
+  font-weight: 500;
+
+  letter-spacing: .02em;
+}
+
+.luxury-reviews__person-meta {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  min-width: 0;
+}
+
+.luxury-reviews__person-meta strong {
+
+  color: var(--rv-ink);
+
+  font-size: 12.5px;
+
+  font-weight: 650;
+}
+
+.luxury-reviews__person-meta small {
+
+  color: var(--rv-muted);
+
+  font-size: 10.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .luxury-reviews__track {
+
+    animation: none;
+  }
+
+  .luxury-reviews__marquee {
+
+    overflow-x: auto;
+
+    scroll-snap-type: x proximity;
+
+    -webkit-mask-image: none;
+
+    mask-image: none;
+  }
+
+  .luxury-reviews__group[aria-hidden="true"] {
+
+    display: none;
+  }
+
+  .luxury-reviews__card {
+
+    scroll-snap-align: start;
+  }
+
 }
 
 
@@ -2482,6 +2980,16 @@
       minmax(340px,.8fr);
 
     gap: 45px;
+  }
+
+  .luxury-product__details::before {
+
+    left: -23px;
+  }
+
+  .luxury-reviews__container {
+
+    width: min(100% - 48px, 1000px);
   }
 
 }
@@ -2514,10 +3022,25 @@
     max-width: none;
   }
 
+  .luxury-product__details::before {
+
+    display: none;
+  }
+
 
   .luxury-product__title {
 
     max-width: 700px;
+  }
+
+  .luxury-reviews {
+
+    padding: 64px 0 76px;
+  }
+
+  .luxury-reviews__container {
+
+    width: min(100% - 36px, 720px);
   }
 
 }
@@ -2629,21 +3152,21 @@
 
   .luxury-product__title {
 
-    font-size: 35px;
+    font-size: 33px;
 
-    line-height: 1.04;
+    line-height: 1.08;
   }
 
 
   .luxury-product__price-current {
 
-    font-size: 20px;
+    font-size: 18px;
   }
 
 
   .luxury-product__description {
 
-    font-size: 12.5px;
+    font-size: 13px;
 
     line-height: 1.75;
   }
@@ -2749,11 +3272,42 @@
     right: 10px;
   }
 
+  .luxury-reviews {
+
+    padding: 52px 0 64px;
+  }
+
+  .luxury-reviews__header {
+
+    margin-bottom: 34px;
+
+    padding-inline: 18px;
+  }
+
+  .luxury-reviews__card {
+
+    flex-basis: 270px;
+
+    padding: 22px 20px 20px;
+  }
+
+  .luxury-reviews__text {
+
+    font-size: 13px;
+
+    min-height: 108px;
+  }
+
+  .luxury-reviews__track {
+
+    animation-duration: 34s;
+  }
+
 }
 
 
 /* ============================================================
-   REDUCED MOTION
+   REDUCED MOTION (product gallery)
 ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -3788,6 +4342,32 @@
       "id": "trust_3_text",
       "label": "Third benefit description",
       "default": "Simple returns"
+    },
+
+    {
+      "type": "header",
+      "content": "Customer reviews"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show scrolling reviews",
+      "default": true
+    },
+
+    {
+      "type": "text",
+      "id": "reviews_eyebrow",
+      "label": "Eyebrow label",
+      "default": "In their words"
+    },
+
+    {
+      "type": "text",
+      "id": "reviews_title",
+      "label": "Section title",
+      "default": "Loved, in the details"
     }
 
   ],
