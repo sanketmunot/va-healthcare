@@ -61,13 +61,30 @@
 </header>
 
 {% stylesheet %}
-  .site-header {
-    position: relative;
-    z-index: 100;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  }
+.site-header {
+  position: relative;
+  z-index: 100;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.94) 0%,
+      rgba(245, 248, 247, 0.88) 100%
+    );
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(12, 24, 20, 0.16);
+
+  border-radius: 50px;
+
+  box-shadow:
+    0 12px 35px rgba(12, 24, 20, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  overflow: hidden;
+}
 
   .site-header--sticky {
     position: sticky;
@@ -204,7 +221,7 @@
   }
 
   .site-header__icon:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     background: rgba(0, 0, 0, 0.05);
   }
 
