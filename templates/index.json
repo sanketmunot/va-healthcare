@@ -11,14 +11,34 @@
   "sections": {
     "hero": {
       "type": "hero-banner",
+      "blocks": {
+        "slide_ncdAmh": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/spa-bath.jpg"
+          }
+        },
+        "slide_KV7FrB": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/person-stands-on-rocks-poking-out-of-the-ocean-shoreline.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "slide_ncdAmh",
+        "slide_KV7FrB"
+      ],
       "settings": {
+        "height": 70,
+        "overlay_opacity": 55,
         "eyebrow": "Wellness rituals",
         "heading": "Care that feels calm",
         "text": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health.",
         "button_label": "Shop collection",
+        "button_link": "",
         "button_label_2": "Our story",
-        "height": 80,
-        "overlay_opacity": 55
+        "button_link_2": ""
       }
     },
     "trust": {
@@ -27,6 +47,7 @@
         "badge_1": {
           "type": "badge",
           "settings": {
+            "icon": "shopify://shop_images/express-delivery.png",
             "title": "Free shipping",
             "text": "On orders over $75 within the contiguous US."
           }
@@ -34,6 +55,7 @@
         "badge_2": {
           "type": "badge",
           "settings": {
+            "icon": "shopify://shop_images/search.png",
             "title": "Dermatologist tested",
             "text": "Gentle enough for daily use and mindful recovery."
           }
@@ -41,19 +63,26 @@
         "badge_3": {
           "type": "badge",
           "settings": {
-            "title": "Easy returns",
-            "text": "30-day returns if a product isn’t the right fit."
+            "icon": "shopify://shop_images/physical-therapy.png",
+            "title": "Best Service",
+            "text": "Always on your side"
           }
         },
         "badge_4": {
           "type": "badge",
           "settings": {
+            "icon": "shopify://shop_images/secure.png",
             "title": "Secure checkout",
             "text": "Encrypted payments with trusted providers."
           }
         }
       },
-      "block_order": ["badge_1", "badge_2", "badge_3", "badge_4"],
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
+      ],
       "settings": {
         "heading": "Why shoppers trust us",
         "padding": 48
@@ -65,6 +94,7 @@
         "eyebrow": "Curated for you",
         "heading": "Bestsellers",
         "text": "Gentle formulas and daily rituals customers return to.",
+        "collection": "frontpage",
         "products_to_show": 4,
         "columns": 4,
         "show_view_all": true,
@@ -77,29 +107,39 @@
         "tile_1": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/bikes-take-the-turn.jpg",
             "eyebrow": "Morning",
             "title": "Daily balance",
-            "text": "Light support for focused days."
+            "text": "Light support for focused days.",
+            "link": ""
           }
         },
         "tile_2": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/woman-strong-band-exercise.jpg",
             "eyebrow": "Body",
             "title": "Recovery care",
-            "text": "Soothe sore muscles and tension."
+            "text": "Soothe sore muscles and tension.",
+            "link": ""
           }
         },
         "tile_3": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/intense-exercise.jpg",
             "eyebrow": "Mind",
             "title": "Calm rituals",
-            "text": "Small habits that quiet the noise."
+            "text": "Small habits that quiet the noise.",
+            "link": ""
           }
         }
       },
-      "block_order": ["tile_1", "tile_2", "tile_3"],
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3"
+      ],
       "settings": {
         "heading": "Shop by ritual",
         "padding": 48
@@ -108,11 +148,13 @@
     "story": {
       "type": "image-with-text",
       "settings": {
+        "image": "shopify://shop_images/handful-of-acorns.jpg",
         "layout": "image_first",
         "eyebrow": "Our approach",
         "heading": "Formulated for everyday recovery",
         "text": "<p>Soft textures, clean ingredients, and routines that fit real life — without the clinical coldness.</p>",
         "button_label": "Learn more",
+        "button_link": "",
         "padding": 64
       }
     },
@@ -141,7 +183,11 @@
           }
         }
       },
-      "block_order": ["q1", "q2", "q3"],
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
       "settings": {
         "eyebrow": "Support",
         "heading": "Common questions",

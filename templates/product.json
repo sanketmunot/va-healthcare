@@ -34,15 +34,20 @@
           }
         }
       },
-      "block_order": ["ingredients", "usage", "shipping"],
+      "block_order": [
+        "ingredients",
+        "usage",
+        "shipping"
+      ],
       "settings": {
         "show_vendor": true,
         "show_description": true,
-        "show_dynamic_checkout": true,
         "add_to_cart_label": "Add to cart",
-        "padding": 48
+        "show_dynamic_checkout": true
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
