@@ -1,22 +1,31 @@
 {% comment %}
-  PREMIUM PRODUCT PAGE — refined edition
+  PREMIUM PRODUCT PAGE — refined edition + Full/Partial Payment flow
   ------------------------------------------------------------
-  Visual direction:
-  - Boutique atelier / editorial luxury ecommerce
-  - Warm ivory + ink palette with an antique-brass accent
-  - Fraunces (display serif) + Inter (body) + IBM Plex Mono (labels/price)
-  - Large, quiet product imagery with a hairline division from the info panel
-  - Professional option selectors, sticky information panel
-  - Existing gallery / lightbox / variant / notify-me functionality retained
-  - New: an endlessly scrolling customer-review ribbon at the foot of the page
+  New in this version:
+  - Purchase option toggle: "Pay Full Amount" vs "Book with Partial Payment"
+  - Partial payment amount calculator (percentage or fixed, via section settings
+    or product metafields custom.booking_type / custom.booking_value)
+  - Lead capture form for partial bookings (posts to a configurable backend
+    endpoint — you plug in the real URL in section settings, the JS is ready)
+  - Booking confirmation state
+  All existing gallery / lightbox / variant / notify-me / reviews functionality
+  is unchanged.
 {% endcomment %}
 
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign product_form_id = 'product-form-' | append: section.id %}
 
+{% comment %} Resolve partial payment config: metafield overrides section default {% endcomment %}
+{% assign booking_type = product.metafields.custom.booking_type | default: section.settings.partial_payment_type %}
+{% assign booking_value = product.metafields.custom.booking_value | default: section.settings.partial_payment_value %}
+
 <section
   class="luxury-product"
   data-add-to-cart-label="{{ section.settings.add_to_cart_label | escape }}"
+  data-partial-enabled="{{ product.metafields.custom.enable_partial_payment.value }}"
+  data-booking-type="{{ booking_type }}"
+  data-booking-value="{{ booking_value }}"
+  data-lead-endpoint="{{ section.settings.lead_endpoint_url | escape }}"
   style="
     --lp-top-space: {{ section.settings.padding_top }}px;
     --lp-bottom-space: {{ section.settings.padding_bottom }}px;
@@ -465,83 +474,225 @@
 
 
             <!-- =============================================
+                 PURCHASE OPTION TOGGLE (Full vs Partial)
+            ============================================== -->
+
+            {% if product.metafields.custom.enable_partial_payment.value %}
+
+              <div
+                class="luxury-product__mode-toggle"
+                data-purchase-mode-toggle
+                role="tablist"
+                aria-label="Payment option"
+              >
+
+                <button
+                  type="button"
+                  class="luxury-product__mode-btn is-active"
+                  data-mode-btn="full"
+                  role="tab"
+                  aria-selected="true"
+                >
+                  {{ section.settings.full_payment_toggle_label | default: 'Pay Full Amount' }}
+                </button>
+
+                <button
+                  type="button"
+                  class="luxury-product__mode-btn"
+                  data-mode-btn="partial"
+                  role="tab"
+                  aria-selected="false"
+                >
+                  {{ section.settings.partial_payment_toggle_label | default: 'Book with Partial Payment' }}
+                </button>
+
+              </div>
+
+            {% endif %}
+
+
+            <!-- =============================================
                  PURCHASE / NOTIFY ME
             ============================================== -->
 
             <div class="luxury-product__purchase-wrap" data-purchase-wrap>
 
-              <!-- BUY STATE -->
+              <!-- FULL PAYMENT STATE -->
               <div
-                class="luxury-product__purchase-buy {% unless current_variant.available %}is-hidden{% endunless %}"
-                data-purchase-buy
+                class="luxury-product__purchase-mode {% unless current_variant.available %}is-hidden{% endunless %}"
+                data-purchase-mode="full"
               >
 
-                <div class="luxury-product__purchase">
+                <div class="luxury-product__purchase-buy" data-purchase-buy>
 
-                  <div class="luxury-product__quantity">
+                  <div class="luxury-product__purchase">
+
+                    <div class="luxury-product__quantity">
+
+                      <button
+                        type="button"
+                        data-quantity-minus
+                        aria-label="Decrease quantity"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M5 12h14"/>
+                        </svg>
+                      </button>
+
+                      <input
+                        id="Quantity-{{ section.id }}"
+                        type="number"
+                        name="quantity"
+                        min="1"
+                        value="1"
+                        inputmode="numeric"
+                        aria-label="Quantity"
+                      >
+
+                      <button
+                        type="button"
+                        data-quantity-plus
+                        aria-label="Increase quantity"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                      </button>
+
+                    </div>
+
 
                     <button
-                      type="button"
-                      data-quantity-minus
-                      aria-label="Decrease quantity"
+                      type="submit"
+                      class="luxury-product__add"
+                      data-add-to-cart
                     >
+
+                      <span data-add-label>
+                        {{ section.settings.add_to_cart_label }}
+                      </span>
+
                       <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M5 12h14"/>
+                        <path d="m13 6 6 6-6 6"/>
                       </svg>
-                    </button>
 
-                    <input
-                      id="Quantity-{{ section.id }}"
-                      type="number"
-                      name="quantity"
-                      min="1"
-                      value="1"
-                      inputmode="numeric"
-                      aria-label="Quantity"
-                    >
-
-                    <button
-                      type="button"
-                      data-quantity-plus
-                      aria-label="Increase quantity"
-                    >
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 5v14M5 12h14"/>
-                      </svg>
                     </button>
 
                   </div>
 
 
-                  <button
-                    type="submit"
-                    class="luxury-product__add"
-                    data-add-to-cart
-                  >
+                  {% if section.settings.show_dynamic_checkout %}
 
-                    <span data-add-label>
-                      {{ section.settings.add_to_cart_label }}
-                    </span>
+                    <div class="luxury-product__dynamic-checkout">
+                      {{ form | payment_button }}
+                    </div>
 
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M5 12h14"/>
-                      <path d="m13 6 6 6-6 6"/>
-                    </svg>
-
-                  </button>
+                  {% endif %}
 
                 </div>
 
+              </div>
 
-                {% if section.settings.show_dynamic_checkout %}
 
-                  <div class="luxury-product__dynamic-checkout">
-                    {{ form | payment_button }}
+              <!-- PARTIAL PAYMENT STATE -->
+              {% if product.metafields.custom.enable_partial_payment.value %}
+
+                <div
+                  class="luxury-product__purchase-mode is-hidden {% unless current_variant.available %}is-hidden{% endunless %}"
+                  data-purchase-mode="partial"
+                >
+
+                  <div class="luxury-product__partial-summary">
+
+                    <div class="luxury-product__partial-row">
+                      <span>Pay now to book</span>
+                      <strong data-partial-booking-amount>—</strong>
+                    </div>
+
+                    <div class="luxury-product__partial-row luxury-product__partial-row--muted">
+                      <span>Balance on confirmation</span>
+                      <strong data-partial-remaining-amount>—</strong>
+                    </div>
+
                   </div>
 
-                {% endif %}
+                  {% if section.settings.partial_payment_note != blank %}
+                    <p class="luxury-product__partial-note">
+                      {{ section.settings.partial_payment_note }}
+                    </p>
+                  {% endif %}
 
-              </div>
+                  <button
+                    type="button"
+                    class="luxury-product__book-now"
+                    data-book-now-toggle
+                  >
+                    {{ section.settings.book_now_button_label | default: 'Book Now' }}
+                  </button>
+
+
+                  <div class="luxury-product__lead-form is-hidden" data-lead-form>
+
+                    <p class="luxury-product__lead-text">
+                      {{ section.settings.lead_form_text | default: "Share your details and our team will confirm your booking, then collect the remaining balance." }}
+                    </p>
+
+                    <div class="luxury-product__lead-fields">
+
+                      <input
+                        type="text"
+                        placeholder="Full name"
+                        data-lead-name
+                        autocomplete="name"
+                      >
+
+                      <input
+                        type="tel"
+                        inputmode="tel"
+                        placeholder="Phone number"
+                        data-lead-phone
+                        autocomplete="tel"
+                      >
+
+                      <input
+                        type="email"
+                        inputmode="email"
+                        placeholder="Email address (optional)"
+                        data-lead-email
+                        autocomplete="email"
+                      >
+
+                      <input
+                        type="text"
+                        placeholder="City / Pincode"
+                        data-lead-location
+                        autocomplete="postal-code"
+                      >
+
+                    </div>
+
+                    <p class="luxury-product__lead-error is-hidden" data-lead-error>
+                      Please enter your name and a valid phone number.
+                    </p>
+
+                    <button
+                      type="button"
+                      class="luxury-product__lead-submit"
+                      data-lead-submit
+                    >
+                      {{ section.settings.lead_submit_label | default: 'Confirm Booking' }}
+                    </button>
+
+                    <p class="luxury-product__lead-success is-hidden" data-lead-success>
+                      {{ section.settings.lead_success_message | default: "Thanks — your booking request is in. Our team will call you shortly to confirm and collect the remaining balance." }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              {% endif %}
 
 
               <!-- SOLD OUT / NOTIFY STATE -->
@@ -1049,22 +1200,6 @@
 {% stylesheet %}
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
-
-/* ============================================================
-   DESIGN SYSTEM
-   Ink        #1f4d3f  — deep pine, near-black with a cool green cast
-   Paper      #f6f8f4  — soft sage-tinted ivory ground
-   Surface    #eef2ed  — recessed panels, swatches, thumbnails
-   Line       #dbe4dd  — hairline rules
-   Muted      #6b7a72  — secondary text
-   Accent     #2f6b57  — emerald (CTAs, focus, signature marks)
-   Accent-deep#1a3f34  — accent hover / pressed
-   Signature  linear-gradient(135deg, #1f4d3f 0%, #2f6b57 42%, #8fb9a8 100%)
-              — the house gradient, used on review avatars + the reviews rule
-   Display    'Fraunces' — editorial serif, used sparingly for voice
-   Body       'Inter'    — neutral workhorse for reading + UI
-   Mono       'IBM Plex Mono' — catalog-style labels, price, counters
-============================================================ */
 
 .luxury-product {
 
@@ -1885,8 +2020,79 @@
 
 
 /* ============================================================
+   PURCHASE MODE TOGGLE (Full vs Partial)
+============================================================ */
+
+.luxury-product__mode-toggle {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin-top: 30px;
+
+  margin-bottom: 18px;
+}
+
+
+.luxury-product__mode-btn {
+
+  min-height: 48px;
+
+  padding: 0 14px;
+
+  color: var(--lp-black);
+
+  background: #fff;
+
+  border: 1px solid var(--lp-border);
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 12.5px;
+
+  font-weight: 600;
+
+  letter-spacing: 0;
+
+  transition:
+    background-color .2s ease,
+    color .2s ease,
+    border-color .2s ease,
+    transform .2s ease;
+}
+
+
+.luxury-product__mode-btn:hover {
+
+  border-color: var(--lp-accent);
+
+  transform: translateY(-1px);
+}
+
+
+.luxury-product__mode-btn.is-active {
+
+  color: #fff;
+
+  background: var(--lp-black);
+
+  border-color: var(--lp-black);
+}
+
+
+/* ============================================================
    PURCHASE AREA
 ============================================================ */
+
+.luxury-product__purchase-mode {
+  display: grid;
+  gap: 9px;
+}
 
 .luxury-product__purchase-buy {
   display: grid;
@@ -2100,6 +2306,238 @@
 .luxury-product__dynamic-checkout {
 
   margin-top: 9px;
+}
+
+
+/* ============================================================
+   PARTIAL PAYMENT / BOOK NOW
+============================================================ */
+
+.luxury-product__partial-summary {
+
+  display: grid;
+
+  gap: 10px;
+
+  padding: 16px 18px;
+
+  background: var(--lp-soft);
+
+  border: 1px solid var(--lp-border);
+
+  border-radius: 8px;
+}
+
+.luxury-product__partial-row {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  font-size: 13px;
+}
+
+.luxury-product__partial-row span {
+
+  color: var(--lp-muted);
+}
+
+.luxury-product__partial-row strong {
+
+  color: var(--lp-black);
+
+  font-family: 'IBM Plex Mono', monospace;
+
+  font-size: 14px;
+
+  font-weight: 500;
+}
+
+.luxury-product__partial-row--muted strong {
+
+  color: var(--lp-muted);
+
+  font-size: 12.5px;
+}
+
+.luxury-product__partial-note {
+
+  margin: 10px 0 0;
+
+  color: var(--lp-muted);
+
+  font-size: 11.5px;
+
+  line-height: 1.6;
+}
+
+.luxury-product__book-now {
+
+  width: 100%;
+
+  min-height: 58px;
+
+  margin-top: 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0 28px;
+
+  color: #fff;
+
+  background: var(--lp-accent);
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition:
+    background-color .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.luxury-product__book-now:hover {
+
+  background: var(--lp-accent-deep);
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 10px 30px rgba(32,28,22,.2);
+}
+
+.luxury-product__lead-form {
+
+  margin-top: 14px;
+
+  padding: 18px;
+
+  background: var(--lp-soft);
+
+  border: 1px solid var(--lp-border);
+
+  border-radius: 8px;
+
+  display: grid;
+
+  gap: 12px;
+
+  animation: notify-expand .3s ease;
+}
+
+.luxury-product__lead-text {
+
+  margin: 0;
+
+  font-size: 12px;
+
+  color: var(--lp-muted);
+
+  line-height: 1.6;
+}
+
+.luxury-product__lead-fields {
+
+  display: grid;
+
+  gap: 8px;
+}
+
+.luxury-product__lead-fields input {
+
+  width: 100%;
+
+  min-height: 48px;
+
+  padding: 0 14px;
+
+  border: 1px solid var(--lp-border);
+
+  border-radius: 6px;
+
+  font-size: 13px;
+
+  color: #1c2e28;
+
+  background: #fff;
+
+  transition: border-color .2s ease;
+}
+
+.luxury-product__lead-fields input:focus-visible {
+
+  outline: none;
+
+  border-color: var(--lp-accent);
+}
+
+.luxury-product__lead-error {
+
+  margin: 0;
+
+  font-size: 11px;
+
+  color: #b3261e;
+}
+
+.luxury-product__lead-submit {
+
+  min-height: 48px;
+
+  padding: 0 24px;
+
+  color: #fff;
+
+  background: var(--lp-black);
+
+  border-radius: 6px;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background-color .2s ease, transform .2s ease;
+}
+
+.luxury-product__lead-submit:hover {
+
+  background: var(--lp-accent-deep);
+
+  transform: translateY(-1px);
+}
+
+.luxury-product__lead-submit:disabled {
+
+  opacity: .5;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.luxury-product__lead-success {
+
+  margin: 0;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  color: #1a7a3c;
 }
 
 
@@ -2721,8 +3159,6 @@
   border-radius: 999px;
 }
 
-/* Marquee viewport */
-
 .luxury-reviews__marquee {
 
   position: relative;
@@ -2778,8 +3214,6 @@
   to   { transform: translateX(-50%); }
 
 }
-
-/* Cards */
 
 .luxury-reviews__card {
 
@@ -3175,6 +3609,12 @@
   .luxury-product__form {
 
     margin-top: 27px;
+  }
+
+
+  .luxury-product__mode-toggle {
+
+    grid-template-columns: 1fr;
   }
 
 
@@ -3772,6 +4212,55 @@
 
 
   /* ==========================================================
+     PURCHASE MODE TOGGLE (Full vs Partial)
+  ========================================================== */
+
+  const modeToggle =
+    root.querySelector('[data-purchase-mode-toggle]');
+
+  const modeButtons =
+    Array.from(root.querySelectorAll('[data-mode-btn]'));
+
+  const modePanels =
+    Array.from(root.querySelectorAll('[data-purchase-mode]'));
+
+  const setActiveMode = (mode) => {
+
+    modeButtons.forEach((btn) => {
+
+      const isActive = btn.dataset.modeBtn === mode;
+
+      btn.classList.toggle('is-active', isActive);
+
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+
+    });
+
+    modePanels.forEach((panel) => {
+
+      const isThisPanel = panel.dataset.purchaseMode === mode;
+
+      // Don't override the sold-out hidden state — that's controlled by updateVariant()
+      if (panel.dataset.soldOutLocked === 'true') return;
+
+      panel.classList.toggle('is-hidden', !isThisPanel);
+
+    });
+
+  };
+
+  modeButtons.forEach((btn) => {
+
+    btn.addEventListener('click', () => {
+
+      setActiveMode(btn.dataset.modeBtn);
+
+    });
+
+  });
+
+
+  /* ==========================================================
      VARIANTS
   ========================================================== */
 
@@ -3802,11 +4291,23 @@
   const addLabel =
     root.querySelector('[data-add-label]');
 
-  const purchaseBuy =
-    root.querySelector('[data-purchase-buy]');
+  const purchaseWrap =
+    root.querySelector('[data-purchase-wrap]');
+
+  const purchaseFullPanel =
+    root.querySelector('[data-purchase-mode="full"]');
+
+  const purchasePartialPanel =
+    root.querySelector('[data-purchase-mode="partial"]');
 
   const purchaseNotify =
     root.querySelector('[data-purchase-notify]');
+
+  const bookingAmountEl =
+    root.querySelector('[data-partial-booking-amount]');
+
+  const remainingAmountEl =
+    root.querySelector('[data-partial-remaining-amount]');
 
 
   const formatMoney = (cents) => {
@@ -3833,6 +4334,45 @@
         currency: 'INR'
       }
     );
+
+  };
+
+
+  const updatePartialAmounts = (priceCents) => {
+
+    if (!bookingAmountEl || !remainingAmountEl) return;
+
+    const bookingType = root.dataset.bookingType || 'percentage';
+
+    const bookingValue = Number(root.dataset.bookingValue || 0);
+
+
+    let bookingCents = 0;
+
+
+    if (bookingType === 'fixed') {
+
+      // booking value is entered in the store's currency major unit (e.g. rupees)
+      bookingCents = Math.round(bookingValue * 100);
+
+    } else {
+
+      // percentage
+      bookingCents = Math.round(
+        priceCents * (bookingValue / 100)
+      );
+
+    }
+
+
+    bookingCents = Math.min(bookingCents, priceCents);
+
+    const remainingCents = Math.max(priceCents - bookingCents, 0);
+
+
+    bookingAmountEl.textContent = formatMoney(bookingCents);
+
+    remainingAmountEl.textContent = formatMoney(remainingCents);
 
   };
 
@@ -3964,20 +4504,40 @@
     }
 
 
-    if (purchaseBuy && purchaseNotify) {
+    updatePartialAmounts(price);
 
-      purchaseBuy.classList.toggle(
-        'is-hidden',
-        !available
-      );
+
+    if (purchaseNotify) {
+
+      // Mark panels so the mode toggle doesn't fight this state
+      [purchaseFullPanel, purchasePartialPanel].forEach((panel) => {
+
+        if (!panel) return;
+
+        panel.dataset.soldOutLocked = available ? 'false' : 'true';
+
+        if (!available) panel.classList.add('is-hidden');
+
+      });
+
 
       purchaseNotify.classList.toggle(
         'is-hidden',
         available
       );
 
+      modeToggle?.classList.toggle('is-hidden', !available);
 
-      if (!available) {
+
+      if (available) {
+
+        // Restore whichever mode is currently active
+        const activeBtn =
+          modeButtons.find((btn) => btn.classList.contains('is-active'));
+
+        setActiveMode(activeBtn ? activeBtn.dataset.modeBtn : 'full');
+
+      } else {
 
         notifyFormPanel?.classList.add('is-hidden');
         notifySuccess?.classList.add('is-hidden');
@@ -4001,6 +4561,175 @@
     );
 
   });
+
+
+  /* ==========================================================
+     PARTIAL PAYMENT — BOOK NOW / LEAD FORM
+  ========================================================== */
+
+  const bookNowToggle =
+    root.querySelector('[data-book-now-toggle]');
+
+  const leadForm =
+    root.querySelector('[data-lead-form]');
+
+  const leadName =
+    root.querySelector('[data-lead-name]');
+
+  const leadPhone =
+    root.querySelector('[data-lead-phone]');
+
+  const leadEmail =
+    root.querySelector('[data-lead-email]');
+
+  const leadLocation =
+    root.querySelector('[data-lead-location]');
+
+  const leadError =
+    root.querySelector('[data-lead-error]');
+
+  const leadSubmit =
+    root.querySelector('[data-lead-submit]');
+
+  const leadSuccess =
+    root.querySelector('[data-lead-success]');
+
+
+  bookNowToggle?.addEventListener(
+    'click',
+    () => {
+
+      leadForm?.classList.toggle('is-hidden');
+
+    }
+  );
+
+
+  const isValidPhone = (value) =>
+    /^[0-9+\-\s()]{7,15}$/.test(value.trim());
+
+
+  leadSubmit?.addEventListener(
+    'click',
+    async () => {
+
+      const name = leadName?.value.trim() || '';
+
+      const phone = leadPhone?.value.trim() || '';
+
+      const email = leadEmail?.value.trim() || '';
+
+      const location = leadLocation?.value.trim() || '';
+
+
+      if (!name || !phone || !isValidPhone(phone)) {
+
+        leadError?.classList.remove('is-hidden');
+
+        return;
+
+      }
+
+      leadError?.classList.add('is-hidden');
+
+
+      leadSubmit.disabled = true;
+
+      leadSubmit.textContent = 'Submitting…';
+
+
+      const selectedVariant =
+        variantSelect?.options[
+          variantSelect.selectedIndex
+        ];
+
+      const variantTitle =
+        selectedVariant?.textContent.trim() || '';
+
+      const bookingAmountText =
+        bookingAmountEl?.textContent || '';
+
+      const remainingAmountText =
+        remainingAmountEl?.textContent || '';
+
+      const endpoint = root.dataset.leadEndpoint;
+
+
+      const payload = {
+        source: 'product_page_partial_payment',
+        product_title: document.title,
+        product_url: window.location.href,
+        variant_id: variantSelect?.value || null,
+        variant_title: variantTitle,
+        booking_amount: bookingAmountText,
+        remaining_amount: remainingAmountText,
+        customer: {
+          name,
+          phone,
+          email,
+          location
+        }
+      };
+
+
+      try {
+
+        if (endpoint) {
+
+          // Real backend endpoint (Zoho lead push, etc.) — wire the URL
+          // into the section's "Lead capture endpoint" setting.
+          await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+        } else {
+
+          // Fallback so the form still "works" before a backend endpoint
+          // is configured — sends a message to the store's contact form.
+          const body = new URLSearchParams();
+
+          body.append('form_type', 'contact');
+          body.append('utf8', '✓');
+          body.append('contact[email]', email || 'no-email@provided.com');
+          body.append(
+            'contact[body]',
+            `Partial payment booking request — Product: ${document.title} | Variant: ${variantTitle} | Booking amount: ${bookingAmountText} | Remaining: ${remainingAmountText} | Name: ${name} | Phone: ${phone} | Location: ${location}`
+          );
+
+          await fetch('/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+          });
+
+        }
+
+
+        leadForm?.classList.add('is-hidden');
+
+        leadSuccess?.classList.remove('is-hidden');
+
+
+      } catch (error) {
+
+        leadError.textContent =
+          'Something went wrong. Please try again.';
+
+        leadError?.classList.remove('is-hidden');
+
+
+      } finally {
+
+        leadSubmit.disabled = false;
+
+        leadSubmit.textContent = 'Confirm Booking';
+
+      }
+
+    }
+  );
 
 
   /* ==========================================================
@@ -4262,6 +4991,85 @@
       "id": "show_dynamic_checkout",
       "label": "Show dynamic checkout",
       "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Full vs Partial payment"
+    },
+
+    {
+      "type": "text",
+      "id": "full_payment_toggle_label",
+      "label": "Full payment toggle label",
+      "default": "Pay Full Amount"
+    },
+
+    {
+      "type": "text",
+      "id": "partial_payment_toggle_label",
+      "label": "Partial payment toggle label",
+      "default": "Book with Partial Payment"
+    },
+
+    {
+      "type": "select",
+      "id": "partial_payment_type",
+      "label": "Booking amount type",
+      "options": [
+        { "value": "percentage", "label": "Percentage of price" },
+        { "value": "fixed", "label": "Fixed amount" }
+      ],
+      "default": "percentage"
+    },
+
+    {
+      "type": "number",
+      "id": "partial_payment_value",
+      "label": "Booking value (percentage e.g. 20, or fixed amount in store currency)",
+      "default": 20
+    },
+
+    {
+      "type": "textarea",
+      "id": "partial_payment_note",
+      "label": "Note shown under the amount summary",
+      "default": "The remaining balance is collected by our sales team after confirming your order."
+    },
+
+    {
+      "type": "text",
+      "id": "book_now_button_label",
+      "label": "Book Now button label",
+      "default": "Book Now"
+    },
+
+    {
+      "type": "textarea",
+      "id": "lead_form_text",
+      "label": "Lead form description",
+      "default": "Share your details and our team will confirm your booking, then collect the remaining balance."
+    },
+
+    {
+      "type": "text",
+      "id": "lead_submit_label",
+      "label": "Lead form submit button label",
+      "default": "Confirm Booking"
+    },
+
+    {
+      "type": "text",
+      "id": "lead_success_message",
+      "label": "Lead form success message",
+      "default": "Thanks — your booking request is in. Our team will call you shortly to confirm and collect the remaining balance."
+    },
+
+    {
+      "type": "text",
+      "id": "lead_endpoint_url",
+      "label": "Lead capture endpoint",
+      "info": "This is where booking leads get POSTed as JSON. Point it at your backend/Zoho CRM integration endpoint once it's ready."
     },
 
     {
