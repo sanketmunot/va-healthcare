@@ -91,13 +91,8 @@
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "Curated for you",
+        "eyebrow": "Curated catalog",
         "heading": "Bestsellers",
-        "text": "Gentle formulas and daily rituals customers return to.",
-        "collection": "frontpage",
-        "products_to_show": 4,
-        "columns": 4,
-        "show_view_all": true,
         "padding": 64
       }
     },

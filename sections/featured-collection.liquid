@@ -1,4 +1,14 @@
-<section class="featured-collection" style="padding-block: {{ section.settings.padding }}px;">
+{% liquid
+  assign columns = 5
+  assign max_rows = 2
+  assign cards_limit = columns | times: max_rows
+%}
+
+<section
+  class="featured-collection"
+  style="--fc-pad: {{ section.settings.padding }}px; padding-block: clamp(1.75rem, 5vw, var(--fc-pad));"
+  data-featured-collection
+>
   <div class="featured-collection__header">
     <div>
       {% if section.settings.eyebrow != blank %}
@@ -7,63 +17,450 @@
       {% if section.settings.heading != blank %}
         <h2 class="section-heading">{{ section.settings.heading }}</h2>
       {% endif %}
-      {% if section.settings.text != blank %}
-        <p class="section-subheading">{{ section.settings.text }}</p>
-      {% endif %}
     </div>
-    {% if section.settings.collection != blank and section.settings.show_view_all %}
-      <a class="button button--secondary" href="{{ section.settings.collection.url }}">View all</a>
-    {% endif %}
+
+    <div class="featured-collection__tabs" role="tablist" aria-label="Product collections">
+      <button
+        type="button"
+        class="featured-collection__tab is-active"
+        role="tab"
+        aria-selected="true"
+        data-tab-target="all"
+      >
+        All Products
+      </button>
+      {% for collection in collections %}
+        {% if collection.handle != 'all' and collection.products_count > 0 %}
+          <button
+            type="button"
+            class="featured-collection__tab"
+            role="tab"
+            aria-selected="false"
+            data-tab-target="{{ collection.handle | escape }}"
+          >
+            {{ collection.title }}
+          </button>
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 
-  <div class="featured-collection__grid" style="--columns: {{ section.settings.columns }};">
-    {% if section.settings.collection != blank %}
-      {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
-        {% render 'product-card', product: product %}
-      {% else %}
-        <p class="featured-collection__empty">This collection has no products yet.</p>
+  <div class="featured-collection__panels">
+    <div class="featured-collection__strip is-active" data-tab-panel="all" role="tabpanel" data-shuffle>
+      {% liquid
+        assign shown_count = 0
+        assign shown_ids = ','
+      %}
+
+      {% for pass in (1..5) %}
+        {% if shown_count >= cards_limit %}
+          {% break %}
+        {% endif %}
+
+        {% for collection in collections %}
+          {% if shown_count >= cards_limit %}
+            {% break %}
+          {% endif %}
+          {% if collection.handle == 'all' or collection.products_count == 0 %}
+            {% continue %}
+          {% endif %}
+
+          {% liquid
+            assign skip = pass | minus: 1
+            assign taken = 0
+          %}
+          {% for product in collection.products %}
+            {% if taken == skip %}
+              {% assign id_token = ',' | append: product.id | append: ',' %}
+              {% unless shown_ids contains id_token %}
+                {% render 'featured-collection-card', product: product %}
+                {% assign shown_count = shown_count | plus: 1 %}
+                {% assign shown_ids = shown_ids | append: product.id | append: ',' %}
+              {% endunless %}
+              {% break %}
+            {% endif %}
+            {% assign taken = taken | plus: 1 %}
+          {% endfor %}
+        {% endfor %}
       {% endfor %}
-    {% else %}
-      {% for i in (1..4) %}
-        <article class="product-card product-card--placeholder">
-          <div class="product-card__media"><div class="product-card__placeholder"></div></div>
-          <div class="product-card__body">
-            <h3 class="product-card__title">Sample product {{ i }}</h3>
-            <p class="product-card__price"><span>$28.00</span></p>
-          </div>
-        </article>
-      {% endfor %}
-    {% endif %}
+
+      {% if shown_count == 0 %}
+        {% for i in (1..columns) %}
+          {% render 'featured-collection-card', placeholder_index: i %}
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% for collection in collections %}
+      {% if collection.handle != 'all' and collection.products_count > 0 %}
+        <div class="featured-collection__strip" data-tab-panel="{{ collection.handle | escape }}" role="tabpanel" hidden>
+          {% for product in collection.products limit: cards_limit %}
+            {% render 'featured-collection-card', product: product %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
 </section>
 
 {% stylesheet %}
+  .featured-collection {
+    overflow-x: clip;
+  }
+
   .featured-collection__header {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: end;
-    gap: 1rem;
+    gap: 1.25rem 1.5rem;
     margin-bottom: 1.75rem;
   }
 
-  .featured-collection__grid {
-    display: grid;
-    gap: 1.25rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .featured-collection__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.55rem;
   }
 
-  .featured-collection__empty {
-    grid-column: 1 / -1;
+  .featured-collection__tab {
+    min-height: 2.4rem;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+    color: var(--color-foreground);
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition:
+      background var(--transition),
+      color var(--transition);
+  }
+
+  .featured-collection__tab:hover {
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  }
+
+  .featured-collection__tab.is-active {
+    background: var(--color-foreground);
+    color: var(--color-surface);
+  }
+
+  .featured-collection__strip {
+    display: none;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .featured-collection__strip.is-active {
+    display: grid;
+  }
+
+  .featured-collection__strip[hidden] {
+    display: none !important;
+  }
+
+  .featured-collection__card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 1.35rem;
+    transition:
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .featured-collection__card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .featured-collection__media {
+    position: relative;
+    display: block;
+    margin: 0.7rem 0.7rem 0;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+    text-decoration: none;
+  }
+
+  .featured-collection__image,
+  .featured-collection__placeholder {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    filter: grayscale(1);
+    transition: filter 380ms ease;
+  }
+
+  .featured-collection__placeholder {
+    background:
+      linear-gradient(145deg, rgba(47, 107, 87, 0.18), transparent 55%),
+      var(--color-surface);
+  }
+
+  .featured-collection__card:hover .featured-collection__image,
+  .featured-collection__card:hover .featured-collection__placeholder,
+  .featured-collection__card:focus-within .featured-collection__image,
+  .featured-collection__card:focus-within .featured-collection__placeholder {
+    filter: none;
+  }
+
+  .featured-collection__card:hover + .featured-collection__card .featured-collection__image,
+  .featured-collection__card:hover + .featured-collection__card .featured-collection__placeholder,
+  .featured-collection__card:focus-within + .featured-collection__card .featured-collection__image,
+  .featured-collection__card:focus-within + .featured-collection__card .featured-collection__placeholder,
+  .featured-collection__card:has(+ .featured-collection__card:hover) .featured-collection__image,
+  .featured-collection__card:has(+ .featured-collection__card:hover) .featured-collection__placeholder,
+  .featured-collection__card:has(+ .featured-collection__card:focus-within) .featured-collection__image,
+  .featured-collection__card:has(+ .featured-collection__card:focus-within) .featured-collection__placeholder {
+    filter: grayscale(0.45);
+  }
+
+  .featured-collection__card:first-child:hover + .featured-collection__card .featured-collection__image,
+  .featured-collection__card:first-child:hover + .featured-collection__card .featured-collection__placeholder,
+  .featured-collection__card:first-child:focus-within + .featured-collection__card .featured-collection__image,
+  .featured-collection__card:first-child:focus-within + .featured-collection__card .featured-collection__placeholder {
+    filter: none;
+  }
+
+  .featured-collection__badge {
+    position: absolute;
+    top: 0.7rem;
+    left: 0.7rem;
+    max-width: calc(100% - 1.4rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    color: var(--color-foreground);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: capitalize;
+  }
+
+  .featured-collection__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.95rem 1rem 1.05rem;
+    flex: 1;
+  }
+
+  .featured-collection__usp {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-muted);
   }
 
-  @media (min-width: 900px) {
-    .featured-collection__grid {
-      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  .featured-collection__title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1.3;
+  }
+
+  .featured-collection__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .featured-collection__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.28rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .featured-collection__star {
+    color: #e0b422;
+  }
+
+  .featured-collection__rating span {
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  .featured-collection__price {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: baseline;
+    margin-top: 0.15rem;
+  }
+
+  .featured-collection__price span {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-foreground);
+  }
+
+  .featured-collection__price s {
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  .featured-collection__form {
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+
+  .featured-collection__atc {
+    width: 100%;
+    min-height: 2.65rem;
+    margin-top: auto;
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+    color: var(--color-accent);
+    font-size: 0.9rem;
+  }
+
+  .featured-collection__atc:hover {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  .featured-collection__atc:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 1199px) {
+    .featured-collection__strip {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 899px) {
+    .featured-collection__header {
+      align-items: stretch;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .featured-collection__tabs {
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      max-width: 100%;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .featured-collection__tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .featured-collection__tab {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      min-height: 2.25rem;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.82rem;
+    }
+
+    .featured-collection__strip.is-active {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .featured-collection__card {
+      border-radius: 1.1rem;
+    }
+
+    .featured-collection__card:hover {
+      transform: translateY(-3px);
+    }
+
+    .featured-collection__media {
+      margin: 0.55rem 0.55rem 0;
+      border-radius: 0.8rem;
+    }
+
+    .featured-collection__title {
+      font-size: 0.92rem;
+    }
+
+    .featured-collection__price span {
+      font-size: 1rem;
+    }
+
+    .featured-collection__atc {
+      min-height: 2.4rem;
+      font-size: 0.82rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .featured-collection__strip.is-active {
+      gap: 0.6rem;
+    }
+
+    .featured-collection__body {
+      padding: 0.75rem 0.75rem 0.85rem;
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-featured-collection]').forEach((root) => {
+    if (root.dataset.tabsReady === 'true') return;
+    root.dataset.tabsReady = 'true';
+
+    const tabs = root.querySelectorAll('[data-tab-target]');
+    const panels = root.querySelectorAll('[data-tab-panel]');
+    const allPanel = root.querySelector('[data-shuffle]');
+
+    if (allPanel) {
+      const cards = Array.from(allPanel.children);
+      for (let i = cards.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const current = cards[i];
+        cards[i] = cards[j];
+        cards[j] = current;
+      }
+      cards.forEach((card) => allPanel.appendChild(card));
+    }
+
+    const showPanel = (target) => {
+      tabs.forEach((item) => {
+        const active = item.getAttribute('data-tab-target') === target;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      panels.forEach((panel) => {
+        const active = panel.getAttribute('data-tab-panel') === target;
+        panel.classList.toggle('is-active', active);
+        panel.hidden = !active;
+      });
+    };
+
+    root.querySelector('.featured-collection__tabs')?.addEventListener('click', (event) => {
+      const tab = event.target.closest('[data-tab-target]');
+      if (!tab || !root.contains(tab)) return;
+      event.preventDefault();
+      showPanel(tab.getAttribute('data-tab-target'));
+    });
+  });
+{% endjavascript %}
 
 {% schema %}
 {
@@ -73,48 +470,13 @@
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow",
-      "default": "Curated for you"
+      "default": "Curated catalog"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
       "default": "Bestsellers"
-    },
-    {
-      "type": "textarea",
-      "id": "text",
-      "label": "Text",
-      "default": "Gentle formulas and daily rituals customers return to."
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Collection"
-    },
-    {
-      "type": "range",
-      "id": "products_to_show",
-      "min": 2,
-      "max": 12,
-      "step": 1,
-      "label": "Products to show",
-      "default": 4
-    },
-    {
-      "type": "range",
-      "id": "columns",
-      "min": 2,
-      "max": 4,
-      "step": 1,
-      "label": "Desktop columns",
-      "default": 4
-    },
-    {
-      "type": "checkbox",
-      "id": "show_view_all",
-      "label": "Show view all button",
-      "default": true
     },
     {
       "type": "range",

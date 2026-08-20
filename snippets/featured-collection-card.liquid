@@ -1,0 +1,131 @@
+{% doc %}
+  Catalog-style featured collection card.
+
+  @param {product} [product] - Live product, omitted for placeholders
+  @param {number} [placeholder_index] - Sample card number when product is blank
+{% enddoc %}
+
+{% liquid
+  assign is_placeholder = false
+  if product == blank
+    assign is_placeholder = true
+  endif
+
+  if is_placeholder
+    assign title = 'Sample product'
+    assign usp = 'Hospital grade accuracy'
+    assign badge = 'Featured'
+    assign available = true
+  else
+    assign featured = product.featured_media.preview_image | default: product.featured_image
+    assign title = product.title
+    assign available = product.available
+    assign form_id = 'featured-cart-' | append: section.id | append: '-' | append: product.id
+    assign usp = product.type | default: product.vendor
+    if product.compare_at_price > product.price
+      assign badge = 'Sale'
+    elsif product.type != blank
+      assign badge = product.type
+    else
+      assign badge = 'Featured'
+    endif
+    assign rating = product.metafields.reviews.rating.value
+    assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  endif
+%}
+
+<article class="featured-collection__card"{% if is_placeholder %} aria-hidden="true"{% endif %}>
+  {% if is_placeholder %}
+    <div class="featured-collection__media">
+      <div class="featured-collection__placeholder"></div>
+      <span class="featured-collection__badge">{{ badge }}</span>
+    </div>
+  {% else %}
+    <a class="featured-collection__media" href="{{ product.url }}" aria-label="{{ title | escape }}">
+      {% if featured != blank %}
+        {{
+          featured
+          | image_url: width: 900
+          | image_tag:
+            loading: 'lazy',
+            widths: '320, 480, 640, 900',
+            sizes: '(min-width: 990px) 20vw, 50vw',
+            class: 'featured-collection__image'
+        }}
+      {% else %}
+        <div class="featured-collection__placeholder"></div>
+      {% endif %}
+      {% unless available %}
+        <span class="featured-collection__badge">Sold out</span>
+      {% else %}
+        <span class="featured-collection__badge">{{ badge }}</span>
+      {% endunless %}
+    </a>
+  {% endif %}
+
+  <div class="featured-collection__body">
+    {% if usp != blank %}
+      <p class="featured-collection__usp">{{ usp }}</p>
+    {% endif %}
+
+    <h3 class="featured-collection__title">
+      {% if is_placeholder %}
+        {{ title }} {{ placeholder_index }}
+      {% else %}
+        <a href="{{ product.url }}">{{ title }}</a>
+      {% endif %}
+    </h3>
+
+    {% if is_placeholder %}
+      <p class="featured-collection__rating">
+        <span class="featured-collection__star" aria-hidden="true">★</span>
+        4.8 <span>(210)</span>
+      </p>
+    {% elsif rating != blank %}
+      <p class="featured-collection__rating">
+        <span class="featured-collection__star" aria-hidden="true">★</span>
+        {{ rating }}
+        {% if rating_count != blank %}
+          <span>({{ rating_count }})</span>
+        {% endif %}
+      </p>
+    {% endif %}
+
+    <p class="featured-collection__price">
+      {% if is_placeholder %}
+        <span>₹2,199</span>
+        <s>₹3,499</s>
+      {% else %}
+        <span>{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <s>{{ product.compare_at_price | money }}</s>
+        {% endif %}
+      {% endif %}
+    </p>
+
+    {% if is_placeholder %}
+      <button type="button" class="button featured-collection__atc" tabindex="-1">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M6 7h15l-1.4 8.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.6L5 4H2"/>
+          <circle cx="9" cy="20" r="1.3"/>
+          <circle cx="18" cy="20" r="1.3"/>
+        </svg>
+        Add to Bag
+      </button>
+    {% elsif available %}
+      {% form 'product', product, class: 'featured-collection__form', id: form_id %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <button type="submit" class="button featured-collection__atc">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 7h15l-1.4 8.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.6L5 4H2"/>
+            <circle cx="9" cy="20" r="1.3"/>
+            <circle cx="18" cy="20" r="1.3"/>
+          </svg>
+          Add to Bag
+        </button>
+      {% endform %}
+    {% else %}
+      <button type="button" class="button featured-collection__atc" disabled>Sold out</button>
+    {% endif %}
+  </div>
+</article>
