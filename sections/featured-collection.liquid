@@ -30,7 +30,17 @@
         All Products
       </button>
       {% for collection in collections %}
-        {% if collection.handle != 'all' and collection.products_count > 0 %}
+        {% if collection.handle == 'all' %}
+          {% continue %}
+        {% endif %}
+        {% assign collection_in_stock = false %}
+        {% for product in collection.products %}
+          {% if product.available %}
+            {% assign collection_in_stock = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% if collection_in_stock %}
           <button
             type="button"
             class="featured-collection__tab"
@@ -70,6 +80,9 @@
             assign taken = 0
           %}
           {% for product in collection.products %}
+            {% unless product.available %}
+              {% continue %}
+            {% endunless %}
             {% if taken == skip %}
               {% assign id_token = ',' | append: product.id | append: ',' %}
               {% unless shown_ids contains id_token %}
@@ -92,10 +105,26 @@
     </div>
 
     {% for collection in collections %}
-      {% if collection.handle != 'all' and collection.products_count > 0 %}
+      {% if collection.handle == 'all' %}
+        {% continue %}
+      {% endif %}
+      {% assign panel_count = 0 %}
+      {% for product in collection.products %}
+        {% if product.available %}
+          {% assign panel_count = panel_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+      {% if panel_count > 0 %}
         <div class="featured-collection__strip" data-tab-panel="{{ collection.handle | escape }}" role="tabpanel" hidden>
-          {% for product in collection.products limit: cards_limit %}
-            {% render 'featured-collection-card', product: product %}
+          {% assign shown_in_panel = 0 %}
+          {% for product in collection.products %}
+            {% if product.available %}
+              {% render 'featured-collection-card', product: product %}
+              {% assign shown_in_panel = shown_in_panel | plus: 1 %}
+              {% if shown_in_panel >= cards_limit %}
+                {% break %}
+              {% endif %}
+            {% endif %}
           {% endfor %}
         </div>
       {% endif %}
