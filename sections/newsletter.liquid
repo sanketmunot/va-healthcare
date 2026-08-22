@@ -50,6 +50,15 @@
 
       </div>
 
+      <div class="newsletter__bulk">
+        <p class="newsletter__bulk-text">
+          {{ section.settings.bulk_text | default: 'Need a bulk order? Get in touch and we will help with volume pricing.' }}
+        </p>
+        <button type="button" class="newsletter__bulk-button" data-open-lead-form>
+          {{ section.settings.bulk_button | default: 'Contact us' }}
+        </button>
+      </div>
+
     </div>
 
 
@@ -336,6 +345,45 @@
   fill: none;
   stroke: #d8eee1;
   stroke-width: 1.6;
+}
+
+.newsletter__bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  max-width: 520px;
+  margin-top: 1.5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.newsletter__bulk-text {
+  flex: 1 1 12rem;
+  margin: 0;
+  color: rgba(245, 250, 247, 0.86);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.newsletter__bulk-button {
+  flex: 0 0 auto;
+  min-height: 2.4rem;
+  padding: 0.5rem 1.1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f5faf7;
+  color: #17382f;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.newsletter__bulk-button:hover {
+  background: #ffffff;
 }
 
 
@@ -684,6 +732,23 @@
       "id": "button_label",
       "label": "Button label",
       "default": "Subscribe"
+    },
+
+    {
+      "type": "header",
+      "content": "Bulk order"
+    },
+    {
+      "type": "textarea",
+      "id": "bulk_text",
+      "label": "Description",
+      "default": "Need a bulk order? Get in touch and we will help with volume pricing."
+    },
+    {
+      "type": "text",
+      "id": "bulk_button",
+      "label": "Button text",
+      "default": "Contact us"
     },
 
     {

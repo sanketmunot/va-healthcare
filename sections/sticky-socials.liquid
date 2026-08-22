@@ -6,21 +6,6 @@
     facebook: section.settings.facebook,
     whatsapp: section.settings.whatsapp
   %}
-
-  <aside class="vah-bulk-order">
-    <p class="vah-bulk-order__text">
-      {{ section.settings.bulk_text | default: 'Need a bulk order? Get in touch and we will help with volume pricing.' }}
-    </p>
-    <button type="button" class="vah-bulk-order__button" data-open-lead-form>
-      {{ section.settings.bulk_button | default: 'Contact us' }}
-    </button>
-  </aside>
-
-  {% render 'contact-lead-form',
-    form_heading: section.settings.form_heading,
-    form_subheading: section.settings.form_subheading,
-    form_button_text: section.settings.form_button_text
-  %}
 {% endif %}
 
 {% stylesheet %}
@@ -104,14 +89,14 @@
 
   @media (max-width: 899px) {
     .vah-socials--sticky {
-      top: auto;
-      bottom: 1rem;
-      left: 0.75rem;
-      transform: none;
-      flex-direction: row;
-      padding: 0.4rem 0.45rem;
-      gap: 0.4rem;
-      border-radius: 999px;
+      left: 0.45rem;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+      flex-direction: column;
+      padding: 0.5rem 0.35rem;
+      gap: 0.45rem;
+      border-radius: 1.1rem;
     }
 
     .vah-socials--sticky .vah-socials__label {
@@ -119,104 +104,31 @@
     }
 
     .vah-socials--sticky .vah-socials__list {
-      flex-direction: row;
-      gap: 0.35rem;
+      flex-direction: column;
+      gap: 0.4rem;
     }
 
     .vah-socials--sticky .vah-social {
-      width: 2.25rem;
-      height: 2.25rem;
-      border-radius: 999px;
+      width: 2.15rem;
+      height: 2.15rem;
+      border-radius: 10px;
     }
 
     .vah-socials--sticky .vah-social svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
     }
   }
 
   @media (max-width: 420px) {
     .vah-socials--sticky {
-      left: 0.5rem;
-      bottom: 0.75rem;
-      padding: 0.3rem 0.35rem;
+      left: 0.3rem;
+      padding: 0.4rem 0.28rem;
     }
 
     .vah-socials--sticky .vah-social {
-      width: 2rem;
-      height: 2rem;
-    }
-  }
-
-  .vah-bulk-order {
-    position: fixed;
-    right: 0.85rem;
-    top: 50%;
-    z-index: 40;
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-    width: min(13.75rem, calc(100vw - 2rem));
-    margin: 0;
-    padding: 0.9rem 0.95rem 1rem;
-    transform: translateY(-50%);
-    border: 1px solid var(--color-border, rgba(12, 24, 20, 0.12));
-    border-radius: 1.15rem;
-    background: color-mix(in srgb, var(--color-surface, #fff) 92%, transparent);
-    box-shadow: var(--shadow-soft, 0 8px 24px rgba(12, 24, 20, 0.08));
-    backdrop-filter: blur(10px);
-  }
-
-  .vah-bulk-order__text {
-    margin: 0;
-    font-size: 0.8rem;
-    line-height: 1.45;
-    font-weight: 600;
-    color: var(--color-muted, #5c6865);
-  }
-
-  .vah-bulk-order__button {
-    min-height: 2.25rem;
-    padding: 0.4rem 0.85rem;
-    border: 0;
-    border-radius: 999px;
-    background: var(--color-foreground, #0c1814);
-    color: var(--color-surface, #fff);
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .vah-bulk-order__button:hover {
-    background: var(--color-accent, #18352d);
-  }
-
-  @media (max-width: 899px) {
-    .vah-bulk-order {
-      top: auto;
-      right: 0.75rem;
-      bottom: 1rem;
-      transform: none;
-      width: min(11.5rem, calc(100vw - 7.5rem));
-      padding: 0.7rem 0.75rem 0.8rem;
-      border-radius: 1rem;
-    }
-
-    .vah-bulk-order__text {
-      font-size: 0.72rem;
-    }
-
-    .vah-bulk-order__button {
-      min-height: 2rem;
-      font-size: 0.76rem;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .vah-bulk-order {
-      right: 0.5rem;
-      bottom: 0.75rem;
-      width: min(10.75rem, calc(100vw - 6.5rem));
+      width: 1.95rem;
+      height: 1.95rem;
     }
   }
 {% endstylesheet %}
@@ -253,44 +165,6 @@
       "id": "whatsapp",
       "label": "WhatsApp number (digits only, with country code)",
       "default": "919876543210"
-    },
-    {
-      "type": "header",
-      "content": "Bulk order"
-    },
-    {
-      "type": "textarea",
-      "id": "bulk_text",
-      "label": "Description",
-      "default": "Need a bulk order? Get in touch and we will help with volume pricing."
-    },
-    {
-      "type": "text",
-      "id": "bulk_button",
-      "label": "Button text",
-      "default": "Contact us"
-    },
-    {
-      "type": "header",
-      "content": "Query form"
-    },
-    {
-      "type": "text",
-      "id": "form_heading",
-      "label": "Form heading",
-      "default": "Send us your query"
-    },
-    {
-      "type": "text",
-      "id": "form_subheading",
-      "label": "Form subheading",
-      "default": "We'll get back to you within 24 hours"
-    },
-    {
-      "type": "text",
-      "id": "form_button_text",
-      "label": "Submit button text",
-      "default": "Submit Query"
     }
   ],
   "presets": [
