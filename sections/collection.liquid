@@ -75,92 +75,18 @@
             </div>
           {% endfor %}
 
-          {% assign has_vendor_filter = false %}
           {% assign has_type_filter = false %}
           {% for filter in collection.filters %}
             {% for value in filter.values limit: 1 %}
-              {% if value.param_name == 'filter.p.vendor' %}
-                {% assign has_vendor_filter = true %}
-              {% endif %}
               {% if value.param_name == 'filter.p.product_type' %}
                 {% assign has_type_filter = true %}
               {% endif %}
             {% endfor %}
           {% endfor %}
 
-          {% unless has_vendor_filter %}
-            {% if collection.all_vendors.size > 0 %}
-              <div class="collection-page__dropdown" data-dropdown>
-                <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
-                  Vendor
-                  {% if request.query_parameters['filter.p.vendor'] != blank %}
-                    <span class="collection-page__dropdown-dot"></span>
-                  {% endif %}
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                </button>
-                <div class="collection-page__dropdown-panel" data-dropdown-panel>
-                  <div class="collection-page__filter-options">
-                    {% for vendor in collection.all_vendors %}
-                      {% assign vendor_active = false %}
-                      {% assign vendor_param = request.query_parameters['filter.p.vendor'] %}
-                      {% if vendor_param == vendor or vendor_param contains vendor %}
-                        {% assign vendor_active = true %}
-                      {% endif %}
-                      <label class="collection-page__filter-option">
-                        <input
-                          type="checkbox"
-                          name="filter.p.vendor"
-                          value="{{ vendor }}"
-                          {% if vendor_active %}checked{% endif %}
-                          data-filter-input
-                        >
-                        <span>{{ vendor }}</span>
-                      </label>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          {% endunless %}
-
-          {% unless has_type_filter %}
-            {% if collection.all_types.size > 0 %}
-              <div class="collection-page__dropdown" data-dropdown>
-                <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
-                  Type
-                  {% if request.query_parameters['filter.p.product_type'] != blank %}
-                    <span class="collection-page__dropdown-dot"></span>
-                  {% endif %}
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                </button>
-                <div class="collection-page__dropdown-panel" data-dropdown-panel>
-                  <div class="collection-page__filter-options">
-                    {% for product_type in collection.all_types %}
-                      {% assign type_active = false %}
-                      {% assign type_param = request.query_parameters['filter.p.product_type'] %}
-                      {% if type_param == product_type or type_param contains product_type %}
-                        {% assign type_active = true %}
-                      {% endif %}
-                      <label class="collection-page__filter-option">
-                        <input
-                          type="checkbox"
-                          name="filter.p.product_type"
-                          value="{{ product_type }}"
-                          {% if type_active %}checked{% endif %}
-                          data-filter-input
-                        >
-                        <span>{{ product_type }}</span>
-                      </label>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          {% endunless %}
-
           <div class="collection-page__dropdown" data-dropdown>
             <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
-              Collection
+              Category
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="collection-page__dropdown-panel" data-dropdown-panel>
@@ -187,9 +113,6 @@
             {% assign has_active_filters = true %}
           {% endif %}
         {% endfor %}
-        {% if request.query_parameters['filter.p.vendor'] != blank or request.query_parameters['filter.p.product_type'] != blank %}
-          {% assign has_active_filters = true %}
-        {% endif %}
         {% if has_active_filters %}
           <a href="{{ collection.url }}" class="collection-page__clear-all" data-clear-filters>Clear all</a>
         {% endif %}
@@ -236,18 +159,7 @@
             </a>
           {% endfor %}
         {% endfor %}
-        {% unless has_vendor_filter %}
-          {% assign vendor_param = request.query_parameters['filter.p.vendor'] %}
-          {% if vendor_param != blank %}
-            {% if vendor_param.first %}
-              {% for vendor in vendor_param %}
-                <span class="collection-page__chip">{{ vendor }}</span>
-              {% endfor %}
-            {% else %}
-              <span class="collection-page__chip">{{ vendor_param }}</span>
-            {% endif %}
-          {% endif %}
-        {% endunless %}
+
       </div>
 
       <div class="collection-page__grid" style="--columns: {{ section.settings.columns }};" data-grid>
