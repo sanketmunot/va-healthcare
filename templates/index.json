@@ -9,6 +9,12 @@
  */
 {
   "sections": {
+    "sticky_socials": {
+      "type": "sticky-socials",
+      "settings": {
+        "whatsapp": "919876543210"
+      }
+    },
     "hero": {
       "type": "hero-banner",
       "blocks": {
@@ -166,6 +172,7 @@
     }
   },
   "order": [
+    "sticky_socials",
     "hero",
     "trust",
     "featured",

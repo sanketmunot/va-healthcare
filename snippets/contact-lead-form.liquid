@@ -1,0 +1,404 @@
+{% doc %}
+  Shared Get in Touch / lead query modal.
+
+  @param {string} [form_heading]
+  @param {string} [form_subheading]
+  @param {string} [form_button_text]
+{% enddoc %}
+
+{% liquid
+  assign heading = form_heading | default: 'Send us your query'
+  assign subheading = form_subheading | default: "We'll get back to you within 24 hours"
+  assign button_text = form_button_text | default: 'Submit Query'
+%}
+
+<div
+  class="vah-form-overlay"
+  id="vah-form-overlay"
+  aria-hidden="true"
+>
+  <div
+    class="vah-form-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="vah-form-title"
+  >
+    <button
+      type="button"
+      class="vah-form-close"
+      id="vah-close-form"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+
+    <div class="vah-card vah-form-card">
+      <div class="vah-card__header">
+        <div class="vah-card__badge vah-card__badge--form">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <path d="M4 4h16v16H4V4z" stroke="#1FB6A7" stroke-width="1.6"/>
+            <path d="M7.5 9h9M7.5 12.5h9M7.5 16h5.5" stroke="#1FB6A7" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="vah-card__title" id="vah-form-title">{{ heading }}</h2>
+          <p class="vah-card__subtitle">{{ subheading }}</p>
+        </div>
+      </div>
+
+      {% form 'contact', id: 'vah-lead-form', class: 'vah-form' %}
+        {% if form.posted_successfully? %}
+          <div class="vah-form__success" id="vah-thank-you" data-vah-posted="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Thank you! Your query has been submitted successfully.</span>
+          </div>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="vah-form__error">{{ form.errors | default_errors }}</div>
+        {% endif %}
+
+        {% unless form.posted_successfully? %}
+          <div class="vah-form__row">
+            <div class="vah-form__field">
+              <label for="vah-name">Full name</label>
+              <input
+                type="text"
+                id="vah-name"
+                name="contact[name]"
+                placeholder="Your name"
+                value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                required
+              >
+            </div>
+            <div class="vah-form__field">
+              <label for="vah-phone">Phone number</label>
+              <input
+                type="tel"
+                id="vah-phone"
+                name="contact[phone]"
+                placeholder="+91 98765 43210"
+                value="{% if form.phone %}{{ form.phone }}{% endif %}"
+              >
+            </div>
+          </div>
+
+          <div class="vah-form__field">
+            <label for="vah-email">Email address</label>
+            <input
+              type="email"
+              id="vah-email"
+              name="contact[email]"
+              placeholder="you@example.com"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              required
+            >
+          </div>
+
+          <div class="vah-form__field">
+            <label for="vah-message">Your query</label>
+            <textarea
+              id="vah-message"
+              name="contact[body]"
+              rows="4"
+              placeholder="Tell us what you're looking for..."
+              required
+            >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+          </div>
+
+          <button type="submit" class="vah-cta vah-cta--form">
+            {{ button_text }}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <p class="vah-form__note">Submitted queries are saved to your store's inbox as leads — no app required.</p>
+        {% endunless %}
+      {% endform %}
+    </div>
+  </div>
+</div>
+
+{% style %}
+  .vah-form-overlay {
+    --vah-ink: #0c1814;
+    --vah-muted: #5c6865;
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(12, 24, 20, 0.15) 0%, rgba(12, 24, 20, 0.62) 100%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+  }
+
+  .vah-form-overlay.is-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.2s ease, visibility 0s linear 0s;
+  }
+
+  .vah-form-modal {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    transform: translateY(15px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .vah-form-overlay.is-open .vah-form-modal {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .vah-form-overlay .vah-form-card {
+    position: relative;
+    margin: 0;
+    padding: 32px;
+    background: #ffffff;
+    border: 1px solid rgba(12, 24, 20, 0.12);
+    border-radius: 22px;
+    box-shadow: 0 30px 80px rgba(12, 24, 20, 0.35);
+  }
+
+  .vah-form-overlay .vah-card__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .vah-form-overlay .vah-card__badge {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 24, 20, 0.06);
+    border: 1px solid rgba(12, 24, 20, 0.08);
+  }
+
+  .vah-form-overlay .vah-card__title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: var(--vah-ink);
+  }
+
+  .vah-form-overlay .vah-card__subtitle {
+    font-size: 14px;
+    color: var(--vah-muted);
+    margin: 0;
+  }
+
+  .vah-form-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(12, 24, 20, 0.08);
+    color: #0c1814;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    appearance: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+
+  .vah-form-close:hover,
+  .vah-form-close:focus-visible {
+    background: #0c1814;
+    color: #ffffff;
+    transform: rotate(90deg);
+  }
+
+  .vah-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .vah-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .vah-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .vah-form__field label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--vah-muted);
+  }
+
+  .vah-form__field input,
+  .vah-form__field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(12, 24, 20, 0.12);
+    background: #f5f8f7;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 15px;
+    color: var(--vah-ink);
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .vah-form__field input:focus,
+  .vah-form__field textarea:focus {
+    outline: none;
+    border-color: rgba(12, 24, 20, 0.45);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(12, 24, 20, 0.08);
+  }
+
+  .vah-form-overlay .vah-cta {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 999px;
+    background: #0c1814;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .vah-form-overlay .vah-cta:hover {
+    background: #18352d;
+  }
+
+  .vah-form__note {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--vah-muted);
+  }
+
+  .vah-form__success,
+  .vah-form__error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 16px;
+    border-radius: 12px;
+    background: rgba(12, 24, 20, 0.06);
+    color: #0c1814;
+    border: 1px solid rgba(12, 24, 20, 0.14);
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  body.vah-form-open {
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    .vah-form__row {
+      grid-template-columns: 1fr;
+    }
+
+    .vah-form-overlay {
+      padding: 12px;
+    }
+
+    .vah-form-modal {
+      max-height: 94vh;
+    }
+
+    .vah-form-overlay .vah-form-card {
+      padding: 22px;
+    }
+
+    .vah-form-close {
+      top: 10px;
+      right: 10px;
+    }
+  }
+{% endstyle %}
+
+<script>
+  (function () {
+    if (window.vahLeadFormBound) return;
+    window.vahLeadFormBound = true;
+
+    const overlay = document.getElementById('vah-form-overlay');
+    const closeButton = document.getElementById('vah-close-form');
+    if (!overlay || !closeButton) return;
+
+    const openForm = function () {
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('vah-form-open');
+    };
+
+    const closeForm = function () {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('vah-form-open');
+    };
+
+    document.addEventListener('click', function (event) {
+      const opener = event.target.closest('[data-open-lead-form]');
+      if (!opener) return;
+      event.preventDefault();
+      openForm();
+    });
+
+    closeButton.addEventListener('click', closeForm);
+
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) closeForm();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && overlay.classList.contains('is-open')) closeForm();
+    });
+
+    if (overlay.querySelector('[data-vah-posted]')) {
+      openForm();
+      setTimeout(closeForm, 2500);
+    }
+  })();
+</script>
