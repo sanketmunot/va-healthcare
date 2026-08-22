@@ -10,6 +10,10 @@
 {
   "general": {
     "404": "Not found",
+    "about": "About",
+    "about_founders": "Founders",
+    "about_values": "About values",
+    "about_vision": "Our vision",
     "article": "Article",
     "block": "Block",
     "blog": "Blog",

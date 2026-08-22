@@ -1,0 +1,386 @@
+{% liquid
+  assign about_page = false
+  assign page_handle = page.handle | default: '' | downcase
+  assign page_title_down = page.title | default: '' | downcase
+  if template.suffix == 'about'
+    assign about_page = true
+  endif
+  if page_handle contains 'about'
+    assign about_page = true
+  endif
+  if page_title_down contains 'about'
+    assign about_page = true
+  endif
+%}
+
+{% if about_page %}
+<section class="about-vision" style="padding-block: {{ section.settings.padding }}px;">
+ 
+
+  <div class="about-vision__layout">
+
+    <div>
+    <div class="about-vision__intro">
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 class="section-heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+
+      {% if section.settings.lead != blank %}
+        <p class="about-vision__lead">{{ section.settings.lead }}</p>
+      {% endif %}
+    </div>
+
+    {% if section.settings.text != blank %}
+        <div class="about-vision__narrative rte">
+          {{ section.settings.text }}
+        </div>
+    {% endif %}
+    </div>
+
+    {% assign impact_blocks = section.blocks | where: 'type', 'impact' %}
+    {% if impact_blocks.size > 0 %}
+      <ul class="about-vision__impact" role="list">
+        {% for block in impact_blocks %}
+          <li class="about-vision__stat" {{ block.shopify_attributes }}>
+            {% if block.settings.number != blank %}
+              <p class="about-vision__number">{{ block.settings.number }}</p>
+            {% endif %}
+            {% if block.settings.label != blank %}
+              <p class="about-vision__label">{{ block.settings.label }}</p>
+            {% endif %}
+            {% if block.settings.note != blank %}
+              <p class="about-vision__note">{{ block.settings.note }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    
+  </div>
+
+  {% assign help_blocks = section.blocks | where: 'type', 'help' %}
+  {% if help_blocks.size > 0 %}
+    <div class="about-vision__help">
+      {% if section.settings.help_heading != blank %}
+        <h3 class="about-vision__help-heading">{{ section.settings.help_heading }}</h3>
+      {% endif %}
+
+      <ul class="about-vision__help-grid" role="list">
+        {% for block in help_blocks %}
+          <li class="about-vision__help-item" {{ block.shopify_attributes }}>
+            <span class="about-vision__help-index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+            {% if block.settings.title != blank %}
+              <h4 class="about-vision__help-title">{{ block.settings.title }}</h4>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <p class="about-vision__help-text">{{ block.settings.text }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if section.settings.caption != blank %}
+    <p class="about-vision__caption">{{ section.settings.caption }}</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% stylesheet %}
+  .about-vision__intro {
+    max-width: 44rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .about-vision__lead {
+    margin-top: 0.85rem;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.6;
+    color: var(--color-foreground);
+  }
+
+  .about-vision__layout {
+    display: grid;
+    gap: 1.75rem;
+    align-items: start;
+  }
+
+  .about-vision__narrative {
+    color: var(--color-muted);
+    font-size: 1.02rem;
+    line-height: 1.75;
+  }
+
+  .about-vision__narrative p + p {
+    margin-top: 0.9rem;
+  }
+
+  .about-vision__impact {
+    display: grid;
+    gap: 0.85rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    align-self: center;
+  }
+
+  .about-vision__stat {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius) + 10px);
+    padding: 1.2rem 1.25rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .about-vision__number {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-accent);
+    margin-bottom: 0.2rem;
+  }
+
+  .about-vision__label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .about-vision__note {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .about-vision__help {
+    margin-top: 2.75rem;
+  }
+
+  .about-vision__help-heading {
+    font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .about-vision__help-grid {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .about-vision__help-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius) + 10px);
+    padding: 1.35rem 1.3rem;
+  }
+
+  .about-vision__help-index {
+    display: inline-block;
+    margin-bottom: 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+  }
+
+  .about-vision__help-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .about-vision__help-text {
+    color: var(--color-muted);
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+
+  .about-vision__caption {
+    margin-top: 1.5rem;
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 900px) {
+    .about-vision__layout {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 3rem;
+    }
+
+    .about-vision__impact {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .about-vision__help-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.15rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Our vision",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our vision"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A more mobile India"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "Physiotherapy should not be a last resort in a metro clinic. It should be everyday care that clinics, caregivers, and households across India can actually get."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Vision text",
+      "default": "<p>Nearly one in six people in India lives with musculoskeletal pain. Community studies put that close to 200 million people — and the burden is heavier in rural districts than in cities. Among Indians over 45, more than half report joint or back pain. Osteoarthritis alone touches tens of millions of knees and spines.</p><p>Pain keeps farmers from fields, nurses from shifts, and older parents from walking without help. India still has far too few rehab specialists for this scale. Rest and painkillers are often the only options on offer. Surgery, when it happens, is rarely followed by proper recovery.</p><p>Physiotherapy changes the outcome. Guided movement reduces pain, rebuilds strength, and can delay or avoid surgery. After a stroke, a fracture, a delivery, or years at a desk, the right routine restores independence. When trusted physio tools reach clinics and homes beyond a handful of cities, recovery stops being a privilege.</p><p>VA Healthcare exists to put clinic-grade physiotherapy products into India’s medical sales network — so more people can move again, work again, and age with dignity.</p>"
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Help heading",
+      "default": "How physiotherapy helps"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Source note",
+      "default": "Impact figures drawn from COPCORD India community studies (~16% MSK pain; ~200 million people) and national surveys of adults 45+ (over half report musculoskeletal disorders)."
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 72
+    }
+  ],
+  "blocks": [
+    {
+      "type": "impact",
+      "name": "Impact stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "200M+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Indians living with MSK pain"
+        },
+        {
+          "type": "textarea",
+          "id": "note",
+          "label": "Note",
+          "default": "About 1 in 6 people nationwide."
+        }
+      ]
+    },
+    {
+      "type": "help",
+      "name": "How physio helps",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Restore movement"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Targeted exercise reduces pain and can delay or avoid surgery."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Our vision",
+      "blocks": [
+        {
+          "type": "impact",
+          "settings": {
+            "number": "200M+",
+            "label": "Indians with MSK pain",
+            "note": "About 1 in 6 people, from COPCORD community studies."
+          }
+        },
+        {
+          "type": "impact",
+          "settings": {
+            "number": "20%",
+            "label": "Rural prevalence",
+            "note": "Roughly double the urban rate — care is hardest where specialists are fewest."
+          }
+        },
+        {
+          "type": "impact",
+          "settings": {
+            "number": "53%",
+            "label": "Adults 45+ with MSDs",
+            "note": "Joint and back pain dominate; 60% of those over 60 are affected."
+          }
+        },
+        {
+          "type": "help",
+          "settings": {
+            "title": "Cut the pain cycle",
+            "text": "Guided movement and the right supports reduce chronic pain without depending only on medication."
+          }
+        },
+        {
+          "type": "help",
+          "settings": {
+            "title": "Recover after injury and surgery",
+            "text": "Stroke, fracture, delivery, and post-op patients regain strength faster with structured physio."
+          }
+        },
+        {
+          "type": "help",
+          "settings": {
+            "title": "Keep India working",
+            "text": "Desk strain, farm labour, and factory shifts all create MSK injury. Rehab returns people to work."
+          }
+        },
+        {
+          "type": "help",
+          "settings": {
+            "title": "Age with independence",
+            "text": "Balance, gait, and joint care help older families stay mobile at home instead of losing years to stiffness."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

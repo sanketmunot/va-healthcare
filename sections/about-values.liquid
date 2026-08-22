@@ -1,0 +1,227 @@
+<section class="about-values" style="padding-block: {{ section.settings.padding }}px;">
+  <div class="about-values__intro">
+    {% if section.settings.eyebrow != blank %}
+      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+    {% endif %}
+
+    {% if section.settings.heading != blank %}
+      <h2 class="section-heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if section.settings.text != blank %}
+      <p class="section-subheading">{{ section.settings.text }}</p>
+    {% endif %}
+  </div>
+
+  {% if section.blocks.size > 0 %}
+    <ul class="about-values__grid" role="list">
+      {% for block in section.blocks %}
+        <li class="about-values__item" {{ block.shopify_attributes }}>
+          {% if block.settings.icon != blank %}
+            {{
+              block.settings.icon
+              | image_url: width: 120
+              | image_tag:
+                loading: 'lazy',
+                class: 'about-values__icon',
+                widths: '60, 90, 120',
+                sizes: '48px',
+                alt: block.settings.title
+            }}
+          {% else %}
+            <span class="about-values__mark" aria-hidden="true">{{ forloop.index }}</span>
+          {% endif %}
+
+          {% if block.settings.title != blank %}
+            <h3 class="about-values__title">{{ block.settings.title }}</h3>
+          {% endif %}
+
+          {% if block.settings.text != blank %}
+            <p class="about-values__text">{{ block.settings.text }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .about-values__intro {
+    max-width: 38rem;
+    margin-bottom: 2rem;
+  }
+
+  .about-values__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .about-values__item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius) + 10px);
+    padding: 1.5rem 1.35rem;
+    box-shadow: var(--shadow-soft);
+    transition:
+      transform var(--transition),
+      border-color var(--transition);
+  }
+
+  .about-values__item:hover {
+    transform: translateY(-3px);
+    border-color: rgba(47, 107, 87, 0.35);
+  }
+
+  .about-values__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    object-fit: contain;
+    margin-bottom: 1rem;
+  }
+
+  .about-values__mark {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+    border-radius: 999px;
+    background: rgba(47, 107, 87, 0.12);
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .about-values__title {
+    font-size: 1.15rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .about-values__text {
+    color: var(--color-muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 900px) {
+    .about-values__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.35rem;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .about-values__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-values__item,
+    .about-values__item:hover {
+      transition: none;
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "About values",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "What we believe"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Care that stays human"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Every formula and every routine is built around calm, trust, and the way people actually live."
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "value",
+      "name": "Value",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Calm care"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Soft textures and quiet routines designed for real recovery."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "About values",
+      "blocks": [
+        {
+          "type": "value",
+          "settings": {
+            "title": "Calm care",
+            "text": "Soft textures and quiet routines designed for real recovery."
+          }
+        },
+        {
+          "type": "value",
+          "settings": {
+            "title": "Trusted formulas",
+            "text": "Thoughtfully sourced ingredients made for sensitive, daily use."
+          }
+        },
+        {
+          "type": "value",
+          "settings": {
+            "title": "Everyday recovery",
+            "text": "Support that fits sleep, movement, and the pace of ordinary days."
+          }
+        },
+        {
+          "type": "value",
+          "settings": {
+            "title": "Honest guidance",
+            "text": "Clear language, no noise — so you always know what you are using."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

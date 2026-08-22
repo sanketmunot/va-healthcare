@@ -1,10 +1,19 @@
-{% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
+{% liquid
+  assign about_page = false
+  assign page_handle = page.handle | default: '' | downcase
+  assign page_title_down = page.title | default: '' | downcase
+  if template.suffix == 'about'
+    assign about_page = true
+  endif
+  if page_handle contains 'about'
+    assign about_page = true
+  endif
+  if page_title_down contains 'about'
+    assign about_page = true
+  endif
+%}
 
-  Query form opens as an overlay when "Get in Touch" is clicked.
-{% endcomment %}
-
+{% unless about_page %}
 <div class="vah-page">
 
   <!-- HERO -->
@@ -1200,6 +1209,7 @@
 
   }
 </style>
+{% endunless %}
 
 
 {% schema %}

@@ -13,6 +13,7 @@ shopify theme dev --store your-store.myshopify.com
 - Sticky header + announcement bar
 - Full-bleed hero, featured collection, promo tiles
 - Trust badges, image with text, FAQ, newsletter
+- About us page template (hero, story, values, FAQ)
 - Product page with tabs and quick-add cards
 - Collection grid and cart with notes
 

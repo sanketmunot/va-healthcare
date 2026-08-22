@@ -1,10 +1,6 @@
 {
   "sections": {
     "main": {
-      "type": "page",
-      "settings": {}
-    },
-    "about": {
       "type": "about",
       "blocks": {
         "stat_1": {
@@ -155,12 +151,63 @@
         "text": "A physiotherapist and a medical-sales operator — building the products and the reach India actually needs.",
         "padding": 72
       }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Who is VA Healthcare for?",
+            "answer": "<p>Physiotherapists, hospitals, and households across India who need trusted rehab products — from metro clinics to smaller towns where specialists are scarce.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Do you supply clinics and distributors?",
+            "answer": "<p>Yes. We sell through medical-sales channels as well as direct to customers, so equipment can move from warehouse to treatment room without a long wait.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Can physiotherapy really reduce the need for surgery?",
+            "answer": "<p>For many joint, back, and post-injury cases, structured physiotherapy reduces pain and rebuilds function. It is not a replacement for every surgery, but it is often the missing step before — and after — the operating theatre.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "settings": {
+        "eyebrow": "About us",
+        "heading": "A few things we are asked",
+        "text": "How we work with clinicians, why physio matters at India’s scale, and how to get in touch.",
+        "show_contact_cta": true,
+        "contact_cta_label": "Still have questions? Contact us",
+        "padding": 64
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "Stay in the loop",
+        "heading": "Rehab notes for Indian clinics",
+        "text": "New products, training drops, and practical physio updates — no noise.",
+        "placeholder": "Email address",
+        "button_label": "Subscribe",
+        "padding": 72
+      }
     }
   },
   "order": [
     "main",
-    "about",
     "vision",
-    "founders"
+    "founders",
+    "faq",
+    "newsletter"
   ]
 }
