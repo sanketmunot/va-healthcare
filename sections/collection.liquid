@@ -19,7 +19,9 @@
                 {% if filter.active_values.size > 0 or filter.min_value.value or filter.max_value.value %}
                   <span class="collection-page__dropdown-dot"></span>
                 {% endif %}
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
               </button>
 
               <div class="collection-page__dropdown-panel" data-dropdown-panel>
@@ -37,7 +39,9 @@
                         data-price-input
                       >
                     </label>
+
                     <span class="collection-page__price-sep">–</span>
+
                     <label class="collection-page__price-field">
                       <span>Max</span>
                       <input
@@ -51,7 +55,10 @@
                       >
                     </label>
                   </div>
-                  <button type="button" class="collection-page__price-apply" data-apply-price>Apply</button>
+
+                  <button type="button" class="collection-page__price-apply" data-apply-price>
+                    Apply
+                  </button>
 
                 {% else %}
                   <div class="collection-page__filter-options">
@@ -87,8 +94,11 @@
           <div class="collection-page__dropdown" data-dropdown>
             <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
               Category
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
             </button>
+
             <div class="collection-page__dropdown-panel" data-dropdown-panel>
               <div class="collection-page__filter-options">
                 {% for col in collections %}
@@ -113,36 +123,84 @@
             {% assign has_active_filters = true %}
           {% endif %}
         {% endfor %}
+
         {% if has_active_filters %}
-          <a href="{{ collection.url }}" class="collection-page__clear-all" data-clear-filters>Clear all</a>
+          <a
+            href="{{ collection.url }}"
+            class="collection-page__clear-all"
+            data-clear-filters
+          >
+            Clear all
+          </a>
         {% endif %}
 
         {% assign current_sort = request.query_parameters.sort_by | default: collection.sort_by %}
-        <div class="collection-page__dropdown collection-page__dropdown--sort{% unless has_active_filters %} collection-page__dropdown--end-push{% endunless %}" data-dropdown>
+
+        <div
+          class="collection-page__dropdown collection-page__dropdown--sort{% unless has_active_filters %} collection-page__dropdown--end-push{% endunless %}"
+          data-dropdown
+        >
           <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
             Sort by
-            {% if current_sort == 'price-ascending' or current_sort == 'price-descending' or current_sort == 'discount-descending' or current_sort == 'discount-ascending' %}
+
+            {% if current_sort == 'price-ascending'
+              or current_sort == 'price-descending'
+              or current_sort == 'discount-descending'
+              or current_sort == 'discount-ascending'
+            %}
               <span class="collection-page__dropdown-dot"></span>
             {% endif %}
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
           </button>
+
           <div class="collection-page__dropdown-panel" data-dropdown-panel>
             <input type="hidden" data-sort-select value="{{ current_sort }}">
+
             <div class="collection-page__filter-options">
               <label class="collection-page__filter-option">
-                <input type="radio" name="collection-sort-{{ section.id }}" value="price-ascending" {% if current_sort == 'price-ascending' %}checked{% endif %} data-sort-option>
+                <input
+                  type="radio"
+                  name="collection-sort-{{ section.id }}"
+                  value="price-ascending"
+                  {% if current_sort == 'price-ascending' %}checked{% endif %}
+                  data-sort-option
+                >
                 <span>Price: Low to High</span>
               </label>
+
               <label class="collection-page__filter-option">
-                <input type="radio" name="collection-sort-{{ section.id }}" value="price-descending" {% if current_sort == 'price-descending' %}checked{% endif %} data-sort-option>
+                <input
+                  type="radio"
+                  name="collection-sort-{{ section.id }}"
+                  value="price-descending"
+                  {% if current_sort == 'price-descending' %}checked{% endif %}
+                  data-sort-option
+                >
                 <span>Price: High to Low</span>
               </label>
+
               <label class="collection-page__filter-option">
-                <input type="radio" name="collection-sort-{{ section.id }}" value="discount-descending" {% if current_sort == 'discount-descending' %}checked{% endif %} data-sort-option>
+                <input
+                  type="radio"
+                  name="collection-sort-{{ section.id }}"
+                  value="discount-descending"
+                  {% if current_sort == 'discount-descending' %}checked{% endif %}
+                  data-sort-option
+                >
                 <span>Discount: High to Low</span>
               </label>
+
               <label class="collection-page__filter-option">
-                <input type="radio" name="collection-sort-{{ section.id }}" value="discount-ascending" {% if current_sort == 'discount-ascending' %}checked{% endif %} data-sort-option>
+                <input
+                  type="radio"
+                  name="collection-sort-{{ section.id }}"
+                  value="discount-ascending"
+                  {% if current_sort == 'discount-ascending' %}checked{% endif %}
+                  data-sort-option
+                >
                 <span>Discount: Low to High</span>
               </label>
             </div>
@@ -153,20 +211,32 @@
       <div class="collection-page__active-chips" data-active-chips>
         {% for filter in collection.filters %}
           {% for value in filter.active_values %}
-            <a href="{{ value.url_to_remove }}" class="collection-page__chip" data-chip>
+            <a
+              href="{{ value.url_to_remove }}"
+              class="collection-page__chip"
+              data-chip
+            >
               {{ value.label }}
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="m6 6 12 12M18 6 6 18"/>
+              </svg>
             </a>
           {% endfor %}
         {% endfor %}
-
       </div>
 
-      <div class="collection-page__grid" style="--columns: {{ section.settings.columns }};" data-grid>
+      <div
+        class="collection-page__grid"
+        style="--columns: {{ section.settings.columns }};"
+        data-grid
+      >
         {% for product in collection.products %}
           {% render 'product-card', product: product %}
         {% else %}
-          <p class="collection-page__empty">No products match the selected filters.</p>
+          <p class="collection-page__empty">
+            No products match the selected filters.
+          </p>
         {% endfor %}
       </div>
 
@@ -195,12 +265,14 @@
 </section>
 
 {% stylesheet %}
+
   .collection-page__header {
     margin-bottom: 1.5rem;
     max-width: 42rem;
   }
 
-  /* ---------- Horizontal filter bar ---------- */
+  /* ---------- Filter Bar ---------- */
+
   .collection-page__filterbar {
     display: flex;
     align-items: center;
@@ -232,6 +304,7 @@
     font-size: 0.85rem;
     font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
   }
 
   .collection-page__dropdown.is-open .collection-page__dropdown-toggle {
@@ -243,6 +316,7 @@
     height: 0.4rem;
     border-radius: 999px;
     background: var(--color-accent);
+    flex-shrink: 0;
   }
 
   .collection-page__dropdown-panel {
@@ -296,6 +370,8 @@
     cursor: not-allowed;
   }
 
+  /* ---------- Price Range ---------- */
+
   .collection-page__price-range {
     display: flex;
     align-items: end;
@@ -334,7 +410,10 @@
     color: var(--color-surface);
     font-size: 0.82rem;
     font-weight: 600;
+    cursor: pointer;
   }
+
+  /* ---------- Clear All ---------- */
 
   .collection-page__clear-all {
     margin-left: auto;
@@ -343,7 +422,10 @@
     color: var(--color-accent);
     text-decoration: underline;
     white-space: nowrap;
+    cursor: pointer;
   }
+
+  /* ---------- Sort ---------- */
 
   .collection-page__dropdown--sort .collection-page__dropdown-panel {
     left: auto;
@@ -364,7 +446,8 @@
     color: var(--color-accent);
   }
 
-  /* ---------- Active chips ---------- */
+  /* ---------- Active Chips ---------- */
+
   .collection-page__active-chips {
     display: flex;
     flex-wrap: wrap;
@@ -382,14 +465,19 @@
     gap: 0.4rem;
     padding: 0.35rem 0.7rem;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--color-accent) 12%,
+      var(--color-surface)
+    );
     color: var(--color-foreground);
     font-size: 0.8rem;
     font-weight: 600;
     text-decoration: none;
   }
 
-  /* ---------- Grid ---------- */
+  /* ---------- Product Grid ---------- */
+
   .collection-page__grid {
     display: grid;
     gap: 1.25rem;
@@ -400,6 +488,8 @@
     grid-column: 1 / -1;
     color: var(--color-muted);
   }
+
+  /* ---------- Infinite Scroll ---------- */
 
   .collection-page__sentinel {
     height: 1px;
@@ -429,8 +519,12 @@
   }
 
   @keyframes collection-page-spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
+
+  /* ---------- Pagination ---------- */
 
   .collection-page__pagination {
     margin-top: 2rem;
@@ -444,234 +538,603 @@
     text-decoration: none;
   }
 
+  /* ---------- Desktop ---------- */
+
   @media (min-width: 900px) {
     .collection-page__grid {
-      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+      grid-template-columns: repeat(
+        var(--columns),
+        minmax(0, 1fr)
+      );
     }
   }
 
-  @media (max-width: 599px) {
-    .collection-page__filterbar {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 0.75rem;
-    }
+  /* ---------- Mobile ---------- */
 
-    .collection-page__filterbar-form {
-      flex-wrap: nowrap;
-    }
-
-    .collection-page__dropdown-toggle {
-      flex-shrink: 0;
-    }
-
-    .collection-page__clear-all {
-      margin-left: 0.5rem;
-      flex-shrink: 0;
-    }
-
-    .collection-page__grid {
-      gap: 0.75rem;
-    }
+@media (max-width: 599px) {
+  .collection-page__filterbar {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
   }
+
+  .collection-page__filterbar-form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .collection-page__dropdown {
+    position: relative;
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  .collection-page__dropdown-toggle {
+    min-height: 2.4rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  /* Mobile dropdown */
+  .collection-page__dropdown-panel {
+    position: fixed;
+    z-index: 100;
+    left: 0.75rem;
+    right: 0.75rem;
+    top: auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .collection-page__dropdown--sort .collection-page__dropdown-panel {
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .collection-page__filter-options {
+    max-height: none;
+  }
+
+  /* Clear all on its own line */
+  .collection-page__clear-all {
+    order: 2;
+    flex: 0 0 100%;
+    width: 100%;
+    margin-left: 0;
+    padding: 0.25rem 0;
+    text-align: left;
+    font-size: 0.82rem;
+  }
+
+  .collection-page__active-chips {
+    gap: 0.4rem;
+  }
+
+  .collection-page__chip {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .collection-page__grid {
+    gap: 0.75rem;
+  }
+}
+
 {% endstylesheet %}
 
 {% javascript %}
+
   document.querySelectorAll('[data-collection-page]').forEach((root) => {
     if (root.dataset.ready === 'true') return;
+
     root.dataset.ready = 'true';
 
     let isFetching = false;
     let observer = null;
 
-    /* ---------- Dropdown open/close ---------- */
+    /* ---------- Dropdown open / close ---------- */
+
     const closeAllDropdowns = () => {
-      root.querySelectorAll('[data-dropdown].is-open').forEach((d) => d.classList.remove('is-open'));
+      root
+        .querySelectorAll('[data-dropdown].is-open')
+        .forEach((dropdown) => {
+          dropdown.classList.remove('is-open');
+        });
     };
 
     document.addEventListener('click', (event) => {
       if (!root.contains(event.target)) return;
-      if (!event.target.closest('[data-dropdown]')) closeAllDropdowns();
+
+      if (!event.target.closest('[data-dropdown]')) {
+        closeAllDropdowns();
+      }
     });
 
     /* ---------- Build filtered URL ---------- */
+
     const buildFilterUrl = () => {
       const params = new URLSearchParams();
-      root.querySelectorAll('[data-filter-input]:checked').forEach((input) => {
-        params.append(input.name, input.value);
-      });
-      root.querySelectorAll('[data-price-input]').forEach((input) => {
-        if (input.value) params.append(input.name, input.value);
-      });
+
+      root
+        .querySelectorAll('[data-filter-input]:checked')
+        .forEach((input) => {
+          params.append(input.name, input.value);
+        });
+
+      root
+        .querySelectorAll('[data-price-input]')
+        .forEach((input) => {
+          if (input.value) {
+            params.append(input.name, input.value);
+          }
+        });
+
       const sort = root.querySelector('[data-sort-select]');
-      if (sort && sort.value) params.set('sort_by', sort.value);
+
+      if (sort && sort.value) {
+        params.set('sort_by', sort.value);
+      }
+
       const query = params.toString();
-      return query ? `${window.location.pathname}?${query}` : window.location.pathname;
+
+      return query
+        ? `${window.location.pathname}?${query}`
+        : window.location.pathname;
     };
 
     /* ---------- Fetch + swap ---------- */
-    const fetchAndReplace = async (url, { pushState = true, append = false } = {}) => {
+
+    const fetchAndReplace = async (
+      url,
+      { pushState = true, append = false } = {}
+    ) => {
       if (isFetching) return;
+
       isFetching = true;
+
       const loader = root.querySelector('[data-loader]');
       loader?.classList.remove('is-hidden');
 
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
         const html = await response.text();
-        const parsed = new DOMParser().parseFromString(html, 'text/html');
+
+        const parsed = new DOMParser().parseFromString(
+          html,
+          'text/html'
+        );
 
         const newGrid = parsed.querySelector('[data-grid]');
         const newSentinel = parsed.querySelector('[data-sentinel]');
         const newFilterbar = parsed.querySelector('[data-filterbar]');
         const newChips = parsed.querySelector('[data-active-chips]');
+
         const gridEl = root.querySelector('[data-grid]');
 
         if (append && newGrid && gridEl) {
           Array.from(newGrid.children).forEach((child) => {
-            if (child.classList.contains('collection-page__empty')) return;
+            if (
+              child.classList.contains(
+                'collection-page__empty'
+              )
+            ) {
+              return;
+            }
+
             gridEl.appendChild(child);
           });
-          const sentinel = root.querySelector('[data-sentinel]');
-          if (sentinel && newSentinel) sentinel.dataset.nextUrl = newSentinel.dataset.nextUrl || '';
+
+          const sentinel =
+            root.querySelector('[data-sentinel]');
+
+          if (sentinel && newSentinel) {
+            sentinel.dataset.nextUrl =
+              newSentinel.dataset.nextUrl || '';
+          }
         } else if (newGrid && gridEl) {
           gridEl.replaceWith(newGrid);
-          const filterbar = root.querySelector('[data-filterbar]');
-          if (newFilterbar && filterbar) filterbar.replaceWith(newFilterbar);
-          const chips = root.querySelector('[data-active-chips]');
-          if (newChips && chips) chips.replaceWith(newChips);
-          if (pushState) window.history.pushState({}, '', url);
+
+          const filterbar =
+            root.querySelector('[data-filterbar]');
+
+          if (newFilterbar && filterbar) {
+            filterbar.replaceWith(newFilterbar);
+          }
+
+          const chips =
+            root.querySelector('[data-active-chips]');
+
+          if (newChips && chips) {
+            chips.replaceWith(newChips);
+          }
+
+          if (pushState) {
+            window.history.pushState({}, '', url);
+          }
+
           bindDynamicListeners();
         }
       } catch (error) {
-        console.error('Collection filter/scroll fetch failed', error);
+        console.error(
+          'Collection filter/scroll fetch failed',
+          error
+        );
       } finally {
         loader?.classList.add('is-hidden');
+
         isFetching = false;
+
         applyClientSort();
         bindInfiniteScroll();
       }
     };
 
+    /* ---------- Client-side discount sorting ---------- */
+
     const applyClientSort = () => {
       const sort = root.querySelector('[data-sort-select]');
       const gridEl = root.querySelector('[data-grid]');
-      if (!sort || !gridEl || !sort.value.startsWith('discount')) return;
 
-      const direction = sort.value === 'discount-ascending' ? 1 : -1;
-      const cards = Array.from(gridEl.querySelectorAll('.product-card'));
+      if (
+        !sort ||
+        !gridEl ||
+        !sort.value.startsWith('discount')
+      ) {
+        return;
+      }
+
+      const direction =
+        sort.value === 'discount-ascending'
+          ? 1
+          : -1;
+
+      const cards = Array.from(
+        gridEl.querySelectorAll('.product-card')
+      );
+
       cards.sort((a, b) => {
         const discountOf = (card) => {
-          const price = Number(card.dataset.price || 0);
-          const compare = Number(card.dataset.compare || 0);
-          if (!compare || compare <= price) return 0;
-          return (compare - price) / compare;
+          const price = Number(
+            card.dataset.price || 0
+          );
+
+          const compare = Number(
+            card.dataset.compare || 0
+          );
+
+          if (!compare || compare <= price) {
+            return 0;
+          }
+
+          return (
+            (compare - price) / compare
+          );
         };
-        return (discountOf(a) - discountOf(b)) * direction;
+
+        return (
+          (discountOf(a) - discountOf(b)) *
+          direction
+        );
       });
-      cards.forEach((card) => gridEl.appendChild(card));
+
+      cards.forEach((card) => {
+        gridEl.appendChild(card);
+      });
     };
 
-    /* ---------- Bind listeners on current (possibly replaced) form ---------- */
+    /* ---------- Bind dynamic listeners ---------- */
+
     const bindDynamicListeners = () => {
-      root.querySelectorAll('[data-dropdown-toggle]').forEach((toggle) => {
-        toggle.addEventListener('click', (event) => {
-          event.stopPropagation();
-          const dropdown = toggle.closest('[data-dropdown]');
-          const wasOpen = dropdown.classList.contains('is-open');
-          closeAllDropdowns();
-          if (!wasOpen) dropdown.classList.add('is-open');
+
+      /* Dropdown buttons */
+
+      root
+        .querySelectorAll('[data-dropdown-toggle]')
+        .forEach((toggle) => {
+
+          toggle.addEventListener(
+            'click',
+            (event) => {
+              event.stopPropagation();
+
+              const dropdown =
+                toggle.closest('[data-dropdown]');
+
+              const wasOpen =
+                dropdown.classList.contains(
+                  'is-open'
+                );
+
+              closeAllDropdowns();
+
+              if (!wasOpen) {
+                dropdown.classList.add(
+                  'is-open'
+                );
+              }
+            }
+          );
         });
-      });
 
-      root.querySelectorAll('[data-filter-input]').forEach((input) => {
-        input.addEventListener('change', () => fetchAndReplace(buildFilterUrl()));
-      });
+      /* Filter inputs */
 
-      root.querySelector('[data-apply-price]')?.addEventListener('click', () => {
-        fetchAndReplace(buildFilterUrl());
-      });
+      root
+        .querySelectorAll('[data-filter-input]')
+        .forEach((input) => {
 
-      root.querySelectorAll('[data-chip]').forEach((chip) => {
-        chip.addEventListener('click', (event) => {
-          event.preventDefault();
-          fetchAndReplace(chip.href);
+          input.addEventListener(
+            'change',
+            () => {
+              fetchAndReplace(
+                buildFilterUrl()
+              );
+            }
+          );
         });
-      });
 
-      root.querySelector('[data-clear-filters]')?.addEventListener('click', (event) => {
-        event.preventDefault();
-        fetchAndReplace(event.currentTarget.href);
-      });
+      /* Price Apply */
 
-      root.querySelectorAll('[data-sort-option]').forEach((input) => {
-        input.addEventListener('change', () => {
-          const sortInput = root.querySelector('[data-sort-select]');
-          if (sortInput) sortInput.value = input.value;
-          fetchAndReplace(buildFilterUrl());
+      root
+        .querySelector(
+          '[data-apply-price]'
+        )
+        ?.addEventListener(
+          'click',
+          () => {
+            fetchAndReplace(
+              buildFilterUrl()
+            );
+          }
+        );
+
+      /* Active filter chips */
+
+      root
+        .querySelectorAll('[data-chip]')
+        .forEach((chip) => {
+
+          chip.addEventListener(
+            'click',
+            (event) => {
+              event.preventDefault();
+
+              fetchAndReplace(
+                chip.href
+              );
+            }
+          );
         });
-      });
+
+      /* Clear all */
+
+      root
+        .querySelector('[data-clear-filters]')
+        ?.addEventListener(
+          'click',
+          (event) => {
+            event.preventDefault();
+
+            /*
+             * Clear filters AND reset sorting.
+             */
+            const clearUrl =
+              event.currentTarget.href;
+
+            fetchAndReplace(
+              clearUrl
+            );
+          }
+        );
+
+      /* Sort */
+
+      root
+        .querySelectorAll('[data-sort-option]')
+        .forEach((input) => {
+
+          input.addEventListener(
+            'change',
+            () => {
+
+              const sortInput =
+                root.querySelector(
+                  '[data-sort-select]'
+                );
+
+              if (sortInput) {
+                sortInput.value =
+                  input.value;
+              }
+
+              fetchAndReplace(
+                buildFilterUrl()
+              );
+            }
+          );
+        });
     };
 
     /* ---------- Infinite scroll ---------- */
+
     const getColumnCount = (gridEl) => {
-      const columns = window.getComputedStyle(gridEl).gridTemplateColumns.split(' ').filter(Boolean);
-      return Math.max(columns.length, 1);
+      const columns =
+        window
+          .getComputedStyle(gridEl)
+          .gridTemplateColumns
+          .split(' ')
+          .filter(Boolean);
+
+      return Math.max(
+        columns.length,
+        1
+      );
     };
 
     const getPrefetchTrigger = () => {
-      const gridEl = root.querySelector('[data-grid]');
-      const sentinel = root.querySelector('[data-sentinel]');
-      if (!gridEl) return sentinel;
+      const gridEl =
+        root.querySelector('[data-grid]');
 
-      const cards = Array.from(gridEl.children).filter((child) => !child.classList.contains('collection-page__empty'));
-      if (!cards.length) return sentinel;
+      const sentinel =
+        root.querySelector('[data-sentinel]');
 
-      const cols = getColumnCount(gridEl);
-      const triggerIndex = Math.max(0, cards.length - cols * 2);
-      return cards[triggerIndex] || sentinel;
+      if (!gridEl) {
+        return sentinel;
+      }
+
+      const cards =
+        Array.from(
+          gridEl.children
+        ).filter(
+          (child) =>
+            !child.classList.contains(
+              'collection-page__empty'
+            )
+        );
+
+      if (!cards.length) {
+        return sentinel;
+      }
+
+      const cols =
+        getColumnCount(gridEl);
+
+      const triggerIndex =
+        Math.max(
+          0,
+          cards.length - cols * 2
+        );
+
+      return (
+        cards[triggerIndex] ||
+        sentinel
+      );
     };
 
     const bindInfiniteScroll = () => {
-      const sentinel = root.querySelector('[data-sentinel]');
+      const sentinel =
+        root.querySelector(
+          '[data-sentinel]'
+        );
+
       if (!sentinel) return;
-      if (observer) observer.disconnect();
 
-      const triggerEl = getPrefetchTrigger();
+      if (observer) {
+        observer.disconnect();
+      }
 
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            const nextUrl = sentinel.dataset.nextUrl;
-            if (!nextUrl || isFetching) return;
-            fetchAndReplace(nextUrl, { pushState: false, append: true });
-          });
-        },
-        { rootMargin: '0px 0px 15% 0px' }
+      const triggerEl =
+        getPrefetchTrigger();
+
+      observer =
+        new IntersectionObserver(
+          (entries) => {
+
+            entries.forEach(
+              (entry) => {
+
+                if (
+                  !entry.isIntersecting
+                ) {
+                  return;
+                }
+
+                const nextUrl =
+                  sentinel.dataset
+                    .nextUrl;
+
+                if (
+                  !nextUrl ||
+                  isFetching
+                ) {
+                  return;
+                }
+
+                fetchAndReplace(
+                  nextUrl,
+                  {
+                    pushState: false,
+                    append: true
+                  }
+                );
+              }
+            );
+          },
+          {
+            rootMargin:
+              '0px 0px 15% 0px'
+          }
+        );
+
+      observer.observe(
+        triggerEl
       );
 
-      observer.observe(triggerEl);
+      const nextUrl =
+        sentinel.dataset.nextUrl;
 
-      const nextUrl = sentinel.dataset.nextUrl;
-      if (nextUrl && !isFetching) {
-        const rect = triggerEl.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 1.15) {
-          fetchAndReplace(nextUrl, { pushState: false, append: true });
+      if (
+        nextUrl &&
+        !isFetching
+      ) {
+        const rect =
+          triggerEl.getBoundingClientRect();
+
+        if (
+          rect.top <
+          window.innerHeight * 1.15
+        ) {
+          fetchAndReplace(
+            nextUrl,
+            {
+              pushState: false,
+              append: true
+            }
+          );
         }
       }
     };
 
+    /* ---------- Initial setup ---------- */
+
     bindDynamicListeners();
+
     applyClientSort();
+
     bindInfiniteScroll();
 
-    window.addEventListener('popstate', () => {
-      fetchAndReplace(window.location.href, { pushState: false });
-    });
+    /* ---------- Browser back / forward ---------- */
+
+    window.addEventListener(
+      'popstate',
+      () => {
+        fetchAndReplace(
+          window.location.href,
+          {
+            pushState: false
+          }
+        );
+      }
+    );
   });
+
 {% endjavascript %}
 
 {% schema %}
