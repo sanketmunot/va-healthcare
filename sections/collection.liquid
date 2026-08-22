@@ -7,28 +7,477 @@
   </header>
 
   {% paginate collection.products by section.settings.products_per_page %}
-    <div class="collection-page__grid" style="--columns: {{ section.settings.columns }};">
-      {% for product in collection.products %}
-        {% render 'product-card', product: product %}
-      {% else %}
-        <p class="collection-page__empty">No products found in this collection.</p>
-      {% endfor %}
+
+    <div class="collection-page__wrap" data-collection-page>
+
+      <div class="collection-page__filterbar" data-filterbar>
+        <form id="CollectionFilterForm-{{ section.id }}" data-filters-form class="collection-page__filterbar-form">
+          {% for filter in collection.filters %}
+            <div class="collection-page__dropdown" data-dropdown>
+              <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
+                {{ filter.label }}
+                {% if filter.active_values.size > 0 or filter.min_value.value or filter.max_value.value %}
+                  <span class="collection-page__dropdown-dot"></span>
+                {% endif %}
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+
+              <div class="collection-page__dropdown-panel" data-dropdown-panel>
+                {% if filter.type == 'price_range' %}
+                  <div class="collection-page__price-range">
+                    <label class="collection-page__price-field">
+                      <span>Min</span>
+                      <input
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        name="{{ filter.min_value.param_name }}"
+                        value="{{ filter.min_value.value }}"
+                        placeholder="0"
+                        data-price-input
+                      >
+                    </label>
+                    <span class="collection-page__price-sep">–</span>
+                    <label class="collection-page__price-field">
+                      <span>Max</span>
+                      <input
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        name="{{ filter.max_value.param_name }}"
+                        value="{{ filter.max_value.value }}"
+                        placeholder="{{ filter.range_max }}"
+                        data-price-input
+                      >
+                    </label>
+                  </div>
+                  <button type="button" class="collection-page__price-apply" data-apply-price>Apply</button>
+
+                {% else %}
+                  <div class="collection-page__filter-options">
+                    {% for value in filter.values %}
+                      <label class="collection-page__filter-option{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                        <input
+                          type="checkbox"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                          data-filter-input
+                        >
+                        <span>{{ value.label }}</span>
+                        <small>({{ value.count }})</small>
+                      </label>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+
+          {% assign has_vendor_filter = false %}
+          {% assign has_type_filter = false %}
+          {% for filter in collection.filters %}
+            {% for value in filter.values limit: 1 %}
+              {% if value.param_name == 'filter.p.vendor' %}
+                {% assign has_vendor_filter = true %}
+              {% endif %}
+              {% if value.param_name == 'filter.p.product_type' %}
+                {% assign has_type_filter = true %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+
+          {% unless has_vendor_filter %}
+            {% if collection.all_vendors.size > 0 %}
+              <div class="collection-page__dropdown" data-dropdown>
+                <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
+                  Vendor
+                  {% if request.query_parameters['filter.p.vendor'] != blank %}
+                    <span class="collection-page__dropdown-dot"></span>
+                  {% endif %}
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="collection-page__dropdown-panel" data-dropdown-panel>
+                  <div class="collection-page__filter-options">
+                    {% for vendor in collection.all_vendors %}
+                      {% assign vendor_active = false %}
+                      {% assign vendor_param = request.query_parameters['filter.p.vendor'] %}
+                      {% if vendor_param == vendor or vendor_param contains vendor %}
+                        {% assign vendor_active = true %}
+                      {% endif %}
+                      <label class="collection-page__filter-option">
+                        <input
+                          type="checkbox"
+                          name="filter.p.vendor"
+                          value="{{ vendor }}"
+                          {% if vendor_active %}checked{% endif %}
+                          data-filter-input
+                        >
+                        <span>{{ vendor }}</span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endunless %}
+
+          {% unless has_type_filter %}
+            {% if collection.all_types.size > 0 %}
+              <div class="collection-page__dropdown" data-dropdown>
+                <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
+                  Type
+                  {% if request.query_parameters['filter.p.product_type'] != blank %}
+                    <span class="collection-page__dropdown-dot"></span>
+                  {% endif %}
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="collection-page__dropdown-panel" data-dropdown-panel>
+                  <div class="collection-page__filter-options">
+                    {% for product_type in collection.all_types %}
+                      {% assign type_active = false %}
+                      {% assign type_param = request.query_parameters['filter.p.product_type'] %}
+                      {% if type_param == product_type or type_param contains product_type %}
+                        {% assign type_active = true %}
+                      {% endif %}
+                      <label class="collection-page__filter-option">
+                        <input
+                          type="checkbox"
+                          name="filter.p.product_type"
+                          value="{{ product_type }}"
+                          {% if type_active %}checked{% endif %}
+                          data-filter-input
+                        >
+                        <span>{{ product_type }}</span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endunless %}
+
+          <div class="collection-page__dropdown" data-dropdown>
+            <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
+              Collection
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="collection-page__dropdown-panel" data-dropdown-panel>
+              <div class="collection-page__filter-options">
+                {% for col in collections %}
+                  {% if col.all_products_count > 0 %}
+                    <a
+                      href="{{ col.url }}"
+                      class="collection-page__filter-option{% if col.handle == collection.handle %} is-current{% endif %}"
+                    >
+                      <span>{{ col.title }}</span>
+                      <small>({{ col.all_products_count }})</small>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </form>
+
+        {% assign has_active_filters = false %}
+        {% for filter in collection.filters %}
+          {% if filter.active_values.size > 0 or filter.min_value.value or filter.max_value.value %}
+            {% assign has_active_filters = true %}
+          {% endif %}
+        {% endfor %}
+        {% if request.query_parameters['filter.p.vendor'] != blank or request.query_parameters['filter.p.product_type'] != blank %}
+          {% assign has_active_filters = true %}
+        {% endif %}
+        {% if has_active_filters %}
+          <a href="{{ collection.url }}" class="collection-page__clear-all" data-clear-filters>Clear all</a>
+        {% endif %}
+
+        {% assign current_sort = request.query_parameters.sort_by | default: collection.sort_by %}
+        <div class="collection-page__dropdown collection-page__dropdown--sort{% unless has_active_filters %} collection-page__dropdown--end-push{% endunless %}" data-dropdown>
+          <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
+            Sort by
+            {% if current_sort == 'price-ascending' or current_sort == 'price-descending' or current_sort == 'discount-descending' or current_sort == 'discount-ascending' %}
+              <span class="collection-page__dropdown-dot"></span>
+            {% endif %}
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="collection-page__dropdown-panel" data-dropdown-panel>
+            <input type="hidden" data-sort-select value="{{ current_sort }}">
+            <div class="collection-page__filter-options">
+              <label class="collection-page__filter-option">
+                <input type="radio" name="collection-sort-{{ section.id }}" value="price-ascending" {% if current_sort == 'price-ascending' %}checked{% endif %} data-sort-option>
+                <span>Price: Low to High</span>
+              </label>
+              <label class="collection-page__filter-option">
+                <input type="radio" name="collection-sort-{{ section.id }}" value="price-descending" {% if current_sort == 'price-descending' %}checked{% endif %} data-sort-option>
+                <span>Price: High to Low</span>
+              </label>
+              <label class="collection-page__filter-option">
+                <input type="radio" name="collection-sort-{{ section.id }}" value="discount-descending" {% if current_sort == 'discount-descending' %}checked{% endif %} data-sort-option>
+                <span>Discount: High to Low</span>
+              </label>
+              <label class="collection-page__filter-option">
+                <input type="radio" name="collection-sort-{{ section.id }}" value="discount-ascending" {% if current_sort == 'discount-ascending' %}checked{% endif %} data-sort-option>
+                <span>Discount: Low to High</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="collection-page__active-chips" data-active-chips>
+        {% for filter in collection.filters %}
+          {% for value in filter.active_values %}
+            <a href="{{ value.url_to_remove }}" class="collection-page__chip" data-chip>
+              {{ value.label }}
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </a>
+          {% endfor %}
+        {% endfor %}
+        {% unless has_vendor_filter %}
+          {% assign vendor_param = request.query_parameters['filter.p.vendor'] %}
+          {% if vendor_param != blank %}
+            {% if vendor_param.first %}
+              {% for vendor in vendor_param %}
+                <span class="collection-page__chip">{{ vendor }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="collection-page__chip">{{ vendor_param }}</span>
+            {% endif %}
+          {% endif %}
+        {% endunless %}
+      </div>
+
+      <div class="collection-page__grid" style="--columns: {{ section.settings.columns }};" data-grid>
+        {% for product in collection.products %}
+          {% render 'product-card', product: product %}
+        {% else %}
+          <p class="collection-page__empty">No products match the selected filters.</p>
+        {% endfor %}
+      </div>
+
+      <div
+        class="collection-page__sentinel"
+        data-sentinel
+        data-next-url="{% if paginate.next %}{{ paginate.next.url }}{% endif %}"
+      ></div>
+
+      <div class="collection-page__loader is-hidden" data-loader>
+        <span class="collection-page__spinner" aria-hidden="true"></span>
+        Loading more products…
+      </div>
+
+      <noscript>
+        {% if paginate.pages > 1 %}
+          <nav class="collection-page__pagination" aria-label="Pagination">
+            {{ paginate | default_pagination }}
+          </nav>
+        {% endif %}
+      </noscript>
+
     </div>
 
-    {% if paginate.pages > 1 %}
-      <nav class="collection-page__pagination" aria-label="Pagination">
-        {{ paginate | default_pagination }}
-      </nav>
-    {% endif %}
   {% endpaginate %}
 </section>
 
 {% stylesheet %}
   .collection-page__header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     max-width: 42rem;
   }
 
+  /* ---------- Horizontal filter bar ---------- */
+  .collection-page__filterbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .collection-page__filterbar-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .collection-page__dropdown {
+    position: relative;
+  }
+
+  .collection-page__dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .collection-page__dropdown.is-open .collection-page__dropdown-toggle {
+    border-color: var(--color-accent);
+  }
+
+  .collection-page__dropdown-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+  }
+
+  .collection-page__dropdown-panel {
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    min-width: 15rem;
+    max-width: 18rem;
+    padding: 0.9rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.85rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .collection-page__dropdown.is-open .collection-page__dropdown-panel {
+    display: block;
+  }
+
+  .collection-page__filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    max-height: 14rem;
+    overflow-y: auto;
+  }
+
+  .collection-page__filter-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.86rem;
+    cursor: pointer;
+  }
+
+  .collection-page__filter-option input {
+    accent-color: var(--color-accent);
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .collection-page__filter-option small {
+    color: var(--color-muted);
+  }
+
+  .collection-page__filter-option.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .collection-page__price-range {
+    display: flex;
+    align-items: end;
+    gap: 0.5rem;
+  }
+
+  .collection-page__price-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    flex: 1;
+  }
+
+  .collection-page__price-field input {
+    min-height: 2.4rem;
+    padding: 0 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  .collection-page__price-sep {
+    padding-bottom: 0.6rem;
+    color: var(--color-muted);
+  }
+
+  .collection-page__price-apply {
+    margin-top: 0.65rem;
+    width: 100%;
+    min-height: 2.3rem;
+    border-radius: 0.4rem;
+    background: var(--color-foreground);
+    color: var(--color-surface);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .collection-page__clear-all {
+    margin-left: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+
+  .collection-page__dropdown--sort .collection-page__dropdown-panel {
+    left: auto;
+    right: 0;
+  }
+
+  .collection-page__dropdown--end-push {
+    margin-left: auto;
+  }
+
+  a.collection-page__filter-option {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a.collection-page__filter-option.is-current {
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  /* ---------- Active chips ---------- */
+  .collection-page__active-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .collection-page__active-chips:empty {
+    display: none;
+  }
+
+  .collection-page__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+    color: var(--color-foreground);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* ---------- Grid ---------- */
   .collection-page__grid {
     display: grid;
     gap: 1.25rem;
@@ -38,6 +487,37 @@
   .collection-page__empty {
     grid-column: 1 / -1;
     color: var(--color-muted);
+  }
+
+  .collection-page__sentinel {
+    height: 1px;
+  }
+
+  .collection-page__loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 2rem 0;
+    color: var(--color-muted);
+    font-size: 0.88rem;
+  }
+
+  .collection-page__loader.is-hidden {
+    display: none;
+  }
+
+  .collection-page__spinner {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    animation: collection-page-spin 700ms linear infinite;
+  }
+
+  @keyframes collection-page-spin {
+    to { transform: rotate(360deg); }
   }
 
   .collection-page__pagination {
@@ -57,7 +537,230 @@
       grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
     }
   }
+
+  @media (max-width: 599px) {
+    .collection-page__filterbar {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 0.75rem;
+    }
+
+    .collection-page__filterbar-form {
+      flex-wrap: nowrap;
+    }
+
+    .collection-page__dropdown-toggle {
+      flex-shrink: 0;
+    }
+
+    .collection-page__clear-all {
+      margin-left: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .collection-page__grid {
+      gap: 0.75rem;
+    }
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-collection-page]').forEach((root) => {
+    if (root.dataset.ready === 'true') return;
+    root.dataset.ready = 'true';
+
+    let isFetching = false;
+    let observer = null;
+
+    /* ---------- Dropdown open/close ---------- */
+    const closeAllDropdowns = () => {
+      root.querySelectorAll('[data-dropdown].is-open').forEach((d) => d.classList.remove('is-open'));
+    };
+
+    document.addEventListener('click', (event) => {
+      if (!root.contains(event.target)) return;
+      if (!event.target.closest('[data-dropdown]')) closeAllDropdowns();
+    });
+
+    /* ---------- Build filtered URL ---------- */
+    const buildFilterUrl = () => {
+      const params = new URLSearchParams();
+      root.querySelectorAll('[data-filter-input]:checked').forEach((input) => {
+        params.append(input.name, input.value);
+      });
+      root.querySelectorAll('[data-price-input]').forEach((input) => {
+        if (input.value) params.append(input.name, input.value);
+      });
+      const sort = root.querySelector('[data-sort-select]');
+      if (sort && sort.value) params.set('sort_by', sort.value);
+      const query = params.toString();
+      return query ? `${window.location.pathname}?${query}` : window.location.pathname;
+    };
+
+    /* ---------- Fetch + swap ---------- */
+    const fetchAndReplace = async (url, { pushState = true, append = false } = {}) => {
+      if (isFetching) return;
+      isFetching = true;
+      const loader = root.querySelector('[data-loader]');
+      loader?.classList.remove('is-hidden');
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        const html = await response.text();
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+
+        const newGrid = parsed.querySelector('[data-grid]');
+        const newSentinel = parsed.querySelector('[data-sentinel]');
+        const newFilterbar = parsed.querySelector('[data-filterbar]');
+        const newChips = parsed.querySelector('[data-active-chips]');
+        const gridEl = root.querySelector('[data-grid]');
+
+        if (append && newGrid && gridEl) {
+          Array.from(newGrid.children).forEach((child) => {
+            if (child.classList.contains('collection-page__empty')) return;
+            gridEl.appendChild(child);
+          });
+          const sentinel = root.querySelector('[data-sentinel]');
+          if (sentinel && newSentinel) sentinel.dataset.nextUrl = newSentinel.dataset.nextUrl || '';
+        } else if (newGrid && gridEl) {
+          gridEl.replaceWith(newGrid);
+          const filterbar = root.querySelector('[data-filterbar]');
+          if (newFilterbar && filterbar) filterbar.replaceWith(newFilterbar);
+          const chips = root.querySelector('[data-active-chips]');
+          if (newChips && chips) chips.replaceWith(newChips);
+          if (pushState) window.history.pushState({}, '', url);
+          bindDynamicListeners();
+        }
+      } catch (error) {
+        console.error('Collection filter/scroll fetch failed', error);
+      } finally {
+        loader?.classList.add('is-hidden');
+        isFetching = false;
+        applyClientSort();
+        bindInfiniteScroll();
+      }
+    };
+
+    const applyClientSort = () => {
+      const sort = root.querySelector('[data-sort-select]');
+      const gridEl = root.querySelector('[data-grid]');
+      if (!sort || !gridEl || !sort.value.startsWith('discount')) return;
+
+      const direction = sort.value === 'discount-ascending' ? 1 : -1;
+      const cards = Array.from(gridEl.querySelectorAll('.product-card'));
+      cards.sort((a, b) => {
+        const discountOf = (card) => {
+          const price = Number(card.dataset.price || 0);
+          const compare = Number(card.dataset.compare || 0);
+          if (!compare || compare <= price) return 0;
+          return (compare - price) / compare;
+        };
+        return (discountOf(a) - discountOf(b)) * direction;
+      });
+      cards.forEach((card) => gridEl.appendChild(card));
+    };
+
+    /* ---------- Bind listeners on current (possibly replaced) form ---------- */
+    const bindDynamicListeners = () => {
+      root.querySelectorAll('[data-dropdown-toggle]').forEach((toggle) => {
+        toggle.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const dropdown = toggle.closest('[data-dropdown]');
+          const wasOpen = dropdown.classList.contains('is-open');
+          closeAllDropdowns();
+          if (!wasOpen) dropdown.classList.add('is-open');
+        });
+      });
+
+      root.querySelectorAll('[data-filter-input]').forEach((input) => {
+        input.addEventListener('change', () => fetchAndReplace(buildFilterUrl()));
+      });
+
+      root.querySelector('[data-apply-price]')?.addEventListener('click', () => {
+        fetchAndReplace(buildFilterUrl());
+      });
+
+      root.querySelectorAll('[data-chip]').forEach((chip) => {
+        chip.addEventListener('click', (event) => {
+          event.preventDefault();
+          fetchAndReplace(chip.href);
+        });
+      });
+
+      root.querySelector('[data-clear-filters]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        fetchAndReplace(event.currentTarget.href);
+      });
+
+      root.querySelectorAll('[data-sort-option]').forEach((input) => {
+        input.addEventListener('change', () => {
+          const sortInput = root.querySelector('[data-sort-select]');
+          if (sortInput) sortInput.value = input.value;
+          fetchAndReplace(buildFilterUrl());
+        });
+      });
+    };
+
+    /* ---------- Infinite scroll ---------- */
+    const getColumnCount = (gridEl) => {
+      const columns = window.getComputedStyle(gridEl).gridTemplateColumns.split(' ').filter(Boolean);
+      return Math.max(columns.length, 1);
+    };
+
+    const getPrefetchTrigger = () => {
+      const gridEl = root.querySelector('[data-grid]');
+      const sentinel = root.querySelector('[data-sentinel]');
+      if (!gridEl) return sentinel;
+
+      const cards = Array.from(gridEl.children).filter((child) => !child.classList.contains('collection-page__empty'));
+      if (!cards.length) return sentinel;
+
+      const cols = getColumnCount(gridEl);
+      const triggerIndex = Math.max(0, cards.length - cols * 2);
+      return cards[triggerIndex] || sentinel;
+    };
+
+    const bindInfiniteScroll = () => {
+      const sentinel = root.querySelector('[data-sentinel]');
+      if (!sentinel) return;
+      if (observer) observer.disconnect();
+
+      const triggerEl = getPrefetchTrigger();
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const nextUrl = sentinel.dataset.nextUrl;
+            if (!nextUrl || isFetching) return;
+            fetchAndReplace(nextUrl, { pushState: false, append: true });
+          });
+        },
+        { rootMargin: '0px 0px 15% 0px' }
+      );
+
+      observer.observe(triggerEl);
+
+      const nextUrl = sentinel.dataset.nextUrl;
+      if (nextUrl && !isFetching) {
+        const rect = triggerEl.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 1.15) {
+          fetchAndReplace(nextUrl, { pushState: false, append: true });
+        }
+      }
+    };
+
+    bindDynamicListeners();
+    applyClientSort();
+    bindInfiniteScroll();
+
+    window.addEventListener('popstate', () => {
+      fetchAndReplace(window.location.href, { pushState: false });
+    });
+  });
+{% endjavascript %}
 
 {% schema %}
 {

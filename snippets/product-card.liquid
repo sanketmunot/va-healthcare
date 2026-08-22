@@ -15,7 +15,11 @@
   assign featured = product.featured_media.preview_image | default: product.featured_image
 %}
 
-<article class="product-card">
+<article
+  class="product-card"
+  data-price="{{ product.price }}"
+  data-compare="{{ product.compare_at_price | default: 0 }}"
+>
   <a class="product-card__media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
     {% if featured != blank %}
       {{

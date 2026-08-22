@@ -1,126 +1,429 @@
-<section class="promo-tiles" style="padding-block: {{ section.settings.padding }}px;">
+{% liquid
+  assign category_count = 0
+%}
+
+<section
+  class="shop-categories"
+  style="--sc-pad: {{ section.settings.padding }}px; padding-block: clamp(1.75rem, 5vw, var(--sc-pad));"
+  data-shop-categories
+>
   {% if section.settings.heading != blank %}
-    <h2 class="section-heading">{{ section.settings.heading }}</h2>
+    <h2 class="section-heading shop-categories__heading">{{ section.settings.heading }}</h2>
   {% endif %}
-  <div class="promo-tiles__grid">
-    {% for block in section.blocks %}
-      <a
-        class="promo-tiles__card"
-        href="{{ block.settings.link }}"
-        {{ block.shopify_attributes }}
-      >
-        {% if block.settings.image != blank %}
-          {{
-            block.settings.image
-            | image_url: width: 1200
-            | image_tag: loading: 'lazy', class: 'promo-tiles__image', widths: '480, 720, 960, 1200', sizes: '(min-width: 900px) 33vw, 100vw'
-          }}
-        {% else %}
-          <div class="promo-tiles__fallback" aria-hidden="true"></div>
-        {% endif %}
-        <div class="promo-tiles__content">
-          {% if block.settings.eyebrow != blank %}
-            <p class="eyebrow">{{ block.settings.eyebrow }}</p>
-          {% endif %}
-          {% if block.settings.title != blank %}
-            <h3>{{ block.settings.title }}</h3>
-          {% endif %}
-          {% if block.settings.text != blank %}
-            <p>{{ block.settings.text }}</p>
-          {% endif %}
-        </div>
-      </a>
+
+  <ul class="shop-categories__list" role="list">
+    {% for collection in collections %}
+      {% if collection.handle == 'all' or collection.products_count == 0 %}
+        {% continue %}
+      {% endif %}
+
+      {% liquid
+        assign category_count = category_count | plus: 1
+        assign featured = collection.image | default: collection.featured_image
+        assign description = collection.description | strip_html | strip
+        if description == blank
+          assign description = 'Explore curated products from this collection.'
+        endif
+      %}
+
+      <li class="shop-categories__item{% if category_count == 1 %} is-active{% endif %}">
+        <a
+          class="shop-categories__card"
+          href="{{ collection.url }}"
+          aria-label="Shop {{ collection.title | escape }}"
+        >
+          <div class="shop-categories__media" aria-hidden="true">
+            {% if featured != blank %}
+              {{
+                featured
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '400, 720, 960, 1200, 1400',
+                  sizes: '(min-width: 900px) 55vw, 100vw',
+                  class: 'shop-categories__image'
+              }}
+            {% else %}
+              <div class="shop-categories__fallback"></div>
+            {% endif %}
+          </div>
+
+          <div class="shop-categories__rail">
+            <span class="shop-categories__icon">
+              {% if featured != blank %}
+                {{
+                  featured
+                  | image_url: width: 160
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '80, 120, 160',
+                    sizes: '44px',
+                    class: 'shop-categories__icon-image',
+                    alt: ''
+                }}
+              {% else %}
+                <span class="shop-categories__icon-mark"></span>
+              {% endif %}
+            </span>
+            <span class="shop-categories__rail-title">{{ collection.title }}</span>
+          </div>
+
+          <div class="shop-categories__panel">
+            <p class="shop-categories__kicker">Collection</p>
+            <h3 class="shop-categories__title">{{ collection.title }}</h3>
+            <p class="shop-categories__text">{{ description | truncate: 140 }}</p>
+            <span class="shop-categories__cta">
+              Shop Collection
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+      </li>
     {% endfor %}
-  </div>
+  </ul>
+
+  {% if category_count == 0 %}
+    <p class="shop-categories__empty">No collections to display yet. Add collections in Shopify admin to populate this section.</p>
+  {% endif %}
 </section>
 
 {% stylesheet %}
-  .promo-tiles .section-heading {
+  .shop-categories {
+    overflow-x: clip;
+  }
+
+  .shop-categories__heading {
     margin-bottom: 1.5rem;
   }
 
-  .promo-tiles__grid {
-    display: grid;
-    gap: 1rem;
+  .shop-categories__empty {
+    color: var(--color-muted);
   }
 
-  .promo-tiles__card {
+  .shop-categories__list {
+    display: flex;
+    align-items: stretch;
+    gap: 0.7rem;
+    height: min(62vh, 32rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .shop-categories__item {
     position: relative;
-    display: block;
-    min-height: 18rem;
-    border-radius: calc(var(--radius) + 8px);
     overflow: hidden;
-    text-decoration: none;
-    color: #f7faf8;
+    border-radius: 1.35rem;
+    background: #13241d;
+    isolation: isolate;
   }
 
-  .promo-tiles__image,
-  .promo-tiles__fallback {
+  .shop-categories__card {
+    display: block;
+    height: 100%;
+    color: #f7faf8;
+    text-decoration: none;
+    outline: none;
+  }
+
+  .shop-categories__item:focus-within {
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-accent);
+  }
+
+  .shop-categories__media,
+  .shop-categories__image,
+  .shop-categories__fallback {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+    max-width: none;
     object-fit: cover;
   }
 
-  .promo-tiles__fallback {
+  .shop-categories__image {
+    transform: scale(1.08);
+    filter: saturate(0.85);
+    transition:
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 480ms ease;
+  }
+
+  .shop-categories__item.is-active .shop-categories__image {
+    transform: scale(1);
+    filter: none;
+  }
+
+  .shop-categories__item.is-active .shop-categories__rail {
+    opacity: 0;
+  }
+
+  .shop-categories__item.is-active .shop-categories__panel {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .shop-categories__fallback {
     background:
       linear-gradient(145deg, #244f42, #6f9f8c);
   }
 
-  .promo-tiles__card::after {
+  .shop-categories__card::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 20, 17, 0.1), rgba(10, 20, 17, 0.7));
+    background:
+      linear-gradient(90deg, rgba(8, 16, 13, 0.35), rgba(8, 16, 13, 0.08) 42%),
+      linear-gradient(180deg, rgba(8, 16, 13, 0.35) 0%, rgba(8, 16, 13, 0.08) 32%, rgba(8, 16, 13, 0.78) 100%);
+    pointer-events: none;
+    z-index: 1;
   }
 
-  .promo-tiles__content {
+  .shop-categories__rail {
     position: absolute;
-    z-index: 1;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1rem 0.55rem 1.15rem;
+    opacity: 1;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .shop-categories__icon {
+    display: grid;
+    place-items: center;
+    width: 2.7rem;
+    height: 2.7rem;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+  }
+
+  .shop-categories__icon-image {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+
+  .shop-categories__icon-mark {
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 30% 30%, #c9e6d8, #2f6b57);
+  }
+
+  .shop-categories__rail-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    max-height: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .shop-categories__panel {
+    position: absolute;
+    z-index: 2;
     left: 0;
     right: 0;
+    top: 0;
     bottom: 0;
-    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding: 1.35rem 1.6rem 1.55rem;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition:
+      opacity 400ms 80ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .promo-tiles__content .eyebrow {
+  .shop-categories__kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: #cfe7da;
   }
 
-  .promo-tiles__content h3 {
-    font-size: 1.5rem;
-    margin-bottom: 0.35rem;
+  .shop-categories__title {
+    max-width: 18ch;
+    margin: 0;
+    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
   }
 
-  .promo-tiles__content p {
+  .shop-categories__text {
+    max-width: 36rem;
+    margin: auto 0 0.35rem;
     color: rgba(247, 250, 248, 0.86);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .promo-tiles__card:hover .promo-tiles__image {
-    transform: scale(1.04);
-  }
-
-  .promo-tiles__image {
-    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  .shop-categories__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0.45rem 1.05rem;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #19372e;
+    font-size: 0.88rem;
+    font-weight: 700;
   }
 
   @media (min-width: 900px) {
-    .promo-tiles__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .shop-categories__item {
+      flex: 0.001 1 5rem;
+      min-width: 5rem;
+      transition: flex-grow 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .shop-categories__item.is-active {
+      flex-grow: 4.6;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .shop-categories__list {
+      flex-direction: column;
+      height: auto;
+      gap: 0.65rem;
+    }
+
+    .shop-categories__item {
+      flex: 0 0 auto;
+      height: 4.85rem;
+      transition: height 620ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .shop-categories__item.is-active {
+      height: min(68vw, 22rem);
+    }
+
+    .shop-categories__rail {
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1rem;
+    }
+
+    .shop-categories__rail-title {
+      writing-mode: horizontal-tb;
+      transform: none;
+      max-height: none;
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
+    }
+
+    .shop-categories__title {
+      font-size: 1.45rem;
+    }
+
+    .shop-categories__panel {
+      padding: 1.15rem 1.15rem 1.2rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shop-categories__item,
+    .shop-categories__image,
+    .shop-categories__rail,
+    .shop-categories__panel {
+      transition: none !important;
     }
   }
 {% endstylesheet %}
 
+{% javascript %}
+  document.querySelectorAll('[data-shop-categories]').forEach((root) => {
+    if (root.dataset.ready === 'true') return;
+    root.dataset.ready = 'true';
+
+    const list = root.querySelector('.shop-categories__list');
+    const items = Array.from(root.querySelectorAll('.shop-categories__item'));
+    if (!list || !items.length) return;
+
+    const first = items[0];
+    const mobileQuery = window.matchMedia('(max-width: 899px)');
+    let hoverTimer = 0;
+
+    const setActive = (next) => {
+      const target = next || first;
+      items.forEach((item) => {
+        item.classList.toggle('is-active', item === target);
+      });
+    };
+
+    const activateSoon = (item) => {
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => setActive(item), 40);
+    };
+
+    items.forEach((item) => {
+      const card = item.querySelector('.shop-categories__card');
+      if (!card) return;
+
+      item.addEventListener('pointerenter', () => {
+        if (mobileQuery.matches) return;
+        activateSoon(item);
+      });
+
+      card.addEventListener('focus', () => setActive(item));
+
+      card.addEventListener('click', (event) => {
+        if (!mobileQuery.matches) return;
+        if (item.classList.contains('is-active')) return;
+        event.preventDefault();
+        setActive(item);
+      });
+    });
+
+    list.addEventListener('pointerleave', () => {
+      if (mobileQuery.matches) return;
+      window.clearTimeout(hoverTimer);
+      if (!list.contains(document.activeElement)) {
+        setActive(first);
+      }
+    });
+  });
+{% endjavascript %}
+
 {% schema %}
 {
-  "name": "Promo tiles",
+  "name": "Shop by categories",
   "settings": [
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Shop by ritual"
+      "default": "Shop by Categories"
     },
     {
       "type": "range",
@@ -133,71 +436,9 @@
       "default": 48
     }
   ],
-  "blocks": [
-    {
-      "type": "tile",
-      "name": "Tile",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image"
-        },
-        {
-          "type": "text",
-          "id": "eyebrow",
-          "label": "Eyebrow",
-          "default": "Collection"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Sleep & unwind"
-        },
-        {
-          "type": "textarea",
-          "id": "text",
-          "label": "Text",
-          "default": "Evening essentials for deeper rest."
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
-      "name": "Promo tiles",
-      "blocks": [
-        {
-          "type": "tile",
-          "settings": {
-            "eyebrow": "Morning",
-            "title": "Daily balance",
-            "text": "Light support for focused days."
-          }
-        },
-        {
-          "type": "tile",
-          "settings": {
-            "eyebrow": "Body",
-            "title": "Recovery care",
-            "text": "Soothe sore muscles and tension."
-          }
-        },
-        {
-          "type": "tile",
-          "settings": {
-            "eyebrow": "Mind",
-            "title": "Calm rituals",
-            "text": "Small habits that quiet the noise."
-          }
-        }
-      ]
+      "name": "Shop by categories"
     }
   ]
 }

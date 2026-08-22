@@ -41,17 +41,27 @@
       <span class="featured-collection__badge">{{ badge }}</span>
     </div>
   {% else %}
-    <a class="featured-collection__media" href="{{ product.url }}" aria-label="{{ title | escape }}">
-      {% if featured != blank %}
-        {{
-          featured
-          | image_url: width: 900
-          | image_tag:
-            loading: 'lazy',
-            widths: '320, 480, 640, 900',
-            sizes: '(min-width: 990px) 20vw, 50vw',
-            class: 'featured-collection__image'
-        }}
+        <a class="featured-collection__media" href="{{ product.url }}" aria-label="{{ title | escape }}" data-image-swap>
+      {% if product.images.size > 0 %}
+        {% for image in product.images limit: 3 %}
+          {% liquid
+            assign img_class = 'featured-collection__image'
+            if forloop.first
+              assign img_class = img_class | append: ' is-visible'
+            endif
+          %}
+          {{
+            image
+            | image_url: width: 900
+            | image_tag:
+              loading: 'lazy',
+              widths: '320, 480, 640, 900',
+              sizes: '(min-width: 990px) 20vw, 50vw',
+              class: img_class,
+              alt: title,
+              data-image-index: forloop.index0
+          }}
+        {% endfor %}
       {% else %}
         <div class="featured-collection__placeholder"></div>
       {% endif %}

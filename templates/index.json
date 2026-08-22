@@ -98,45 +98,8 @@
     },
     "promo": {
       "type": "promo-tiles",
-      "blocks": {
-        "tile_1": {
-          "type": "tile",
-          "settings": {
-            "image": "shopify://shop_images/bikes-take-the-turn.jpg",
-            "eyebrow": "Morning",
-            "title": "Daily balance",
-            "text": "Light support for focused days.",
-            "link": ""
-          }
-        },
-        "tile_2": {
-          "type": "tile",
-          "settings": {
-            "image": "shopify://shop_images/woman-strong-band-exercise.jpg",
-            "eyebrow": "Body",
-            "title": "Recovery care",
-            "text": "Soothe sore muscles and tension.",
-            "link": ""
-          }
-        },
-        "tile_3": {
-          "type": "tile",
-          "settings": {
-            "image": "shopify://shop_images/intense-exercise.jpg",
-            "eyebrow": "Mind",
-            "title": "Calm rituals",
-            "text": "Small habits that quiet the noise.",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "tile_1",
-        "tile_2",
-        "tile_3"
-      ],
       "settings": {
-        "heading": "Shop by ritual",
+        "heading": "Shop by Categories",
         "padding": 48
       }
     },
