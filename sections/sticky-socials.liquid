@@ -16,87 +16,202 @@
     --vah-muted: var(--color-muted, #5c6865);
 
     position: fixed;
-    left: 0.85rem;
+    left: 0.6rem;
     top: 50%;
     z-index: 40;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+
     margin: 0;
-    padding: 0.85rem 0.55rem;
+    padding: 0.6rem 0.4rem;
+
     transform: translateY(-50%);
+
     border: 1px solid var(--vah-border);
-    border-radius: 1.35rem;
-    background: color-mix(in srgb, var(--vah-bg) 92%, transparent);
-    box-shadow: var(--shadow-soft, 0 8px 24px rgba(12, 24, 20, 0.08));
+    border-radius: 1rem;
+
+    background: color-mix(
+      in srgb,
+      var(--vah-bg) 92%,
+      transparent
+    );
+
+    box-shadow: var(
+      --shadow-soft,
+      0 8px 24px rgba(12, 24, 20, 0.08)
+    );
+
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease,
+      padding 0.2s ease,
+      box-shadow 0.2s ease;
   }
+
+  /* =========================================
+     HIDE SOCIALS OVER HERO
+     ========================================= */
+
+  .vah-socials--sticky.vah-socials--hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* =========================================
+     LABEL
+     ========================================= */
 
   .vah-socials--sticky .vah-socials__label {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    font-size: 0.68rem;
+
+    font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.08em;
+    line-height: 1;
+
     text-transform: uppercase;
     color: var(--vah-muted);
   }
 
+  /* =========================================
+     SOCIAL LIST
+     ========================================= */
+
   .vah-socials--sticky .vah-socials__list {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    align-items: center;
+    gap: 0.4rem;
   }
 
+  /* =========================================
+     SOCIAL BUTTON
+     ========================================= */
+
   .vah-socials--sticky .vah-social {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid var(--vah-border);
+    border-radius: 9px;
+
     background: var(--vah-bg);
     color: var(--vah-primary);
-    border: 1px solid var(--vah-border);
+
+    transform: scale(1);
+    transform-origin: center;
+
     transition:
-      transform 0.15s ease,
-      color 0.15s ease,
-      background 0.15s ease;
+      transform 0.2s ease,
+      color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
   }
+
+  /* =========================================
+     ICON
+     ========================================= */
+
+  .vah-socials--sticky .vah-social svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+  }
+
+  /* =========================================
+     HOVER
+     ========================================= */
 
   .vah-socials--sticky .vah-social:hover {
-    transform: translateY(-2px);
+    transform: scale(1.25);
     color: #ffffff;
-    background: var(--vah-primary);
+
+    box-shadow:
+      0 5px 15px rgba(12, 24, 20, 0.18);
   }
 
+  /* =========================================
+     INSTAGRAM
+     ========================================= */
+
   .vah-socials--sticky .vah-social--instagram:hover {
-    background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4);
+    background: linear-gradient(
+      135deg,
+      #f58529,
+      #dd2a7b,
+      #8134af,
+      #515bd4
+    );
   }
+
+  /* =========================================
+     TWITTER / X
+     ========================================= */
 
   .vah-socials--sticky .vah-social--twitter:hover {
     background: #0c1814;
   }
 
+  /* =========================================
+     FACEBOOK
+     ========================================= */
+
   .vah-socials--sticky .vah-social--facebook:hover {
     background: #1877f2;
   }
+
+  /* =========================================
+     WHATSAPP
+     ========================================= */
 
   .vah-socials--sticky .vah-social--whatsapp:hover {
     background: #25d366;
   }
 
+  /* =========================================
+     BAR HOVER
+     ========================================= */
+
+  .vah-socials--sticky:hover {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+
+    box-shadow:
+      0 10px 30px rgba(12, 24, 20, 0.12);
+  }
+
+  /* =========================================
+     MOBILE
+     ========================================= */
+
   @media (max-width: 899px) {
     .vah-socials--sticky {
-      left: 0.45rem;
+      left: 0.35rem;
       top: 50%;
-      bottom: auto;
-      transform: translateY(-50%);
-      flex-direction: column;
-      padding: 0.5rem 0.35rem;
-      gap: 0.45rem;
-      border-radius: 1.1rem;
+
+      padding: 0.4rem 0.28rem;
+
+      gap: 0.35rem;
+
+      border-radius: 0.85rem;
     }
 
     .vah-socials--sticky .vah-socials__label {
@@ -104,34 +219,155 @@
     }
 
     .vah-socials--sticky .vah-socials__list {
-      flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.3rem;
     }
 
     .vah-socials--sticky .vah-social {
-      width: 2.15rem;
-      height: 2.15rem;
-      border-radius: 10px;
+      width: 27px;
+      height: 27px;
+      border-radius: 7px;
     }
 
     .vah-socials--sticky .vah-social svg {
-      width: 15px;
-      height: 15px;
+      width: 13px;
+      height: 13px;
+    }
+
+    .vah-socials--sticky .vah-social:hover {
+      transform: scale(1.3);
     }
   }
+
+  /* =========================================
+     SMALL PHONES
+     ========================================= */
 
   @media (max-width: 420px) {
     .vah-socials--sticky {
-      left: 0.3rem;
-      padding: 0.4rem 0.28rem;
+      left: 0.25rem;
+      padding: 0.3rem 0.22rem;
+      gap: 0.25rem;
+    }
+
+    .vah-socials--sticky .vah-socials__list {
+      gap: 0.25rem;
     }
 
     .vah-socials--sticky .vah-social {
-      width: 1.95rem;
-      height: 1.95rem;
+      width: 25px;
+      height: 25px;
+      border-radius: 7px;
+    }
+
+    .vah-socials--sticky .vah-social svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .vah-socials--sticky .vah-social:hover {
+      transform: scale(1.3);
+    }
+  }
+
+  /* =========================================
+     TOUCH DEVICES
+     ========================================= */
+
+  @media (hover: none) {
+    .vah-socials--sticky .vah-social:hover {
+      transform: none;
+      box-shadow: none;
     }
   }
 {% endstylesheet %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const socials = document.querySelector('.vah-socials--sticky');
+
+    if (!socials) return;
+
+    /*
+     * Find the hero/banner on the homepage.
+     * Works with common Shopify hero/banner section classes.
+     */
+    const hero =
+      document.querySelector(
+        '.shopify-section--hero-banner'
+      ) ||
+      document.querySelector(
+        '.shopify-section--image-banner'
+      ) ||
+      document.querySelector(
+        '.shopify-section--hero'
+      ) ||
+      document.querySelector(
+        '.image-banner'
+      ) ||
+      document.querySelector(
+        '.hero-banner'
+      ) ||
+      document.querySelector(
+        '[data-section-type="hero"]'
+      );
+
+    /*
+     * If a hero section exists, hide socials while
+     * the hero is visible.
+     */
+    if (hero) {
+      const updateSocialVisibility = () => {
+        const heroRect = hero.getBoundingClientRect();
+
+        const heroVisible =
+          heroRect.bottom > 0 &&
+          heroRect.top < window.innerHeight;
+
+        if (heroVisible) {
+          socials.classList.add('vah-socials--hidden');
+        } else {
+          socials.classList.remove('vah-socials--hidden');
+        }
+      };
+
+      updateSocialVisibility();
+
+      window.addEventListener(
+        'scroll',
+        updateSocialVisibility,
+        { passive: true }
+      );
+
+      window.addEventListener(
+        'resize',
+        updateSocialVisibility
+      );
+    } else {
+      /*
+       * Fallback:
+       * If the theme's hero class isn't detected,
+       * hide socials near the top of the page.
+       */
+      const heroHeight = window.innerHeight * 0.85;
+
+      const updateFallback = () => {
+        if (window.scrollY < heroHeight) {
+          socials.classList.add('vah-socials--hidden');
+        } else {
+          socials.classList.remove('vah-socials--hidden');
+        }
+      };
+
+      updateFallback();
+
+      window.addEventListener(
+        'scroll',
+        updateFallback,
+        { passive: true }
+      );
+    }
+  });
+</script>
 
 {% schema %}
 {
