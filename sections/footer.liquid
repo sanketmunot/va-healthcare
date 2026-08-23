@@ -28,7 +28,10 @@
   </div>
 
   <div class="site-footer__bottom page-width">
-    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+    <div class="site-footer__legal">
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+      <a href="/pages/data-sharing-opt-out">{{ 'footer.privacy_policy' | t }}</a>
+    </div>
     {% if section.settings.show_payment_icons %}
       <div class="site-footer__payment">
         {% for type in shop.enabled_payment_types %}
@@ -236,6 +239,27 @@
 
 .site-footer__bottom p {
   margin: 0;
+}
+
+.site-footer__legal {
+  display: flex;
+
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: .5rem 1.25rem;
+}
+
+.site-footer__legal a {
+  color: inherit;
+
+  text-decoration: none;
+
+  transition: color .2s ease;
+}
+
+.site-footer__legal a:hover {
+  color: #ffffff;
 }
 
 

@@ -39,6 +39,9 @@
   "collections": {
     "title": "Collections"
   },
+  "footer": {
+    "privacy_policy": "Privacy Policy"
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",
