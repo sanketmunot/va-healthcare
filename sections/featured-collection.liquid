@@ -20,6 +20,7 @@
     </div>
 
     <div class="featured-collection__tabs" role="tablist" aria-label="Product collections">
+      {%comment%}
       <button
         type="button"
         class="featured-collection__tab is-active"
@@ -52,6 +53,7 @@
           </button>
         {% endif %}
       {% endfor %}
+      {%endcomment%}
     </div>
   </div>
 
@@ -66,7 +68,7 @@
         {% if shown_count >= cards_limit %}
           {% break %}
         {% endif %}
-
+        {%comment%}
         {% for collection in collections %}
           {% if shown_count >= cards_limit %}
             {% break %}
@@ -95,6 +97,26 @@
             {% assign taken = taken | plus: 1 %}
           {% endfor %}
         {% endfor %}
+        {%endcomment%}
+        {% assign bestseller_collection = collections['bestseller'] %}
+
+        {% for product in bestseller_collection.products %}
+          {% if shown_count >= cards_limit %}
+            {% break %}
+          {% endif %}
+
+          {% unless product.available %}
+            {% continue %}
+          {% endunless %}
+
+          {% assign id_token = ',' | append: product.id | append: ',' %}
+
+          {% unless shown_ids contains id_token %}
+            {% render 'featured-collection-card', product: product %}
+            {% assign shown_count = shown_count | plus: 1 %}
+            {% assign shown_ids = shown_ids | append: product.id | append: ',' %}
+          {% endunless %}
+        {% endfor %}
       {% endfor %}
 
       {% if shown_count == 0 %}
@@ -103,7 +125,7 @@
         {% endfor %}
       {% endif %}
     </div>
-
+    {%comment%}
     {% for collection in collections %}
       {% if collection.handle == 'all' %}
         {% continue %}
@@ -129,6 +151,7 @@
         </div>
       {% endif %}
     {% endfor %}
+    {%endcomment%}
   </div>
 </section>
 

@@ -16,6 +16,9 @@
       {% if collection.handle == 'all' or collection.products_count == 0 %}
         {% continue %}
       {% endif %}
+      {% if collection.handle == 'bestseller' or collection.products_count == 0 %}
+        {% continue %}
+      {% endif %}
 
       {% liquid
         assign category_count = category_count | plus: 1
