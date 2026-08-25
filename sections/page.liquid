@@ -20,7 +20,7 @@
   <div
     class="vah-hero"
     {% if section.settings.hero_image %}
-      style="background-image: linear-gradient(180deg, rgba(12, 24, 20, 0.15) 0%, rgba(12, 24, 20, 0.62) 100%), url('{{ section.settings.hero_image | image_url: width: 1600 }}'); background-size: cover; background-position: center;"
+      style="background-image: var(--color-overlay-gradient), url('{{ section.settings.hero_image | image_url: width: 1600 }}'); background-size: cover; background-position: center;"
     {% endif %}
   >
     <div class="vah-hero__glow"></div>
@@ -62,11 +62,11 @@
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
           <path
             d="M12 2L3 7v6c0 5 4 8.5 9 9 5-.5 9-4 9-9V7l-9-5z"
-            fill="#1FB6A7"
+            fill="currentColor"
           />
           <path
             d="M9.5 12.2l1.8 1.8 3.7-4"
-            stroke="#fff"
+            stroke="currentColor"
             stroke-width="1.6"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -257,16 +257,16 @@
 
 <style>
   .vah-page {
-    --vah-primary: #0c1814;
-    --vah-primary-hover: #18352d;
+    --vah-primary: var(--color-foreground);
+    --vah-primary-hover: var(--color-accent-hover);
 
-    --vah-ink: #0c1814;
-    --vah-muted: #5c6865;
+    --vah-ink: var(--color-foreground);
+    --vah-muted: var(--color-muted);
 
-    --vah-bg: #f5f8f7;
-    --vah-card-bg: #ffffff;
+    --vah-bg: var(--color-background);
+    --vah-card-bg: var(--color-surface);
 
-    --vah-border: rgba(12, 24, 20, 0.12);
+    --vah-border: var(--color-border);
 
     max-width: 960px;
     margin: 0 auto;
@@ -298,17 +298,13 @@
 
     padding: 64px 24px 56px;
     background:
-      linear-gradient(
-        180deg,
-        rgba(12, 24, 20, 0.15) 0%,
-        rgba(12, 24, 20, 0.62) 100%
-      ),
-      #18352d;
+      var(--color-overlay-gradient),
+      var(--color-accent-hover);
 
     background-size: cover;
     background-position: center;
 
-    color: #ffffff;
+    color: var(--color-surface);
   }
 
 
@@ -322,7 +318,7 @@
     background:
       radial-gradient(
         60% 60% at 50% 0%,
-        rgba(255, 255, 255, 0.18),
+        var(--color-glass-glow),
         transparent 70%
       );
 
@@ -349,7 +345,7 @@
 
     margin: 0 0 10px;
 
-    color: #ffffff;
+    color: var(--color-surface);
   }
 
 
@@ -362,7 +358,7 @@
 
     margin: 0 0 12px;
 
-    color: #ffffff;
+    color: var(--color-surface);
   }
 
 
@@ -377,7 +373,7 @@
 
     line-height: 1.5;
 
-    color: #ffffff;
+    color: var(--color-surface);
   }
 
 
@@ -427,7 +423,7 @@
 
     box-shadow:
       0 20px 45px -25px
-      rgba(12, 24, 20, 0.35);
+      var(--color-shadow-strong);
   }
 
 
@@ -456,10 +452,10 @@
     justify-content: center;
 
     background:
-      rgba(12, 24, 20, 0.06);
+      var(--color-success-bg);
 
     border: 1px solid
-      rgba(12, 24, 20, 0.08);
+      var(--color-input-bg-muted);
   }
 
 
@@ -532,13 +528,13 @@
     transform: translateY(-2px);
 
     border-color:
-      rgba(12, 24, 20, 0.28);
+      var(--color-shadow-medium);
 
-    background: #ffffff;
+    background: var(--color-surface);
 
     box-shadow:
       0 12px 24px -16px
-      rgba(12, 24, 20, 0.45);
+      var(--color-border-strong);
   }
 
 
@@ -555,7 +551,7 @@
     align-items: center;
     justify-content: center;
 
-    background: #ffffff;
+    background: var(--color-surface);
 
     color: var(--vah-primary);
 
@@ -669,43 +665,13 @@
 
   .vah-social:hover {
     transform: translateY(-2px);
-
-    color: #ffffff;
-
-    background: var(--vah-primary);
+    color: var(--color-accent-contrast);
+    background: var(--color-accent);
   }
-
-
-  .vah-social--instagram:hover {
-    background:
-      linear-gradient(
-        135deg,
-        #f58529,
-        #dd2a7b,
-        #8134af,
-        #515bd4
-      );
-  }
-
-
-  .vah-social--twitter:hover {
-    background: #0c1814;
-  }
-
-
-  .vah-social--facebook:hover {
-    background: #1877f2;
-  }
-
-
-  .vah-social--whatsapp:hover {
-    background: #25d366;
-  }
-
 
   /* =========================================
      CTA BUTTON
-  ========================================= */
+     ========================================= */
 
   .vah-cta {
     margin-top: 28px;
@@ -721,9 +687,9 @@
 
     border-radius: 999px;
 
-    background: #0c1814;
+    background: var(--color-foreground);
 
-    color: #ffffff;
+    color: var(--color-surface);
 
     font-weight: 700;
 
@@ -749,15 +715,15 @@
 
   .vah-cta:hover,
   .vah-cta:focus-visible {
-    background: #18352d;
+    background: var(--color-accent-hover);
 
-    color: #ffffff;
+    color: var(--color-surface);
 
     transform: translateY(-1px);
 
     box-shadow:
       0 10px 25px
-      rgba(12, 24, 20, 0.25);
+      var(--color-cta-shadow);
   }
 
 
@@ -768,7 +734,7 @@
 
   .vah-cta:focus-visible {
     outline: 3px solid
-      rgba(12, 24, 20, 0.18);
+      var(--color-focus-ring);
 
     outline-offset: 3px;
   }
@@ -778,8 +744,7 @@
      FORM OVERLAY
 
      EXACT COLOR COMBINATION REQUESTED:
-     rgba(12, 24, 20, 0.15) 0%
-     rgba(12, 24, 20, 0.62) 100%
+     var(--color-overlay-gradient)
   ========================================= */
 
   .vah-form-overlay {
@@ -803,11 +768,7 @@
     box-sizing: border-box;
 
     background:
-      linear-gradient(
-        180deg,
-        rgba(12, 24, 20, 0.15) 0%,
-        rgba(12, 24, 20, 0.62) 100%
-      );
+      var(--color-overlay-gradient);
 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
@@ -879,11 +840,11 @@
   .vah-form-modal .vah-form-card {
     position: relative;
 
-    background: #ffffff;
+    background: var(--color-surface);
 
     border:
       1px solid
-      rgba(12, 24, 20, 0.12);
+      var(--color-border);
 
     border-radius: 22px;
 
@@ -891,7 +852,7 @@
 
     box-shadow:
       0 30px 80px
-      rgba(12, 24, 20, 0.35);
+      var(--color-shadow-strong);
   }
 
 
@@ -917,9 +878,9 @@
     border-radius: 50%;
 
     background:
-      rgba(12, 24, 20, 0.08);
+      var(--color-input-bg-muted);
 
-    color: #0c1814;
+    color: var(--color-foreground);
 
     font-size: 26px;
 
@@ -944,9 +905,9 @@
 
   .vah-form-close:hover,
   .vah-form-close:focus-visible {
-    background: #0c1814;
+    background: var(--color-foreground);
 
-    color: #ffffff;
+    color: var(--color-surface);
 
     transform: rotate(90deg);
   }
@@ -1009,9 +970,9 @@
 
     border:
       1px solid
-      rgba(12, 24, 20, 0.12);
+      var(--color-border);
 
-    background: #f5f8f7;
+    background: var(--color-background);
 
     border-radius: 12px;
 
@@ -1035,7 +996,7 @@
   .vah-form__field input::placeholder,
   .vah-form__field textarea::placeholder {
     color:
-      rgba(12, 24, 20, 0.42);
+      var(--color-placeholder);
   }
 
 
@@ -1044,13 +1005,13 @@
     outline: none;
 
     border-color:
-      rgba(12, 24, 20, 0.45);
+      var(--color-border-strong);
 
-    background: #ffffff;
+    background: var(--color-surface);
 
     box-shadow:
       0 0 0 3px
-      rgba(12, 24, 20, 0.08);
+      var(--color-input-bg-muted);
   }
 
 
@@ -1088,13 +1049,13 @@
     border-radius: 12px;
 
     background:
-      rgba(12, 24, 20, 0.06);
+      var(--color-success-bg);
 
-    color: #0c1814;
+    color: var(--color-foreground);
 
     border:
       1px solid
-      rgba(12, 24, 20, 0.14);
+      var(--color-success-border);
 
     font-size: 14.5px;
 
@@ -1128,13 +1089,13 @@
     border-radius: 12px;
 
     background:
-      rgba(12, 24, 20, 0.06);
+      var(--color-success-bg);
 
-    color: #0c1814;
+    color: var(--color-foreground);
 
     border:
       1px solid
-      rgba(12, 24, 20, 0.16);
+      var(--color-error-border);
 
     font-size: 14px;
 

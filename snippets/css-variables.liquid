@@ -245,6 +245,237 @@
       {{ settings.surface_color }} 15%,
       transparent
     );
+    --color-accent-light: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 55%,
+      {{ settings.surface_color }}
+    );
+    --color-accent-soft: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 40%,
+      {{ settings.surface_color }}
+    );
+    --color-accent-deep: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 75%,
+      {{ settings.accent_color }}
+    );
+    --color-accent-hover: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 85%,
+      {{ settings.accent_color }}
+    );
+    --color-overlay-light: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 15%,
+      transparent
+    );
+    --color-overlay-medium: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 35%,
+      transparent
+    );
+    --color-overlay-dark: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 62%,
+      transparent
+    );
+    --color-overlay-deep: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 78%,
+      transparent
+    );
+    --color-overlay-gradient: linear-gradient(
+      180deg,
+      color-mix(in srgb, {{ settings.foreground_color }} 15%, transparent) 0%,
+      color-mix(in srgb, {{ settings.foreground_color }} 62%, transparent) 100%
+    );
+    --color-shadow-medium: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 20%,
+      transparent
+    );
+    --color-shadow-strong: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 35%,
+      transparent
+    );
+    --color-shadow-heavy: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 45%,
+      transparent
+    );
+    --color-border-strong: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 45%,
+      transparent
+    );
+    --color-border-input: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 14%,
+      transparent
+    );
+    --color-border-input-focus: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 16%,
+      transparent
+    );
+    --color-placeholder: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 42%,
+      transparent
+    );
+    --color-input-bg: {{ settings.background_color }};
+    --color-input-bg-subtle: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 6%,
+      {{ settings.background_color }}
+    );
+    --color-input-bg-muted: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 8%,
+      {{ settings.background_color }}
+    );
+    --color-hero-bg-fallback: linear-gradient(
+      135deg,
+      color-mix(in srgb, {{ settings.foreground_color }} 70%, {{ settings.accent_color }}) 0%,
+      {{ settings.accent_color }} 42%,
+      color-mix(in srgb, {{ settings.accent_color }} 55%, {{ settings.surface_color }}) 100%
+    );
+    --color-hero-accent-text: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 80%,
+      {{ settings.accent_color }}
+    );
+    --color-hero-btn-outline: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 45%,
+      transparent
+    );
+    --color-about-fallback: linear-gradient(
+      160deg,
+      {{ settings.foreground_color }} 0%,
+      {{ settings.accent_color }} 55%,
+      color-mix(in srgb, {{ settings.accent_color }} 55%, {{ settings.surface_color }}) 100%
+    );
+    --color-about-overlay: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 92%,
+      {{ settings.accent_color }}
+    );
+    --color-promo-bg: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 92%,
+      {{ settings.accent_color }}
+    );
+    --color-promo-fallback: linear-gradient(
+      145deg,
+      color-mix(in srgb, {{ settings.foreground_color }} 50%, {{ settings.accent_color }}),
+      color-mix(in srgb, {{ settings.accent_color }} 55%, {{ settings.surface_color }})
+    );
+    --color-promo-overlay: linear-gradient(
+      90deg,
+      color-mix(in srgb, {{ settings.foreground_color }} 35%, transparent),
+      color-mix(in srgb, {{ settings.foreground_color }} 8%, transparent) 42%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, {{ settings.foreground_color }} 35%, transparent) 0%,
+      color-mix(in srgb, {{ settings.foreground_color }} 8%, transparent) 32%,
+      color-mix(in srgb, {{ settings.foreground_color }} 78%, transparent) 100%
+    );
+    --color-promo-kicker: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 75%,
+      {{ settings.accent_color }}
+    );
+    --color-promo-icon-mark: radial-gradient(
+      circle at 30% 30%,
+      color-mix(in srgb, {{ settings.surface_color }} 80%, {{ settings.accent_color }}),
+      {{ settings.accent_color }}
+    );
+    --color-promo-cta-text: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 90%,
+      {{ settings.accent_color }}
+    );
+    --color-image-tint: linear-gradient(
+      160deg,
+      color-mix(in srgb, {{ settings.accent_color }} 28%, transparent),
+      color-mix(in srgb, {{ settings.accent_color }} 40%, {{ settings.surface_color }})
+    );
+    --color-image-tint-soft: linear-gradient(
+      145deg,
+      color-mix(in srgb, {{ settings.accent_color }} 18%, transparent),
+      transparent 55%
+    );
+    --color-star: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 30%,
+      {{ settings.foreground_color }}
+    );
+    --color-glass-border: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 35%,
+      transparent
+    );
+    --color-glass-bg: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 12%,
+      transparent
+    );
+    --color-glass-glow: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 18%,
+      transparent
+    );
+    --color-focus-ring: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 18%,
+      transparent
+    );
+    --color-focus-outline: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 8%,
+      transparent
+    );
+    --color-cta-shadow: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 25%,
+      transparent
+    );
+    --color-success-bg: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 6%,
+      transparent
+    );
+    --color-success-border: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 14%,
+      transparent
+    );
+    --color-error-bg: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 6%,
+      transparent
+    );
+    --color-error-border: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 16%,
+      transparent
+    );
+    --color-accent-tint-12: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 12%,
+      transparent
+    );
+    --color-accent-tint-35: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 35%,
+      transparent
+    );
+    --color-social-hover: {{ settings.accent_color }};
+    --color-social-hover-contrast: {{ settings.accent_contrast }};
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
     --radius: {{ settings.input_corner_radius }}px;
     --shadow-soft: 0 12px 40px color-mix(

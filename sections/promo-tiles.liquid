@@ -30,10 +30,13 @@
       %}
 
       <li class="shop-categories__item{% if category_count == 1 %} is-active{% endif %}">
-        <a
+        <div
           class="shop-categories__card"
-          href="{{ collection.url }}"
-          aria-label="Shop {{ collection.title | escape }}"
+          role="button"
+          tabindex="0"
+          data-collection-url="{{ collection.url }}"
+          aria-expanded="{% if category_count == 1 %}true{% else %}false{% endif %}"
+          aria-label="Show {{ collection.title | escape }} collection"
         >
           <div class="shop-categories__media" aria-hidden="true">
             {% if featured != blank %}
@@ -75,14 +78,18 @@
             <p class="shop-categories__kicker">Collection</p>
             <h3 class="shop-categories__title">{{ collection.title }}</h3>
             <p class="shop-categories__text">{{ description | truncate: 140 }}</p>
-            <span class="shop-categories__cta">
+            <a
+              class="shop-categories__cta"
+              href="{{ collection.url }}"
+              aria-label="Shop {{ collection.title | escape }} collection"
+            >
               Shop Collection
               <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M5 12h14M13 6l6 6-6 6"/>
               </svg>
-            </span>
+            </a>
           </div>
-        </a>
+        </div>
       </li>
     {% endfor %}
   </ul>
@@ -119,16 +126,20 @@
     position: relative;
     overflow: hidden;
     border-radius: 1.35rem;
-    background: #13241d;
+    background: var(--color-promo-bg);
     isolation: isolate;
+    min-height: 4.85rem;
   }
 
   .shop-categories__card {
     display: block;
+    position: relative;
+    min-height: inherit;
     height: 100%;
-    color: #f7faf8;
+    color: var(--color-on-dark);
     text-decoration: none;
     outline: none;
+    cursor: default;
   }
 
   .shop-categories__item:focus-within {
@@ -171,7 +182,7 @@
 
   .shop-categories__fallback {
     background:
-      linear-gradient(145deg, #244f42, #6f9f8c);
+      var(--color-promo-fallback);
   }
 
   .shop-categories__card::after {
@@ -179,8 +190,7 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(8, 16, 13, 0.35), rgba(8, 16, 13, 0.08) 42%),
-      linear-gradient(180deg, rgba(8, 16, 13, 0.35) 0%, rgba(8, 16, 13, 0.08) 32%, rgba(8, 16, 13, 0.78) 100%);
+      var(--color-promo-overlay);
     pointer-events: none;
     z-index: 1;
   }
@@ -207,9 +217,9 @@
     height: 2.7rem;
     overflow: hidden;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-glass-border);
+    background: var(--color-glass-bg);
+    box-shadow: 0 8px 20px var(--color-shadow-medium);
     flex-shrink: 0;
   }
 
@@ -224,7 +234,7 @@
     width: 100%;
     height: 100%;
     background:
-      radial-gradient(circle at 30% 30%, #c9e6d8, #2f6b57);
+      radial-gradient(circle at 30% 30%, var(--color-hero-accent-text), var(--color-accent));
   }
 
   .shop-categories__rail-title {
@@ -266,7 +276,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #cfe7da;
+    color: var(--color-promo-kicker);
   }
 
   .shop-categories__title {
@@ -280,7 +290,7 @@
   .shop-categories__text {
     max-width: 36rem;
     margin: auto 0 0.35rem;
-    color: rgba(247, 250, 248, 0.86);
+    color: var(--color-on-dark-strong);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -294,10 +304,22 @@
     min-height: 2.5rem;
     padding: 0.45rem 1.05rem;
     border-radius: 999px;
-    background: #ffffff;
-    color: #19372e;
+    background: var(--color-surface);
+    color: var(--color-promo-cta-text);
     font-size: 0.88rem;
     font-weight: 700;
+    text-decoration: none;
+    position: relative;
+    z-index: 3;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .shop-categories__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px var(--color-shadow-medium);
   }
 
   @media (min-width: 900px) {
@@ -310,6 +332,10 @@
     .shop-categories__item.is-active {
       flex-grow: 4.6;
     }
+
+    .shop-categories__card {
+      cursor: pointer;
+    }
   }
 
   @media (max-width: 899px) {
@@ -321,12 +347,27 @@
 
     .shop-categories__item {
       flex: 0 0 auto;
+      width: 100%;
+      min-height: 4.85rem;
       height: 4.85rem;
-      transition: height 620ms cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 4.85rem;
+      overflow: hidden;
+      transition:
+        min-height 620ms cubic-bezier(0.16, 1, 0.3, 1),
+        height 620ms cubic-bezier(0.16, 1, 0.3, 1),
+        max-height 620ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .shop-categories__item.is-active {
-      height: min(68vw, 22rem);
+      min-height: 18rem;
+      height: 18rem;
+      max-height: 18rem;
+    }
+
+    .shop-categories__card {
+      min-height: inherit;
+      height: 100%;
+      cursor: pointer;
     }
 
     .shop-categories__rail {
@@ -374,13 +415,18 @@
     if (!list || !items.length) return;
 
     const first = items[0];
-    const mobileQuery = window.matchMedia('(max-width: 899px)');
+    const hoverMedia = window.matchMedia('(hover: hover) and (pointer: fine)');
     let hoverTimer = 0;
 
     const setActive = (next) => {
       const target = next || first;
       items.forEach((item) => {
-        item.classList.toggle('is-active', item === target);
+        const active = item === target;
+        item.classList.toggle('is-active', active);
+        item.querySelector('.shop-categories__card')?.setAttribute(
+          'aria-expanded',
+          active ? 'true' : 'false'
+        );
       });
     };
 
@@ -389,27 +435,48 @@
       hoverTimer = window.setTimeout(() => setActive(item), 40);
     };
 
+    const navigateToCollection = (card) => {
+      const url = card.dataset.collectionUrl;
+      if (url) window.location.href = url;
+    };
+
     items.forEach((item) => {
       const card = item.querySelector('.shop-categories__card');
       if (!card) return;
 
       item.addEventListener('pointerenter', () => {
-        if (mobileQuery.matches) return;
+        if (!hoverMedia.matches) return;
         activateSoon(item);
       });
 
-      card.addEventListener('focus', () => setActive(item));
+      card.addEventListener('keydown', (event) => {
+        if (event.target.closest('.shop-categories__cta')) return;
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+
+        if (hoverMedia.matches) {
+          navigateToCollection(card);
+          return;
+        }
+
+        setActive(item);
+      });
 
       card.addEventListener('click', (event) => {
-        if (!mobileQuery.matches) return;
-        if (item.classList.contains('is-active')) return;
+        if (event.target.closest('.shop-categories__cta')) return;
+
+        if (hoverMedia.matches) {
+          navigateToCollection(card);
+          return;
+        }
+
         event.preventDefault();
         setActive(item);
       });
     });
 
     list.addEventListener('pointerleave', () => {
-      if (mobileQuery.matches) return;
+      if (!hoverMedia.matches) return;
       window.clearTimeout(hoverTimer);
       if (!list.contains(document.activeElement)) {
         setActive(first);

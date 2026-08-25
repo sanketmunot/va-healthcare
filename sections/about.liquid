@@ -93,7 +93,7 @@
     min-height: var(--about-min-height, 50vh);
     display: grid;
     align-items: end;
-    color: #f7faf8;
+    color: var(--color-on-dark);
     overflow: hidden;
   }
 
@@ -111,13 +111,13 @@
 
   .about__fallback {
     background:
-      linear-gradient(160deg, #1c2b26 0%, #2f6b57 55%, #8fb9a8 100%);
+      linear-gradient(160deg, var(--color-foreground) 0%, var(--color-accent) 55%, color-mix(in srgb, var(--color-accent) 55%, var(--color-surface)) 100%);
   }
 
   .about__overlay {
     position: absolute;
     inset: 0;
-    background: #0f1d18;
+    background: var(--color-about-overlay);
     opacity: var(--about-overlay, 0.55);
   }
 
@@ -129,7 +129,7 @@
   }
 
   .about__eyebrow {
-    color: rgba(247, 250, 248, 0.82);
+    color: var(--color-on-dark-muted);
   }
 
   .about__heading {
@@ -145,13 +145,13 @@
   }
 
   .about__cta {
-    background: #ffffff;
-    color: #1c2b26;
+    background: var(--color-surface);
+    color: var(--color-foreground);
   }
 
   .about__cta:hover {
-    background: #f4f7f5;
-    color: #1c2b26;
+    background: var(--color-background);
+    color: var(--color-foreground);
   }
 
   .about__page-content {

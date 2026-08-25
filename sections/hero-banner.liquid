@@ -81,7 +81,7 @@
     min-height: var(--hero-min-height);
     display: grid;
     align-items: end;
-    color: #f7faf8;
+    color: var(--color-on-dark);
     overflow: hidden;
   }
 
@@ -137,9 +137,9 @@
     background:
       linear-gradient(
         135deg,
-        #1f4d3f 0%,
-        #2f6b57 42%,
-        #8fb9a8 100%
+        color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent)) 0%,
+        var(--color-accent) 42%,
+        color-mix(in srgb, var(--color-accent) 55%, var(--color-surface)) 100%
       );
   }
 
@@ -151,11 +151,7 @@
     inset: 0;
 
     background:
-      linear-gradient(
-        180deg,
-          rgba(12, 24, 20, 0.15) 0%,
-          rgba(12, 24, 20, 0.62) 100%
-      );
+      var(--color-overlay-gradient);
 
     z-index: 2;
     pointer-events: none;
@@ -192,7 +188,7 @@
 
     font-size: 1.1rem;
 
-    color: rgba(247, 250, 248, 0.88);
+    color: var(--color-on-dark-muted);
 
     margin-bottom: 1.6rem;
   }
@@ -207,20 +203,20 @@
   }
 
   .hero__button-secondary {
-    border-color: rgba(247, 250, 248, 0.45);
-    color: #f7faf8;
+    border-color: var(--color-hero-btn-outline);
+    color: var(--color-on-dark);
   }
 
   .hero__button-secondary:hover {
-    border-color: #f7faf8;
-    color: #f7faf8;
+    border-color: var(--color-on-dark);
+    color: var(--color-on-dark);
   }
 
   /*
    * Eyebrow
    */
   .hero .eyebrow {
-    color: #c9e6d8;
+    color: var(--color-hero-accent-text);
   }
 
 {% endstylesheet %}

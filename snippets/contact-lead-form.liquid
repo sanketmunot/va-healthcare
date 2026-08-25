@@ -36,8 +36,8 @@
       <div class="vah-card__header">
         <div class="vah-card__badge vah-card__badge--form">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
-            <path d="M4 4h16v16H4V4z" stroke="#1FB6A7" stroke-width="1.6"/>
-            <path d="M7.5 9h9M7.5 12.5h9M7.5 16h5.5" stroke="#1FB6A7" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M4 4h16v16H4V4z" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M7.5 9h9M7.5 12.5h9M7.5 16h5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
         </div>
         <div>
@@ -124,8 +124,8 @@
 
 {% style %}
   .vah-form-overlay {
-    --vah-ink: #0c1814;
-    --vah-muted: #5c6865;
+    --vah-ink: var(--color-foreground);
+    --vah-muted: var(--color-muted);
     position: fixed;
     inset: 0;
     z-index: 2147483647;
@@ -136,7 +136,7 @@
     height: 100%;
     padding: 20px;
     box-sizing: border-box;
-    background: linear-gradient(180deg, rgba(12, 24, 20, 0.15) 0%, rgba(12, 24, 20, 0.62) 100%);
+    background: var(--color-overlay-gradient);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     visibility: hidden;
@@ -173,10 +173,10 @@
     position: relative;
     margin: 0;
     padding: 32px;
-    background: #ffffff;
-    border: 1px solid rgba(12, 24, 20, 0.12);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 22px;
-    box-shadow: 0 30px 80px rgba(12, 24, 20, 0.35);
+    box-shadow: 0 30px 80px var(--color-shadow-strong);
   }
 
   .vah-form-overlay .vah-card__header {
@@ -194,8 +194,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(12, 24, 20, 0.06);
-    border: 1px solid rgba(12, 24, 20, 0.08);
+    color: var(--color-accent);
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-input-bg-muted);
   }
 
   .vah-form-overlay .vah-card__title {
@@ -221,8 +222,8 @@
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: rgba(12, 24, 20, 0.08);
-    color: #0c1814;
+    background: var(--color-input-bg-muted);
+    color: var(--color-foreground);
     font-size: 26px;
     line-height: 1;
     cursor: pointer;
@@ -235,8 +236,8 @@
 
   .vah-form-close:hover,
   .vah-form-close:focus-visible {
-    background: #0c1814;
-    color: #ffffff;
+    background: var(--color-foreground);
+    color: var(--color-surface);
     transform: rotate(90deg);
   }
 
@@ -270,8 +271,8 @@
   .vah-form__field textarea {
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid rgba(12, 24, 20, 0.12);
-    background: #f5f8f7;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
     border-radius: 12px;
     padding: 12px 14px;
     font-size: 15px;
@@ -283,9 +284,9 @@
   .vah-form__field input:focus,
   .vah-form__field textarea:focus {
     outline: none;
-    border-color: rgba(12, 24, 20, 0.45);
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(12, 24, 20, 0.08);
+    border-color: var(--color-border-strong);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 3px var(--color-input-bg-muted);
   }
 
   .vah-form-overlay .vah-cta {
@@ -297,8 +298,8 @@
     padding: 13px 24px;
     border: none;
     border-radius: 999px;
-    background: #0c1814;
-    color: #ffffff;
+    background: var(--color-foreground);
+    color: var(--color-surface);
     font-weight: 700;
     font-size: 15px;
     font-family: inherit;
@@ -306,7 +307,7 @@
   }
 
   .vah-form-overlay .vah-cta:hover {
-    background: #18352d;
+    background: var(--color-accent-hover);
   }
 
   .vah-form__note {
@@ -323,9 +324,9 @@
     gap: 10px;
     padding: 18px 16px;
     border-radius: 12px;
-    background: rgba(12, 24, 20, 0.06);
-    color: #0c1814;
-    border: 1px solid rgba(12, 24, 20, 0.14);
+    background: var(--color-success-bg);
+    color: var(--color-foreground);
+    border: 1px solid var(--color-success-border);
     font-size: 14.5px;
     font-weight: 600;
   }

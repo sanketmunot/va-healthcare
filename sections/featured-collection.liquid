@@ -265,7 +265,7 @@
 
   .featured-collection__placeholder {
     background:
-      linear-gradient(145deg, rgba(47, 107, 87, 0.18), transparent 55%),
+      var(--color-image-tint-soft),
       var(--color-surface);
   }
 
@@ -324,7 +324,7 @@
   }
 
   .featured-collection__star {
-    color: #e0b422;
+    color: var(--color-star);
   }
 
   .featured-collection__rating span {
@@ -488,33 +488,76 @@
         panel.hidden = !active;
       });
     };
-        root.querySelectorAll('[data-image-swap]').forEach((media) => {
+    root.querySelectorAll('[data-image-swap]').forEach((media) => {
       const images = Array.from(media.querySelectorAll('.featured-collection__image'));
       if (images.length < 2) return;
 
-      let timers = [];
+      const hoverMedia = window.matchMedia('(hover: hover) and (pointer: fine)');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let hoverTimers = [];
+      let cycleTimer = null;
+      let currentIndex = 0;
+      let observer = null;
 
       const setActive = (index) => {
+        currentIndex = index;
         images.forEach((img, i) => img.classList.toggle('is-visible', i === index));
       };
 
-      const clearTimers = () => {
-        timers.forEach((t) => clearTimeout(t));
-        timers = [];
+      const clearHoverTimers = () => {
+        hoverTimers.forEach((t) => clearTimeout(t));
+        hoverTimers = [];
       };
 
-        media.addEventListener('mouseenter', () => {
-        clearTimers();
-        setActive(1);
-        if (images.length > 2) {
-          timers.push(setTimeout(() => setActive(2), 1000));
+      const stopCycle = () => {
+        if (cycleTimer) {
+          clearInterval(cycleTimer);
+          cycleTimer = null;
         }
-      });
+      };
 
-      media.addEventListener('mouseleave', () => {
-        clearTimers();
-        setActive(0);
-      });
+      const startCycle = () => {
+        if (reduceMotion || images.length < 2) return;
+
+        stopCycle();
+        cycleTimer = window.setInterval(() => {
+          setActive((currentIndex + 1) % images.length);
+        }, 2800);
+      };
+
+      if (hoverMedia.matches) {
+        media.addEventListener('mouseenter', () => {
+          clearHoverTimers();
+          stopCycle();
+          setActive(1);
+          if (images.length > 2) {
+            hoverTimers.push(window.setTimeout(() => setActive(2), 1000));
+          }
+        });
+
+        media.addEventListener('mouseleave', () => {
+          clearHoverTimers();
+          setActive(0);
+        });
+      } else {
+        observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                setActive(0);
+                startCycle();
+              } else {
+                stopCycle();
+                setActive(0);
+              }
+            });
+          },
+          { threshold: 0.45 }
+        );
+
+        observer.observe(media);
+      }
     });
 
     root.querySelector('.featured-collection__tabs')?.addEventListener('click', (event) => {

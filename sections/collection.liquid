@@ -91,9 +91,17 @@
             {% endfor %}
           {% endfor %}
 
+          {% assign has_active_category = false %}
+          {% unless collection.handle == 'all' %}
+            {% assign has_active_category = true %}
+          {% endunless %}
+
           <div class="collection-page__dropdown" data-dropdown>
             <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
               Category
+              {% if has_active_category %}
+                <span class="collection-page__dropdown-dot"></span>
+              {% endif %}
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="m6 9 6 6 6-6"/>
               </svg>
@@ -124,9 +132,21 @@
           {% endif %}
         {% endfor %}
 
-        {% if has_active_filters %}
+        {% assign show_clear_all = false %}
+        {% if has_active_filters or has_active_category %}
+          {% assign show_clear_all = true %}
+        {% endif %}
+
+        {% if show_clear_all %}
+          {% assign all_products_url = collections.all.url | default: routes.all_products_collection_url %}
+          {% if has_active_category %}
+            {% assign clear_all_url = all_products_url %}
+          {% else %}
+            {% assign clear_all_url = collection.url %}
+          {% endif %}
+
           <a
-            href="{{ collection.url }}"
+            href="{{ clear_all_url }}"
             class="collection-page__clear-all"
             data-clear-filters
           >
@@ -137,7 +157,7 @@
         {% assign current_sort = request.query_parameters.sort_by | default: collection.sort_by %}
 
         <div
-          class="collection-page__dropdown collection-page__dropdown--sort{% unless has_active_filters %} collection-page__dropdown--end-push{% endunless %}"
+          class="collection-page__dropdown collection-page__dropdown--sort{% unless show_clear_all %} collection-page__dropdown--end-push{% endunless %}"
           data-dropdown
         >
           <button type="button" class="collection-page__dropdown-toggle" data-dropdown-toggle>
@@ -209,6 +229,20 @@
       </div>
 
       <div class="collection-page__active-chips" data-active-chips>
+        {% if has_active_category %}
+          <a
+            href="{{ all_products_url | default: routes.all_products_collection_url }}"
+            class="collection-page__chip"
+            data-chip
+          >
+            {{ collection.title }}
+
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="m6 6 12 12M18 6 6 18"/>
+            </svg>
+          </a>
+        {% endif %}
+
         {% for filter in collection.filters %}
           {% for value in filter.active_values %}
             <a

@@ -85,11 +85,11 @@
 {% stylesheet %}
 
 .faq {
-  --faq-accent: var(--color-accent, #2f6b57);
-  --faq-surface: var(--color-surface, #f4f6f4);
-  --faq-border: var(--color-border, #e1e6e0);
-  --faq-muted: var(--color-muted, #6b7a72);
-  --faq-ink: var(--color-text, #1c2e28);
+  --faq-accent: var(--color-accent, var(--color-accent));
+  --faq-surface: var(--color-surface);
+  --faq-border: var(--color-border);
+  --faq-muted: var(--color-muted);
+  --faq-ink: var(--color-text, var(--color-foreground));
 }
 
 .faq__layout {
@@ -160,7 +160,7 @@
   gap: 12px;
   background: var(--faq-accent);
   border-color: var(--faq-accent);
-  color: #fff;
+  color: var(--color-surface);
   transform: translateY(-1px);
 }
 
@@ -175,7 +175,7 @@
 
 .faq__item {
   position: relative;
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid var(--faq-border);
   border-radius: var(--radius, 10px);
   padding-inline: 20px;
