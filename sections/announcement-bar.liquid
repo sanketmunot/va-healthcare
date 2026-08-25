@@ -1,7 +1,7 @@
 {% if section.settings.text != blank %}
   <div
     class="announcement-bar full-width"
-    style="--announcement-bg: {{ settings.foreground_color }}; --announcement-fg: {{ settings.background_color }};"
+    style="--announcement-bg: var(--color-accent); --announcement-fg: var(--color-accent-contrast);"
   >
     <div class="announcement-bar__inner page-width">
       {% if section.settings.link != blank %}
