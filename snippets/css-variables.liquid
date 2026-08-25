@@ -62,6 +62,189 @@
       {{ settings.accent_color }} 10%,
       transparent
     );
+    --color-newsletter-bg-start: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 88%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-bg-mid: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 45%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-bg-end: {{ settings.accent_color }};
+    --color-newsletter-text: {{ settings.surface_color }};
+    --color-newsletter-text-muted: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 78%,
+      transparent
+    );
+    --color-newsletter-text-soft: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 82%,
+      transparent
+    );
+    --color-newsletter-text-faint: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 62%,
+      transparent
+    );
+    --color-newsletter-text-subtle: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 52%,
+      transparent
+    );
+    --color-newsletter-text-strong: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 86%,
+      transparent
+    );
+    --color-newsletter-eyebrow: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 75%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-accent-glow: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 22%,
+      transparent
+    );
+    --color-newsletter-glow-one: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 12%,
+      transparent
+    );
+    --color-newsletter-glow-two: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 10%,
+      transparent
+    );
+    --color-newsletter-grid-line: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 8%,
+      transparent
+    );
+    --color-newsletter-mask: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 80%,
+      transparent
+    );
+    --color-newsletter-glass-border: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 18%,
+      transparent
+    );
+    --color-newsletter-glass-border-soft: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 14%,
+      transparent
+    );
+    --color-newsletter-glass-bg: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 8%,
+      transparent
+    );
+    --color-newsletter-glass-bg-medium: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 10%,
+      transparent
+    );
+    --color-newsletter-glass-bg-strong: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 12%,
+      transparent
+    );
+    --color-newsletter-glass-bg-focus: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 14%,
+      transparent
+    );
+    --color-newsletter-glass-inset: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 10%,
+      transparent
+    );
+    --color-newsletter-icon-stroke: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 85%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-input-icon: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 55%,
+      transparent
+    );
+    --color-newsletter-focus-border: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 65%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-focus-ring: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 10%,
+      transparent
+    );
+    --color-newsletter-card-shadow: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 20%,
+      transparent
+    );
+    --color-newsletter-btn-bg: {{ settings.surface_color }};
+    --color-newsletter-btn-text: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 85%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-btn-hover: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 92%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-btn-shadow: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 22%,
+      transparent
+    );
+    --color-newsletter-bulk-btn-bg: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 96%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-bulk-btn-text: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 90%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-success-text: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 84%,
+      {{ settings.accent_color }}
+    );
+    --color-newsletter-success-bg: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 10%,
+      transparent
+    );
+    --color-newsletter-success-border: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 18%,
+      transparent
+    );
+    --color-newsletter-error-text: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 88%,
+      {{ settings.accent_contrast }}
+    );
+    --color-newsletter-error-bg: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 8%,
+      transparent
+    );
+    --color-newsletter-error-border: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 15%,
+      transparent
+    );
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
     --radius: {{ settings.input_corner_radius }}px;
     --shadow-soft: 0 12px 40px color-mix(
