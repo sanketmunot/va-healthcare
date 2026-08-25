@@ -13,15 +13,16 @@
     "type_heading_font": "domine_n4",
     "max_page_width": "80rem",
     "min_page_margin": 24,
-    "background_color": "#F4F7F5",
-    "foreground_color": "#1C2B26",
-    "accent_color": "#2F6B57",
+    "background_color": "#FFFFFF",
+    "foreground_color": "#263238",
+    "accent_color": "#073B7A",
     "accent_contrast": "#FFFFFF",
     "surface_color": "#FFFFFF",
-    "muted_color": "#5E736A",
-    "border_color": "#D5E0DA",
+    "muted_color": "#263238",
+    "border_color": "#E8F8F6",
     "input_corner_radius": 10,
     "product_card_show_vendor": false,
-    "product_card_show_quick_add": true
+    "product_card_show_quick_add": true,
+    "content_for_index": []
   }
 }
