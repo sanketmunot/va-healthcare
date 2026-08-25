@@ -42,34 +42,6 @@
   </div>
 </footer>
 
-{% style %}
-  #shopify-section-{{ section.id }} .site-footer,
-  .site-footer {
-    --footer-bg: {{ settings.foreground_color }};
-    --footer-bg-deep: color-mix(
-      in srgb,
-      {{ settings.foreground_color }} 82%,
-      #000
-    );
-    --footer-text: {{ settings.surface_color }};
-    --footer-muted: color-mix(
-      in srgb,
-      {{ settings.surface_color }} 64%,
-      transparent
-    );
-    --footer-subtle: color-mix(
-      in srgb,
-      {{ settings.surface_color }} 52%,
-      transparent
-    );
-    --footer-border: color-mix(
-      in srgb,
-      {{ settings.surface_color }} 10%,
-      transparent
-    );
-  }
-{% endstyle %}
-
 {% stylesheet %}
 
 .site-footer {
@@ -78,11 +50,11 @@
   background:
     linear-gradient(
       180deg,
-      var(--footer-bg) 0%,
-      var(--footer-bg-deep) 100%
+      var(--color-footer-bg) 0%,
+      var(--color-footer-bg-deep) 100%
     );
 
-  color: var(--footer-text);
+  color: var(--color-on-dark);
 
   overflow-x: clip;
 }
@@ -145,7 +117,7 @@
 
   letter-spacing: -.035em;
 
-  color: var(--footer-text);
+  color: var(--color-on-dark);
 }
 
 .site-footer__blurb {
@@ -153,7 +125,7 @@
 
   margin: 0;
 
-  color: var(--footer-muted);
+  color: var(--color-on-dark-muted);
 
   font-size: .92rem;
 
@@ -184,7 +156,7 @@
 .site-footer__heading {
   margin: 0 0 14px;
 
-  color: var(--footer-text);
+  color: var(--color-on-dark);
 
   font-size: .78rem;
 
@@ -217,7 +189,7 @@
 
   padding: 3px 0;
 
-  color: var(--footer-muted);
+  color: var(--color-on-dark-muted);
 
   font-size: .9rem;
 
@@ -231,7 +203,7 @@
 }
 
 .site-footer__links a:hover {
-  color: var(--footer-text);
+  color: var(--color-on-dark);
 
   transform: translateX(3px);
 }
@@ -253,9 +225,9 @@
 
   padding-top: 1.25rem;
 
-  border-top: 1px solid var(--footer-border);
+  border-top: 1px solid var(--color-on-dark-border);
 
-  color: var(--footer-subtle);
+  color: var(--color-on-dark-subtle);
 
   font-size: .8rem;
 }
@@ -282,7 +254,7 @@
 }
 
 .site-footer__legal a:hover {
-  color: var(--footer-text);
+  color: var(--color-on-dark);
 }
 
 

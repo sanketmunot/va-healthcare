@@ -20,9 +20,55 @@
     --color-surface: {{ settings.surface_color }};
     --color-muted: {{ settings.muted_color }};
     --color-border: {{ settings.border_color }};
+    --color-surface-hover: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 8%,
+      {{ settings.surface_color }}
+    );
+    --color-shadow: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 12%,
+      transparent
+    );
+    --color-footer-bg: {{ settings.foreground_color }};
+    --color-footer-bg-deep: color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 82%,
+      {{ settings.accent_color }}
+    );
+    --color-on-dark: {{ settings.surface_color }};
+    --color-on-dark-muted: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 64%,
+      transparent
+    );
+    --color-on-dark-subtle: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 52%,
+      transparent
+    );
+    --color-on-dark-border: color-mix(
+      in srgb,
+      {{ settings.surface_color }} 10%,
+      transparent
+    );
+    --color-body-glow: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 12%,
+      transparent
+    );
+    --color-body-glow-alt: color-mix(
+      in srgb,
+      {{ settings.accent_color }} 10%,
+      transparent
+    );
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
     --radius: {{ settings.input_corner_radius }}px;
-    --shadow-soft: 0 12px 40px rgba(28, 43, 38, 0.08);
+    --shadow-soft: 0 12px 40px color-mix(
+      in srgb,
+      {{ settings.foreground_color }} 8%,
+      transparent
+    );
     --transition: 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 {% endstyle %}

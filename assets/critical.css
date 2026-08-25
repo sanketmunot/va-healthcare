@@ -16,8 +16,8 @@ body {
   font-style: var(--font-primary--style);
   font-weight: var(--font-primary--weight);
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(47, 107, 87, 0.12), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, rgba(91, 138, 138, 0.1), transparent 50%),
+    radial-gradient(1200px 600px at 10% -10%, var(--color-body-glow), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, var(--color-body-glow-alt), transparent 50%),
     var(--color-background);
   color: var(--color-foreground);
   line-height: 1.6;
