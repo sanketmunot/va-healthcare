@@ -1270,6 +1270,7 @@
 
   <section
     class="luxury-related"
+    data-related-section
     aria-label="Similar products"
   >
 
@@ -4326,33 +4327,100 @@
     padding: 52px 0 64px;
   }
 
+  .luxury-reviews__container {
+
+    width: min(100% - 32px, 720px);
+  }
+
   .luxury-reviews__header {
 
-    margin-bottom: 34px;
+    margin-bottom: 28px;
 
-    padding-inline: 18px;
+    padding-inline: 0;
+  }
+
+  .luxury-reviews__title {
+
+    font-size: clamp(22px, 6vw, 30px);
+  }
+
+  .luxury-reviews__header::after {
+
+    width: 48px;
+
+    height: 2px;
+
+    margin-top: 16px;
+  }
+
+  .luxury-reviews__group {
+
+    gap: 14px;
+
+    padding-inline: 4px;
   }
 
   .luxury-reviews__card {
 
-    flex-basis: 270px;
+    flex: 0 0 220px;
 
-    padding: 22px 20px 20px;
+    gap: 12px;
+
+    padding: 18px 16px 16px;
+  }
+
+  .luxury-reviews__quote-mark {
+
+    top: 8px;
+    right: 14px;
+
+    font-size: 38px;
+  }
+
+  .luxury-reviews__stars svg {
+
+    width: 11px;
+    height: 11px;
   }
 
   .luxury-reviews__text {
 
-    font-size: 13px;
+    font-size: 12px;
 
-    min-height: 108px;
+    line-height: 1.6;
+
+    min-height: 72px;
+  }
+
+  .luxury-reviews__person {
+
+    gap: 10px;
+
+    padding-top: 10px;
+  }
+
+  .luxury-reviews__avatar {
+
+    width: 30px;
+    height: 30px;
+
+    font-size: 9px;
+  }
+
+  .luxury-reviews__person-meta strong {
+
+    font-size: 11px;
+  }
+
+  .luxury-reviews__person-meta small {
+
+    font-size: 9.5px;
   }
 
   .luxury-reviews__track {
 
     animation-duration: 34s;
   }
-
-  
 
 }
 
@@ -4631,6 +4699,8 @@
 
 
 .luxury-related__card-link:hover
+.luxury-related__image,
+.luxury-related__card.is-card-active
 .luxury-related__image {
 
   transform: scale(1.045);
@@ -4747,6 +4817,8 @@
 
 
 .luxury-related__card-link:hover
+.luxury-related__arrow,
+.luxury-related__card.is-card-active
 .luxury-related__arrow {
 
   opacity: 1;
@@ -4977,151 +5049,177 @@
    MOBILE
 ============================================================ */
 
+/* ============================================================
+   MOBILE — SIMILAR PRODUCTS (2-card scroll + touch animation)
+============================================================ */
+
 @media (max-width: 749px) {
 
   .luxury-related {
-
-    padding:
-      58px 0 70px;
+    padding: 52px 0 60px;
   }
-
 
   .luxury-related__container {
-
-    width: 100%;
-
-    margin: 0;
+    width: calc(100% - 24px);
+    margin-inline: auto;
   }
-
 
   .luxury-related__header {
-
     align-items: flex-end;
-
-    margin-bottom: 26px;
-
-    padding:
-      0 18px 18px;
+    margin-bottom: 22px;
+    padding: 0 0 16px;
   }
 
+  .luxury-related__eyebrow {
+    margin-bottom: 7px;
+    font-size: 8px;
+  }
 
   .luxury-related__title {
-
-    font-size: 32px;
+    font-size: 27px;
   }
-
 
   .luxury-related__view-all {
-
-    font-size: 10px;
-
-    white-space: nowrap;
+    font-size: 9px;
   }
-
-
-  /*
-    Horizontal scrolling on mobile.
-    Cards remain large enough to actually look premium.
-  */
 
   .luxury-related__viewport {
-
     overflow-x: auto;
-
-    overflow-y: hidden;
-
-    padding:
-      0 18px 8px;
-
-    scrollbar-width: none;
-
-    overscroll-behavior-x: contain;
-
-    scroll-snap-type: x mandatory;
-
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    margin-inline: -2px;
+    padding-bottom: 8px;
+    scrollbar-width: none;
   }
 
-
   .luxury-related__viewport::-webkit-scrollbar {
-
     display: none;
   }
 
-
   .luxury-related__grid {
-
     display: flex;
-
     gap: 12px;
-
     width: max-content;
+    min-width: 100%;
+    padding-inline: 2px;
   }
 
-
   .luxury-related__card {
-
-    flex:
-      0 0
-      min(
-        74vw,
-        300px
-      );
-
+    flex: 0 0 clamp(148px, 46vw, 220px);
+    min-width: 0;
     scroll-snap-align: start;
   }
 
-
-  /*
-    Show all five products on mobile.
-    The user can swipe horizontally.
-  */
-
   .luxury-related__card:nth-child(5) {
-
     display: block;
   }
 
-
   .luxury-related__image-wrap {
-
+    width: 100%;
     aspect-ratio: 4 / 5;
-
-    border-radius: 9px;
+    border-radius: 8px;
   }
 
+  .luxury-related__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  .luxury-related__badge {
+    top: 8px;
+    left: 8px;
+    min-height: 20px;
+    padding: 0 6px;
+    font-size: 8px;
+  }
 
   .luxury-related__arrow {
-
-    width: 34px;
-
-    height: 34px;
-
-    opacity: 1;
-
-    transform: none;
+    display: grid;
+    right: 8px;
+    bottom: 8px;
+    width: 30px;
+    height: 30px;
+    opacity: 0;
   }
 
+  .luxury-related__arrow svg {
+    width: 13px;
+    height: 13px;
+  }
 
   .luxury-related__content {
-
-    padding-top: 14px;
+    padding: 10px 2px 0;
   }
 
+  .luxury-related__vendor {
+    margin-bottom: 4px;
+    font-size: 8px;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .luxury-related__product-title {
-
-    font-size: 18px;
+    font-size: 12px;
+    line-height: 1.25;
+    min-height: auto;
+    -webkit-line-clamp: 2;
   }
 
+  .luxury-related__price {
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .luxury-related__price-current {
+    font-size: 11px;
+  }
+
+  .luxury-related__price-compare {
+    font-size: 9px;
+  }
 
   .luxury-related__mobile-hint {
-
     display: flex;
+    margin-top: 14px;
+  }
+}
 
-    padding-inline: 18px;
+
+/* ============================================================
+   VERY SMALL PHONES
+============================================================ */
+
+@media (max-width: 380px) {
+
+  .luxury-related__container {
+    width: calc(100% - 16px);
   }
 
+  .luxury-related__grid {
+    gap: 10px;
+  }
+
+  .luxury-related__card {
+    flex-basis: clamp(140px, 44vw, 190px);
+  }
+
+  .luxury-related__title {
+    font-size: 24px;
+  }
+
+  .luxury-reviews__card {
+    flex-basis: 200px;
+    padding: 16px 14px 14px;
+  }
+
+  .luxury-reviews__text {
+    font-size: 11.5px;
+    min-height: 64px;
+  }
 }
 
 
@@ -5177,12 +5275,6 @@
     border: 1px solid var(--rel-line);
 
     border-radius: 50%;
-  }
-
-
-  .luxury-related__card {
-
-    flex-basis: 78vw;
   }
 
 }
@@ -6493,6 +6585,143 @@
 
 
   updateVariant();
+
+})();
+
+
+(() => {
+
+  const relatedSection =
+    document.querySelector('[data-related-section]');
+
+  if (!relatedSection) return;
+
+  const cards = Array.from(
+    relatedSection.querySelectorAll('.luxury-related__card')
+  );
+
+  if (cards.length < 2) return;
+
+  const hoverMedia = window.matchMedia(
+    '(hover: hover) and (pointer: fine)'
+  );
+
+  const reduceMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+
+  let activeIndex = 0;
+  let cycleTimer = null;
+  let observer = null;
+
+  const setActive = (index) => {
+
+    cards.forEach((card, cardIndex) => {
+
+      card.classList.toggle(
+        'is-card-active',
+        cardIndex === index
+      );
+
+    });
+
+    if (index >= 0) {
+      activeIndex = index;
+    }
+
+  };
+
+  const stopCycle = () => {
+
+    if (cycleTimer) {
+      window.clearInterval(cycleTimer);
+      cycleTimer = null;
+    }
+
+  };
+
+  const startCycle = () => {
+
+    if (
+      reduceMotion ||
+      hoverMedia.matches ||
+      cards.length < 2
+    ) {
+      return;
+    }
+
+    stopCycle();
+
+    cycleTimer = window.setInterval(() => {
+
+      setActive(
+        (activeIndex + 1) % cards.length
+      );
+
+    }, 2800);
+
+  };
+
+  const initRelatedAnimation = () => {
+
+    stopCycle();
+
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+
+    if (hoverMedia.matches) {
+      setActive(-1);
+      return;
+    }
+
+    setActive(0);
+
+    observer = new IntersectionObserver(
+      (entries) => {
+
+        entries.forEach((entry) => {
+
+          if (entry.isIntersecting) {
+            startCycle();
+          } else {
+            stopCycle();
+            setActive(0);
+          }
+
+        });
+
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(relatedSection);
+
+  };
+
+  cards.forEach((card, index) => {
+
+    card.addEventListener(
+      'touchstart',
+      () => {
+
+        stopCycle();
+
+        setActive(index);
+
+      },
+      { passive: true }
+    );
+
+  });
+
+  initRelatedAnimation();
+
+  hoverMedia.addEventListener(
+    'change',
+    initRelatedAnimation
+  );
 
 })();
 
