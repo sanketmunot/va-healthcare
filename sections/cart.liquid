@@ -47,6 +47,22 @@
 
     {% else %}
 
+      {% assign has_partial_items = false %}
+      {% assign partial_pay_now_total = 0 %}
+      {% assign partial_balance_total = 0 %}
+
+      {% for item in cart.items %}
+        {% if item.properties.payment_type == 'partial' %}
+          {% assign has_partial_items = true %}
+          {% assign item_booking_cents = item.properties._booking_amount_cents | default: 0 | times: 1 %}
+          {% assign item_remaining_cents = item.properties._remaining_amount_cents | default: 0 | times: 1 %}
+          {% assign line_booking_cents = item_booking_cents | times: item.quantity %}
+          {% assign line_remaining_cents = item_remaining_cents | times: item.quantity %}
+          {% assign partial_pay_now_total = partial_pay_now_total | plus: line_booking_cents %}
+          {% assign partial_balance_total = partial_balance_total | plus: line_remaining_cents %}
+        {% endif %}
+      {% endfor %}
+
       <div class="cart-page__layout">
 
         <!-- CART ITEMS -->
@@ -111,6 +127,39 @@
                       {{ item.vendor }}
                     </p>
 
+                  {% endif %}
+
+                  {% if item.properties.payment_type != blank %}
+                    <ul class="cart-page__properties">
+                      <li class="cart-page__property">
+                        <span>Payment type</span>
+                        <strong>
+                          {% if item.properties.payment_type == 'partial' %}
+                            Partial payment
+                          {% elsif item.properties.payment_type == 'full_payment' %}
+                            Full payment
+                          {% else %}
+                            {{ item.properties.payment_type }}
+                          {% endif %}
+                        </strong>
+                      </li>
+
+                      {% if item.properties.payment_type == 'partial' %}
+                        {% if item.properties['Pay now'] != blank %}
+                          <li class="cart-page__property">
+                            <span>Pay now</span>
+                            <strong>{{ item.properties['Pay now'] }}</strong>
+                          </li>
+                        {% endif %}
+
+                        {% if item.properties['Balance due'] != blank %}
+                          <li class="cart-page__property cart-page__property--muted">
+                            <span>Balance due</span>
+                            <strong>{{ item.properties['Balance due'] }}</strong>
+                          </li>
+                        {% endif %}
+                      {% endif %}
+                    </ul>
                   {% endif %}
 
                 </div>
@@ -210,6 +259,28 @@
             </strong>
 
           </div>
+
+
+          {% if has_partial_items %}
+            <div
+              class="cart-page__partial-summary"
+              data-partial-summary
+            >
+              <div class="cart-page__summary-row cart-page__summary-row--accent">
+                <span>Pay now (partial)</span>
+                <strong data-partial-pay-now>
+                  {{ partial_pay_now_total | money }}
+                </strong>
+              </div>
+
+              <div class="cart-page__summary-row cart-page__summary-row--muted">
+                <span>Balance due later</span>
+                <strong data-partial-balance>
+                  {{ partial_balance_total | money }}
+                </strong>
+              </div>
+            </div>
+          {% endif %}
 
 
           {% if section.settings.show_cart_note %}
@@ -461,6 +532,54 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
 
+  color: var(--color-muted);
+}
+
+.cart-page__properties {
+  margin: 0.75rem 0 0;
+  padding: 0;
+
+  list-style: none;
+
+  display: grid;
+  gap: 0.35rem;
+}
+
+.cart-page__property {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+
+  font-size: 0.85rem;
+}
+
+.cart-page__property span {
+  color: var(--color-muted);
+}
+
+.cart-page__property strong {
+  font-weight: 600;
+}
+
+.cart-page__property--muted strong {
+  color: var(--color-muted);
+}
+
+.cart-page__partial-summary {
+  display: grid;
+  gap: 0.65rem;
+
+  margin-top: 0.35rem;
+  padding-top: 0.85rem;
+
+  border-top: 1px solid var(--color-border);
+}
+
+.cart-page__summary-row--accent strong {
+  color: var(--color-accent);
+}
+
+.cart-page__summary-row--muted {
   color: var(--color-muted);
 }
 
@@ -1088,6 +1207,56 @@
         subtotal.textContent =
           formatMoney(updatedCart.total_price);
 
+      }
+
+
+      const partialSummary =
+        cart.querySelector('[data-partial-summary]');
+
+      const partialPayNow =
+        cart.querySelector('[data-partial-pay-now]');
+
+      const partialBalance =
+        cart.querySelector('[data-partial-balance]');
+
+
+      let payNowTotal = 0;
+      let balanceTotal = 0;
+      let hasPartialItems = false;
+
+
+      updatedCart.items.forEach((item) => {
+
+        if (item.properties?.payment_type !== 'partial') {
+          return;
+        }
+
+        hasPartialItems = true;
+
+        const bookingCents = Number(
+          item.properties._booking_amount_cents || 0
+        );
+
+        const remainingCents = Number(
+          item.properties._remaining_amount_cents || 0
+        );
+
+        payNowTotal += bookingCents * item.quantity;
+        balanceTotal += remainingCents * item.quantity;
+
+      });
+
+
+      if (partialSummary) {
+        partialSummary.hidden = !hasPartialItems;
+      }
+
+      if (partialPayNow) {
+        partialPayNow.textContent = formatMoney(payNowTotal);
+      }
+
+      if (partialBalance) {
+        partialBalance.textContent = formatMoney(balanceTotal);
       }
 
 
