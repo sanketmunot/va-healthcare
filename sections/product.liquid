@@ -410,23 +410,23 @@
 
                         {% for variant in product.variants %}
 
-                          {% case forloop.parentloop.index %}
+                          {% case option.position %}
 
                             {% when 1 %}
 
-                              {% if variant.option1 == value and variant.available %}
+                              {% if variant.option1 == value %}
                                 {% assign option_disabled = false %}
                               {% endif %}
 
                             {% when 2 %}
 
-                              {% if variant.option2 == value and variant.available %}
+                              {% if variant.option2 == value %}
                                 {% assign option_disabled = false %}
                               {% endif %}
 
                             {% when 3 %}
 
-                              {% if variant.option3 == value and variant.available %}
+                              {% if variant.option3 == value %}
                                 {% assign option_disabled = false %}
                               {% endif %}
 
@@ -485,6 +485,9 @@
                   data-price="{{ variant.price }}"
                   data-compare-price="{{ variant.compare_at_price | default: 0 }}"
                   data-available="{{ variant.available }}"
+                  data-option1="{{ variant.option1 | escape }}"
+                  data-option2="{{ variant.option2 | escape }}"
+                  data-option3="{{ variant.option3 | escape }}"
                   {% if variant == current_variant %}selected{% endif %}
                 >
                   {{ variant.title }}
@@ -6240,19 +6243,46 @@
   );
 
 
+  const optionValueLabels =
+    Array.from(
+      root.querySelectorAll('[data-option-value]')
+    );
+
+
+  const getSelectedOptionValues = () =>
+
+    optionInputs
+      .filter((input) => input.checked)
+      .sort(
+        (a, b) =>
+          Number(a.dataset.optionPosition) -
+          Number(b.dataset.optionPosition)
+      )
+      .map((input) => input.value);
+
+
+  const variantMatchesSelection = (option, selectedValues) => {
+
+    if (!selectedValues.length) return false;
+
+    return selectedValues.every((value, index) => {
+
+      const optionValue =
+        option.dataset[`option${index + 1}`] || '';
+
+      return optionValue === value;
+
+    });
+
+  };
+
+
   const updateVariant = () => {
 
     if (!variantSelect) return;
 
 
-    const selectedValues =
-      optionInputs
-        .filter(
-          input => input.checked
-        )
-        .map(
-          input => input.value
-        );
+    const selectedValues = getSelectedOptionValues();
 
 
     let matchingVariant = null;
@@ -6262,31 +6292,8 @@
       variantSelect.options
     ).forEach((option) => {
 
-      const title =
-        option.textContent
-          .split(' — ')[0]
-          .trim();
-
-      const values =
-        title
-          .split(' / ')
-          .map(
-            value => value.trim()
-          );
-
-
-      const matches =
-        selectedValues.every(
-          (value, index) =>
-            values[index] === value
-        );
-
-
-      if (matches) {
-
-        matchingVariant =
-          option;
-
+      if (variantMatchesSelection(option, selectedValues)) {
+        matchingVariant = option;
       }
 
     });
@@ -6297,6 +6304,15 @@
 
     variantSelect.value =
       matchingVariant.value;
+
+
+    optionValueLabels.forEach((label, index) => {
+
+      if (selectedValues[index] != null) {
+        label.textContent = selectedValues[index];
+      }
+
+    });
 
 
     const price =
