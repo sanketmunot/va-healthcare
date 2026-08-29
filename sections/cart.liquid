@@ -50,6 +50,7 @@
       {% assign has_partial_items = false %}
       {% assign partial_pay_now_total = 0 %}
       {% assign partial_balance_total = 0 %}
+      {% assign cart_due_now_total = 0 %}
 
       {% for item in cart.items %}
         {% if item.properties.payment_type == 'partial' %}
@@ -60,6 +61,9 @@
           {% assign line_remaining_cents = item_remaining_cents | times: item.quantity %}
           {% assign partial_pay_now_total = partial_pay_now_total | plus: line_booking_cents %}
           {% assign partial_balance_total = partial_balance_total | plus: line_remaining_cents %}
+          {% assign cart_due_now_total = cart_due_now_total | plus: line_booking_cents %}
+        {% else %}
+          {% assign cart_due_now_total = cart_due_now_total | plus: item.final_line_price %}
         {% endif %}
       {% endfor %}
 
@@ -172,7 +176,13 @@
                     class="cart-page__line-price"
                     data-line-price
                   >
-                    {{ item.final_line_price | money }}
+                    {% if item.properties.payment_type == 'partial' %}
+                      {% assign item_booking_cents = item.properties._booking_amount_cents | default: 0 | times: 1 %}
+                      {% assign line_booking_cents = item_booking_cents | times: item.quantity %}
+                      {{ line_booking_cents | money }}
+                    {% else %}
+                      {{ item.final_line_price | money }}
+                    {% endif %}
                   </span>
 
                 </div>
@@ -251,11 +261,19 @@
           <div class="cart-page__summary-row">
 
             <span>
-              Subtotal
+              {% if has_partial_items %}
+                Due now
+              {% else %}
+                Subtotal
+              {% endif %}
             </span>
 
             <strong data-cart-subtotal>
-              {{ cart.total_price | money }}
+              {% if has_partial_items %}
+                {{ cart_due_now_total | money }}
+              {% else %}
+                {{ cart.total_price | money }}
+              {% endif %}
             </strong>
 
           </div>
@@ -1130,7 +1148,7 @@
         if (linePrice) {
 
           linePrice.textContent =
-            formatMoney(updatedItem.final_line_price);
+            formatMoney(getLineDisplayPrice(updatedItem));
 
         }
 
@@ -1196,18 +1214,25 @@
      * -----------------------------------------
      */
 
+    const getLineDisplayPrice = (item) => {
+
+      if (item.properties?.payment_type === 'partial') {
+        const bookingCents = Number(
+          item.properties._booking_amount_cents || 0
+        );
+
+        return bookingCents * item.quantity;
+      }
+
+      return item.final_line_price;
+
+    };
+
+
     const updateSummary = (updatedCart) => {
 
       const subtotal =
         cart.querySelector('[data-cart-subtotal]');
-
-
-      if (subtotal) {
-
-        subtotal.textContent =
-          formatMoney(updatedCart.total_price);
-
-      }
 
 
       const partialSummary =
@@ -1222,10 +1247,13 @@
 
       let payNowTotal = 0;
       let balanceTotal = 0;
+      let dueNowTotal = 0;
       let hasPartialItems = false;
 
 
       updatedCart.items.forEach((item) => {
+
+        dueNowTotal += getLineDisplayPrice(item);
 
         if (item.properties?.payment_type !== 'partial') {
           return;
@@ -1245,6 +1273,13 @@
         balanceTotal += remainingCents * item.quantity;
 
       });
+
+
+      if (subtotal) {
+        subtotal.textContent = formatMoney(
+          hasPartialItems ? dueNowTotal : updatedCart.total_price
+        );
+      }
 
 
       if (partialSummary) {

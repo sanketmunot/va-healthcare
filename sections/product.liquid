@@ -483,28 +483,54 @@
               <div
                 class="luxury-product__mode-toggle"
                 data-purchase-mode-toggle
-                role="tablist"
+                role="radiogroup"
                 aria-label="Payment option"
               >
 
                 <button
                   type="button"
-                  class="luxury-product__mode-btn is-active"
+                  class="luxury-product__mode-card is-active"
                   data-mode-btn="full"
-                  role="tab"
-                  aria-selected="true"
+                  role="radio"
+                  aria-checked="true"
                 >
-                  {{ section.settings.full_payment_toggle_label | default: 'Pay Full Amount' }}
+                  <span class="luxury-product__mode-radio" aria-hidden="true">
+                    <span class="luxury-product__mode-radio-dot"></span>
+                  </span>
+
+                  <span class="luxury-product__mode-title">
+                    {{ section.settings.full_payment_toggle_label | default: 'Pay Full Amount' }}
+                  </span>
+
+                  <span
+                    class="luxury-product__mode-subtitle"
+                    data-mode-subtitle="full"
+                  >
+                    {{ current_variant.price | money }} now
+                  </span>
                 </button>
 
                 <button
                   type="button"
-                  class="luxury-product__mode-btn"
+                  class="luxury-product__mode-card"
                   data-mode-btn="partial"
-                  role="tab"
-                  aria-selected="false"
+                  role="radio"
+                  aria-checked="false"
                 >
-                  {{ section.settings.partial_payment_toggle_label | default: 'Book with Partial Payment' }}
+                  <span class="luxury-product__mode-radio" aria-hidden="true">
+                    <span class="luxury-product__mode-radio-dot"></span>
+                  </span>
+
+                  <span class="luxury-product__mode-title">
+                    {{ section.settings.partial_payment_toggle_label | default: 'Book with Partial' }}
+                  </span>
+
+                  <span
+                    class="luxury-product__mode-subtitle"
+                    data-mode-subtitle="partial"
+                  >
+                    {{ section.settings.partial_payment_toggle_subtitle | default: 'Pay advance now' }}
+                  </span>
                 </button>
 
               </div>
@@ -627,12 +653,12 @@
                   <button
                     type="button"
                     class="luxury-product__book-now"
-                    data-partial-checkout
+                    data-partial-add-to-cart
                   >
-                    {{ section.settings.book_now_button_label | default: 'Pay booking amount' }}
+                    {{ section.settings.book_now_button_label | default: 'Add to cart' }}
                   </button>
 
-                  <p class="luxury-product__partial-error is-hidden" data-partial-checkout-error>
+                  <p class="luxury-product__partial-error is-hidden" data-partial-add-to-cart-error>
                     Something went wrong. Please try again.
                   </p>
 
@@ -2288,64 +2314,85 @@
 ============================================================ */
 
 .luxury-product__mode-toggle {
-
   display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 8px;
-
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 30px;
-
   margin-bottom: 18px;
 }
 
-
-.luxury-product__mode-btn {
-
-  min-height: 48px;
-
-  padding: 0 14px;
-
+.luxury-product__mode-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 118px;
+  padding: 18px 14px 16px;
+  text-align: center;
   color: var(--lp-black);
-
   background: var(--color-surface);
-
   border: 1px solid var(--lp-border);
-
-  border-radius: 6px;
-
+  border-radius: 10px;
   cursor: pointer;
-
-  font-size: 12.5px;
-
-  font-weight: 600;
-
-  letter-spacing: 0;
-
   transition:
-    background-color .2s ease,
-    color .2s ease,
     border-color .2s ease,
-    transform .2s ease;
+    box-shadow .2s ease,
+    background-color .2s ease;
 }
 
-
-.luxury-product__mode-btn:hover {
-
-  border-color: var(--lp-accent);
-
-  transform: translateY(-1px);
+.luxury-product__mode-card:hover {
+  border-color: color-mix(in srgb, var(--lp-accent) 45%, var(--lp-border));
 }
 
+.luxury-product__mode-card.is-active {
+  border: 2px solid var(--lp-accent-deep);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-accent-deep) 12%, transparent);
+}
 
-.luxury-product__mode-btn.is-active {
+.luxury-product__mode-radio {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid color-mix(in srgb, var(--lp-black) 18%, var(--lp-border));
+  border-radius: 50%;
+  background: var(--color-surface);
+  transition: border-color .2s ease;
+}
 
-  color: var(--color-surface);
+.luxury-product__mode-radio-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  transform: scale(0);
+  transition:
+    transform .2s ease,
+    background-color .2s ease;
+}
 
-  background: var(--lp-black);
+.luxury-product__mode-card.is-active .luxury-product__mode-radio {
+  border-color: var(--lp-accent-deep);
+}
 
-  border-color: var(--lp-black);
+.luxury-product__mode-card.is-active .luxury-product__mode-radio-dot {
+  background: var(--lp-accent-deep);
+  transform: scale(1);
+}
+
+.luxury-product__mode-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--lp-black);
+}
+
+.luxury-product__mode-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--lp-black) 52%, var(--color-muted));
 }
 
 
@@ -4189,8 +4236,20 @@
 
 
   .luxury-product__mode-toggle {
+    gap: 10px;
+  }
 
-    grid-template-columns: 1fr;
+  .luxury-product__mode-card {
+    min-height: 108px;
+    padding: 16px 10px 14px;
+  }
+
+  .luxury-product__mode-title {
+    font-size: 14px;
+  }
+
+  .luxury-product__mode-subtitle {
+    font-size: 12px;
   }
 
 
@@ -5796,7 +5855,7 @@
 
       btn.classList.toggle('is-active', isActive);
 
-      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
 
     });
 
@@ -5893,6 +5952,9 @@
   const partialModalPercent =
     root.querySelector('[data-partial-modal-percent]');
 
+  const fullModeSubtitle =
+    root.querySelector('[data-mode-subtitle="full"]');
+
   const partialFlowCloseButtons =
     Array.from(
       root.querySelectorAll('[data-partial-flow-close]')
@@ -5986,6 +6048,10 @@
 
     root.dataset.fullPriceCents = String(priceCents);
 
+    if (fullModeSubtitle) {
+      fullModeSubtitle.textContent = `${formatMoney(priceCents)} now`;
+    }
+
   };
 
 
@@ -6056,7 +6122,7 @@
 
       closePartialFlowModal();
 
-      root.querySelector('[data-partial-checkout]')?.focus();
+      root.querySelector('[data-partial-add-to-cart]')?.focus();
 
     }
   );
@@ -6278,33 +6344,33 @@
 
 
   /* ==========================================================
-     PARTIAL PAYMENT — CHECKOUT
+     PARTIAL PAYMENT — ADD TO CART
   ========================================================== */
 
-  const partialCheckoutButton =
-    root.querySelector('[data-partial-checkout]');
+  const partialAddToCartButton =
+    root.querySelector('[data-partial-add-to-cart]');
 
-  const partialCheckoutError =
-    root.querySelector('[data-partial-checkout-error]');
+  const partialAddToCartError =
+    root.querySelector('[data-partial-add-to-cart-error]');
 
   const cartRoot =
     window.Shopify?.routes?.root || '/';
 
 
-  partialCheckoutButton?.addEventListener(
+  partialAddToCartButton?.addEventListener(
     'click',
     async () => {
 
       if (!variantSelect?.value) return;
 
-      partialCheckoutError?.classList.add('is-hidden');
+      partialAddToCartError?.classList.add('is-hidden');
 
-      partialCheckoutButton.disabled = true;
+      partialAddToCartButton.disabled = true;
 
       const originalLabel =
-        partialCheckoutButton.textContent;
+        partialAddToCartButton.textContent;
 
-      partialCheckoutButton.textContent = 'Processing…';
+      partialAddToCartButton.textContent = 'Adding…';
 
 
       const selectedOption =
@@ -6334,23 +6400,18 @@
 
       if (bookingCents <= 0) {
 
-        if (partialCheckoutError) {
-          partialCheckoutError.textContent =
+        if (partialAddToCartError) {
+          partialAddToCartError.textContent =
             'Set partial_payment_value (percentage) on this product in admin, e.g. 20 for 20%.';
         }
 
-        partialCheckoutError?.classList.remove('is-hidden');
-        partialCheckoutButton.disabled = false;
-        partialCheckoutButton.textContent = originalLabel;
+        partialAddToCartError?.classList.remove('is-hidden');
+        partialAddToCartButton.disabled = false;
+        partialAddToCartButton.textContent = originalLabel;
 
         return;
 
       }
-
-      const partialPaymentPercent = Number(
-        root.dataset.partialPaymentValue || 0
-      );
-
 
       try {
 
@@ -6371,11 +6432,8 @@
                     payment_type: 'partial',
                     'Pay now': formatMoney(bookingCents),
                     'Balance due': formatMoney(remainingCents),
-                    'Partial payment %': `${partialPaymentPercent}%`,
-                    _partial_payment_percent: String(partialPaymentPercent),
                     _booking_amount_cents: String(bookingCents),
-                    _remaining_amount_cents: String(remainingCents),
-                    _full_amount_cents: String(priceCents)
+                    _remaining_amount_cents: String(remainingCents)
                   }
                 }
               ]
@@ -6385,36 +6443,21 @@
 
 
         if (!addResponse.ok) {
-          throw new Error('Unable to add partial payment item');
+          throw new Error('Unable to add item to cart');
         }
 
 
-        await fetch(`${cartRoot}cart/update.js`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify({
-            attributes: {
-              payment_type: 'partial',
-              partial_payment_percent: String(partialPaymentPercent)
-            }
-          })
-        });
-
-
-        window.location.href = `${cartRoot}checkout`;
+        window.location.href = `${cartRoot}cart`;
 
       } catch (error) {
 
-        partialCheckoutError?.classList.remove('is-hidden');
+        partialAddToCartError?.classList.remove('is-hidden');
 
       } finally {
 
-        partialCheckoutButton.disabled = false;
+        partialAddToCartButton.disabled = false;
 
-        partialCheckoutButton.textContent = originalLabel;
+        partialAddToCartButton.textContent = originalLabel;
 
       }
 
@@ -6836,7 +6879,14 @@
       "type": "text",
       "id": "partial_payment_toggle_label",
       "label": "Partial payment toggle label",
-      "default": "Book with Partial Payment"
+      "default": "Book with Partial"
+    },
+
+    {
+      "type": "text",
+      "id": "partial_payment_toggle_subtitle",
+      "label": "Partial payment toggle subtitle",
+      "default": "Pay advance now"
     },
 
     {
@@ -6850,8 +6900,8 @@
     {
       "type": "text",
       "id": "book_now_button_label",
-      "label": "Partial checkout button label",
-      "default": "Pay booking amount"
+      "label": "Partial payment button label",
+      "default": "Add to cart"
     },
 
     {

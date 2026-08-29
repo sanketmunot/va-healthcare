@@ -1,8 +1,5 @@
 {% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
+  Full search results page. Used on the search template.
 {% endcomment %}
 
 <div class="search-page">
@@ -27,7 +24,6 @@
 
       <div class="search-results">
         {% paginate search.results by 20 %}
-          {% # Search result items may be an article, a page, or a product. %}
           {% for result in search.results %}
             <div class="search-result">
               {% assign featured_image = result.featured_image | default: result.image %}
@@ -71,7 +67,6 @@
 </div>
 
 {% stylesheet %}
-
   .search-page {
     max-width: 1200px;
     width: 100%;
@@ -86,7 +81,6 @@
     text-align: center;
   }
 
-  /* Search form */
   .search-form {
     display: flex;
     justify-content: center;
@@ -130,7 +124,6 @@
     transform: scale(0.97);
   }
 
-  /* Result count / empty state */
   .search-page__count,
   .search-page__empty {
     text-align: center;
@@ -138,7 +131,6 @@
     margin-bottom: 2rem;
   }
 
-  /* Results grid */
   .search-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -227,7 +219,6 @@
     color: var(--color-foreground);
   }
 
-  /* Pagination */
   .search-pagination {
     margin-top: 2.5rem;
     display: flex;

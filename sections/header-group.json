@@ -27,10 +27,15 @@
         "menu": "main-menu",
         "sticky": true
       }
+    },
+    "search_drawer": {
+      "type": "search-drawer",
+      "settings": {}
     }
   },
   "order": [
     "announcement",
-    "header"
+    "header",
+    "search_drawer"
   ]
 }

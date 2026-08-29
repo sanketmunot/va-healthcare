@@ -1,0 +1,640 @@
+{% comment %}
+  Global search popup with predictive product suggestions.
+  Add this section to the header group.
+{% endcomment %}
+
+<div
+  class="search-drawer"
+  data-search-drawer
+  aria-hidden="true"
+>
+  <div
+    class="search-drawer__backdrop"
+    data-search-close
+    tabindex="-1"
+  ></div>
+
+  <div
+    class="search-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'search.title' | t }}"
+  >
+    <div class="search-drawer__header">
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="search-drawer__form"
+        data-search-form
+      >
+        <label class="visually-hidden" for="SearchDrawerInput-{{ section.id }}">
+          {{ 'search.placeholder' | t }}
+        </label>
+
+        <div class="search-drawer__field">
+          <svg class="search-drawer__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.8"/>
+            <path d="m16.2 16.2 4.3 4.3"/>
+          </svg>
+
+          <input
+            id="SearchDrawerInput-{{ section.id }}"
+            type="search"
+            name="q"
+            class="search-drawer__input"
+            placeholder="{{ 'search.placeholder' | t }}"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            data-search-input
+          >
+        </div>
+
+        <button type="submit" class="search-drawer__submit">
+          {{ 'search.submit' | t }}
+        </button>
+      </form>
+
+      <button
+        type="button"
+        class="search-drawer__close"
+        data-search-close
+        aria-label="Close search"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="search-drawer__status is-hidden"
+      data-search-status
+      aria-live="polite"
+    ></div>
+
+    <div
+      class="search-drawer__results"
+      data-search-results
+      hidden
+    ></div>
+
+    <p class="search-drawer__hint" data-search-hint>
+      Start typing to see product suggestions
+    </p>
+  </div>
+</div>
+
+{% stylesheet %}
+  .search-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: grid;
+    place-items: start center;
+    padding: 1rem;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .search-drawer.is-open {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .search-drawer__backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-foreground) 45%, transparent);
+  }
+
+  .search-drawer__panel {
+    position: relative;
+    width: min(640px, 100%);
+    max-height: min(80vh, 720px);
+    display: flex;
+    flex-direction: column;
+    margin-top: clamp(0.5rem, 8vh, 4rem);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius, 12px) + 4px);
+    box-shadow: 0 24px 60px var(--color-shadow-medium);
+    overflow: hidden;
+  }
+
+  .search-drawer__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-drawer__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.65rem;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .search-drawer__field {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-background);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .search-drawer__field:focus-within {
+    border-color: var(--color-foreground);
+    box-shadow: 0 0 0 3px var(--color-focus-outline);
+  }
+
+  .search-drawer__icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 1.7;
+  }
+
+  .search-drawer__input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--color-foreground);
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .search-drawer__input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .search-drawer__submit {
+    flex-shrink: 0;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-foreground);
+    color: var(--color-surface);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .search-drawer__submit:hover {
+    opacity: 0.9;
+  }
+
+  .search-drawer__submit:active {
+    transform: scale(0.97);
+  }
+
+  .search-drawer__close {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .search-drawer__close:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-accent);
+  }
+
+  .search-drawer__close svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+  }
+
+  .search-drawer__status {
+    padding: 0.65rem 1rem 0;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .search-drawer__status.is-hidden {
+    display: none;
+  }
+
+  .search-drawer__hint {
+    margin: 0;
+    padding: 1rem 1.1rem 1.15rem;
+    color: var(--color-muted);
+    font-size: 0.88rem;
+  }
+
+  .search-drawer__hint.is-hidden {
+    display: none;
+  }
+
+  .search-drawer__results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem 0.85rem;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .search-drawer__item {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: center;
+    padding: 0.55rem 0.5rem;
+    border-radius: 10px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .search-drawer__item:hover,
+  .search-drawer__item:focus-visible {
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  }
+
+  .search-drawer__thumb {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  }
+
+  .search-drawer__thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .search-drawer__thumb--placeholder {
+    width: 100%;
+    height: 100%;
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-background));
+  }
+
+  .search-drawer__meta {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .search-drawer__title {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-foreground);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .search-drawer__price {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .search-drawer__footer {
+    padding: 0 1rem 1rem;
+  }
+
+  .search-drawer__view-all {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .search-drawer__view-all:hover {
+    background: var(--color-surface-hover);
+    border-color: color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 749px) {
+    .search-drawer {
+      padding: 0;
+      place-items: end stretch;
+    }
+
+    .search-drawer__panel {
+      width: 100%;
+      max-height: 92vh;
+      margin-top: 0;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .search-drawer__header {
+      grid-template-columns: 1fr;
+      padding: 0.85rem 0.85rem 0.7rem;
+    }
+
+    .search-drawer__close {
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+    }
+
+    .search-drawer__form {
+      grid-template-columns: 1fr;
+      padding-right: 2.75rem;
+    }
+
+    .search-drawer__submit {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const drawer = document.querySelector('[data-search-drawer]');
+
+    if (!drawer) return;
+
+    const form = drawer.querySelector('[data-search-form]');
+    const input = drawer.querySelector('[data-search-input]');
+    const results = drawer.querySelector('[data-search-results]');
+    const status = drawer.querySelector('[data-search-status]');
+    const hint = drawer.querySelector('[data-search-hint]');
+    const openButtons = document.querySelectorAll('[data-search-open]');
+    const closeButtons = drawer.querySelectorAll('[data-search-close]');
+
+    const root = window.Shopify?.routes?.root || '/';
+    let debounceTimer = null;
+    let activeController = null;
+
+    const formatMoney = (amount) => {
+      const cents = Math.round(Number(amount) * 100);
+
+      if (
+        window.Shopify &&
+        typeof Shopify.formatMoney === 'function'
+      ) {
+        return Shopify.formatMoney(
+          cents,
+          Shopify.money_format
+        );
+      }
+
+      return new Intl.NumberFormat(
+        document.documentElement.lang || 'en',
+        {
+          style: 'currency',
+          currency: window.Shopify?.currency?.active || 'USD'
+        }
+      ).format(Number(amount));
+    };
+
+    const escapeHtml = (value) =>
+      String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const setStatus = (message, visible = true) => {
+      if (!status) return;
+
+      status.textContent = message;
+      status.classList.toggle('is-hidden', !visible);
+    };
+
+    const clearResults = () => {
+      if (!results) return;
+
+      results.innerHTML = '';
+      results.hidden = true;
+    };
+
+    const openDrawer = () => {
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.documentElement.style.overflow = 'hidden';
+      window.setTimeout(() => input?.focus(), 50);
+    };
+
+    const closeDrawer = () => {
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.documentElement.style.overflow = '';
+      clearResults();
+      setStatus('', false);
+
+      if (hint) {
+        hint.classList.remove('is-hidden');
+      }
+
+      if (input) {
+        input.value = '';
+      }
+    };
+
+    const renderProducts = (products, query) => {
+      if (!results) return;
+
+      if (!products.length) {
+        results.hidden = true;
+        results.innerHTML = '';
+        setStatus(`No products found for "${query}"`);
+        return;
+      }
+
+      setStatus('', false);
+
+      if (hint) {
+        hint.classList.add('is-hidden');
+      }
+
+      const itemsHtml = products
+        .map((product) => {
+          const imageHtml = product.image
+            ? `<img src="${product.image}" alt="" loading="lazy" width="112" height="112">`
+            : '<div class="search-drawer__thumb--placeholder"></div>';
+
+          const priceHtml = product.price
+            ? `<p class="search-drawer__price">${formatMoney(product.price)}</p>`
+            : '';
+
+          return `
+            <a class="search-drawer__item" href="${escapeHtml(product.url)}">
+              <div class="search-drawer__thumb">${imageHtml}</div>
+              <div class="search-drawer__meta">
+                <p class="search-drawer__title">${escapeHtml(product.title)}</p>
+                ${priceHtml}
+              </div>
+            </a>
+          `;
+        })
+        .join('');
+
+      const viewAllUrl = `${root}search?q=${encodeURIComponent(query)}&type=product`;
+
+      results.innerHTML = `
+        ${itemsHtml}
+        <div class="search-drawer__footer">
+          <a class="search-drawer__view-all" href="${viewAllUrl}">
+            View all results
+          </a>
+        </div>
+      `;
+
+      results.hidden = false;
+    };
+
+    const fetchSuggestions = async (query) => {
+      if (activeController) {
+        activeController.abort();
+      }
+
+      activeController = new AbortController();
+
+      const url =
+        `${root}search/suggest.json` +
+        `?q=${encodeURIComponent(query)}` +
+        '&resources[type]=product' +
+        '&resources[limit]=8' +
+        '&resources[options][unavailable_products]=last';
+
+      const response = await fetch(url, {
+        signal: activeController.signal,
+        headers: {
+          Accept: 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Search request failed');
+      }
+
+      const data = await response.json();
+
+      return (
+        data?.resources?.results?.products || []
+      );
+    };
+
+    const handleInput = () => {
+      const query = input?.value.trim() || '';
+
+      window.clearTimeout(debounceTimer);
+
+      if (query.length < 2) {
+        clearResults();
+        setStatus('', false);
+
+        if (hint) {
+          hint.classList.toggle('is-hidden', query.length > 0);
+        }
+
+        return;
+      }
+
+      if (hint) {
+        hint.classList.add('is-hidden');
+      }
+
+      setStatus('Searching…');
+
+      debounceTimer = window.setTimeout(async () => {
+        try {
+          const products = await fetchSuggestions(query);
+          renderProducts(products, query);
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+
+          clearResults();
+          setStatus('Something went wrong. Please try again.');
+        }
+      }, 220);
+    };
+
+    openButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        openDrawer();
+      });
+    });
+
+    closeButtons.forEach((button) => {
+      button.addEventListener('click', closeDrawer);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (
+        event.key === 'Escape' &&
+        drawer.classList.contains('is-open')
+      ) {
+        closeDrawer();
+      }
+    });
+
+    input?.addEventListener('input', handleInput);
+
+    form?.addEventListener('submit', (event) => {
+      const query = input?.value.trim() || '';
+
+      if (!query) {
+        event.preventDefault();
+      }
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Search popup",
+  "settings": []
+}
+{% endschema %}

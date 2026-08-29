@@ -98,9 +98,10 @@
     <div class="site-header__actions">
 
       <!-- SEARCH -->
-      <a
-        href="{{ routes.search_url }}"
+      <button
+        type="button"
         class="site-header__action"
+        data-search-open
         aria-label="Search"
       >
 
@@ -116,7 +117,7 @@
 
         </svg>
 
-      </a>
+      </button>
 
 
       <!-- ACCOUNT -->
@@ -273,9 +274,10 @@
 
         {% endif %}
 
-        <a
-          href="{{ routes.search_url }}"
+        <button
+          type="button"
           class="site-header__mobile-footer-link"
+          data-search-open
         >
 
           <svg viewBox="0 0 24 24">
@@ -285,7 +287,7 @@
 
           <span>Search</span>
 
-        </a>
+        </button>
 
       </div>
 
@@ -565,11 +567,19 @@
   width: 42px;
   height: 42px;
 
+  padding: 0;
+
   color: var(--color-foreground);
 
   text-decoration: none;
 
+  background: transparent;
+
+  border: 0;
+
   border-radius: 50%;
+
+  cursor: pointer;
 
   transition:
     color .2s ease,
@@ -875,12 +885,18 @@
 
   background: var(--color-surface-hover);
 
+  border: 0;
+
   border-radius: 9px;
 
   font-size: 13px;
   font-weight: 600;
 
+  font-family: inherit;
+
   text-decoration: none;
+
+  cursor: pointer;
 }
 
 .site-header__mobile-footer-link svg {
