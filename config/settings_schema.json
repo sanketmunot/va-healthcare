@@ -8,6 +8,17 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "Logo",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo",
+        "info": "Used as the browser tab icon and on gift cards."
+      }
+    ]
+  },
+  {
     "name": "Typography",
     "settings": [
       {

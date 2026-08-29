@@ -9,10 +9,14 @@
       aria-label="{{ shop.name }}"
     >
 
-      {% if section.settings.logo != blank %}
+      {% liquid
+        assign logo_image = section.settings.logo | default: settings.logo
+      %}
+
+      {% if logo_image != blank %}
 
         {{
-          section.settings.logo
+          logo_image
           | image_url: width: 500
           | image_tag:
             class: 'site-header__logo-image',
