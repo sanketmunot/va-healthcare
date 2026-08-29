@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "logo": "shopify://shop_images/3367b2c9-5a39-427f-b042-c50a4669348c.png",
     "type_primary_font": "assistant_n4",
     "type_heading_font": "domine_n4",
     "max_page_width": "80rem",
