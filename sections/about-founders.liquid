@@ -37,11 +37,11 @@
             {% if block.settings.image != blank %}
               {{
                 block.settings.image
-                | image_url: width: 900
+                | image_url: width: 480
                 | image_tag:
                   loading: 'lazy',
-                  widths: '400, 600, 900',
-                  sizes: '(min-width: 900px) 28vw, 90vw',
+                  widths: '240, 360, 480',
+                  sizes: '(min-width: 800px) 192px, 120px',
                   class: 'about-founders__image',
                   alt: block.settings.name
               }}
@@ -50,8 +50,8 @@
                 class="about-founders__image"
                 src="{{ block.settings.fallback_image | asset_url }}"
                 alt="{{ block.settings.name | escape }}"
-                width="720"
-                height="960"
+                width="192"
+                height="256"
                 loading="lazy"
               >
             {% else %}
@@ -91,26 +91,35 @@
 
   .about-founders__grid {
     display: grid;
-    gap: 1.5rem;
+    gap: 1.15rem;
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
   .about-founders__card {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem 1.35rem;
+    padding: 1rem 1.1rem;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: calc(var(--radius) + 12px);
-    overflow: hidden;
     box-shadow: var(--shadow-soft);
+  }
+
+  .about-founders__card:nth-child(even) {
+    flex-direction: row-reverse;
   }
 
   .about-founders__media,
   .about-founders__placeholder {
+    flex: 0 0 7.5rem;
+    width: 7.5rem;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    background:
-      var(--color-image-tint);
+    border-radius: calc(var(--radius) + 6px);
+    background: var(--color-image-tint);
   }
 
   .about-founders__image {
@@ -120,7 +129,9 @@
   }
 
   .about-founders__body {
-    padding: 1.4rem 1.35rem 1.55rem;
+    flex: 1;
+    min-width: 0;
+    padding: 0.1rem 0;
   }
 
   .about-founders__role {
@@ -133,7 +144,7 @@
   }
 
   .about-founders__name {
-    font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
     margin-bottom: 0.35rem;
   }
 
@@ -152,8 +163,18 @@
 
   @media (min-width: 800px) {
     .about-founders__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.75rem;
+      gap: 1.5rem;
+    }
+
+    .about-founders__card {
+      gap: 1.75rem 2.25rem;
+      padding: 1.35rem 1.6rem;
+    }
+
+    .about-founders__media,
+    .about-founders__placeholder {
+      flex: 0 0 12rem;
+      width: 12rem;
     }
   }
 {% endstylesheet %}
