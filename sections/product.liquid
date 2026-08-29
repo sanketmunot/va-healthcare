@@ -1,7 +1,8 @@
 {% comment %}
-  Partial payment product metafields (Settings → Custom data → Products, namespace custom):
+  Partial payment metafields (namespace custom):
   - enable_partial_payment (boolean)
-  - partial_payment_value (number) — percentage of variant price to pay now, e.g. 20 = 20%
+  - partial_payment_value (number) — percentage of main variant price, e.g. 20 = 20%
+  - deposit_product (product reference) — product added to cart/checkout for partial payment
 {% endcomment %}
 
 {% assign current_variant = product.selected_or_first_available_variant %}
@@ -15,8 +16,14 @@
   {% assign partial_payment_value = product.metafields.custom.booking_value.value | times: 1 %}
 {% endif %}
 
+{% assign deposit_product = product.metafields.custom.deposit_product.value %}
+{% assign deposit_variant = nil %}
+{% if deposit_product %}
+  {% assign deposit_variant = deposit_product.selected_or_first_available_variant %}
+{% endif %}
+
 {% assign partial_payment_enabled = false %}
-{% if product.metafields.custom.enable_partial_payment.value and partial_payment_value > 0 %}
+{% if product.metafields.custom.enable_partial_payment.value and partial_payment_value > 0 and deposit_variant %}
   {% assign partial_payment_enabled = true %}
 {% endif %}
 
@@ -25,6 +32,13 @@
   data-add-to-cart-label="{{ section.settings.add_to_cart_label | escape }}"
   data-partial-enabled="{{ partial_payment_enabled }}"
   data-partial-payment-value="{{ partial_payment_value }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-handle="{{ product.handle | escape }}"
+  {% if deposit_variant %}
+    data-deposit-variant-id="{{ deposit_variant.id }}"
+    data-deposit-variant-price="{{ deposit_variant.price }}"
+    data-deposit-product-title="{{ deposit_product.title | escape }}"
+  {% endif %}
   data-shop-currency="{{ cart.currency.iso_code | default: shop.currency }}"
   style="
     --lp-top-space: {{ section.settings.padding_top }}px;
@@ -6003,9 +6017,15 @@
       root.dataset.partialPaymentValue || 0
     );
 
-    let bookingCents = Math.round(
-      priceCents * (partialPaymentPercent / 100)
+    const depositVariantPrice = Number(
+      root.dataset.depositVariantPrice || 0
     );
+
+    let bookingCents = depositVariantPrice > 0
+      ? depositVariantPrice
+      : Math.round(
+          priceCents * (partialPaymentPercent / 100)
+        );
 
     bookingCents = Math.min(
       Math.max(bookingCents, 0),
@@ -6384,17 +6404,45 @@
 
       updatePartialAmounts(priceCents);
 
-      const bookingCents = Number(
-        root.dataset.bookingCents || 0
-      );
-
-      const remainingCents = Number(
-        root.dataset.remainingCents || 0
-      );
-
       const quantity = Math.max(
         1,
         Number(quantityInput?.value || 1)
+      );
+
+      const mainVariantId =
+        variantSelect.value;
+
+      const depositVariantId = Number(
+        root.dataset.depositVariantId || 0
+      );
+
+      const depositVariantPrice = Number(
+        root.dataset.depositVariantPrice || 0
+      );
+
+
+      if (!depositVariantId) {
+
+        if (partialAddToCartError) {
+          partialAddToCartError.textContent =
+            'Set custom.deposit_product on this product in admin.';
+        }
+
+        partialAddToCartError?.classList.remove('is-hidden');
+        partialAddToCartButton.disabled = false;
+        partialAddToCartButton.textContent = originalLabel;
+
+        return;
+
+      }
+
+      const bookingCents = depositVariantPrice > 0
+        ? depositVariantPrice
+        : Number(root.dataset.bookingCents || 0);
+
+      const remainingCents = Math.max(
+        priceCents - bookingCents,
+        0
       );
 
 
@@ -6402,7 +6450,7 @@
 
         if (partialAddToCartError) {
           partialAddToCartError.textContent =
-            'Set partial_payment_value (percentage) on this product in admin, e.g. 20 for 20%.';
+            'Deposit product must have a price greater than zero.';
         }
 
         partialAddToCartError?.classList.remove('is-hidden');
@@ -6415,6 +6463,29 @@
 
       try {
 
+        await fetch(`${cartRoot}cart/clear.js`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          }
+        });
+
+
+        const lineProperties = {
+          payment_type: 'partial',
+          'Pay now': formatMoney(bookingCents),
+          'Balance due': formatMoney(remainingCents),
+          'Remaining to collect': formatMoney(remainingCents),
+          'Original product': root.dataset.productTitle || '',
+          'Original variant ID': String(mainVariantId),
+          _booking_amount_cents: String(bookingCents),
+          _remaining_amount_cents: String(remainingCents),
+          _original_variant_id: String(mainVariantId),
+          _original_product_handle: root.dataset.productHandle || ''
+        };
+
+
         const addResponse = await fetch(
           `${cartRoot}cart/add.js`,
           {
@@ -6426,15 +6497,9 @@
             body: JSON.stringify({
               items: [
                 {
-                  id: Number(variantSelect.value),
+                  id: depositVariantId,
                   quantity,
-                  properties: {
-                    payment_type: 'partial',
-                    'Pay now': formatMoney(bookingCents),
-                    'Balance due': formatMoney(remainingCents),
-                    _booking_amount_cents: String(bookingCents),
-                    _remaining_amount_cents: String(remainingCents)
-                  }
+                  properties: lineProperties
                 }
               ]
             })
@@ -6445,6 +6510,22 @@
         if (!addResponse.ok) {
           throw new Error('Unable to add item to cart');
         }
+
+
+        await fetch(`${cartRoot}cart/update.js`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            attributes: {
+              payment_type: 'partial',
+              remaining_to_collect: formatMoney(remainingCents),
+              original_product: root.dataset.productTitle || ''
+            }
+          })
+        });
 
 
         window.location.href = `${cartRoot}cart`;
@@ -6894,7 +6975,7 @@
       "id": "partial_payment_note",
       "label": "Note shown under the amount summary",
       "default": "The remaining balance is collected by our sales team after confirming your order.",
-      "info": "Partial amount is calculated from product metafield custom.partial_payment_value as a percentage of price (e.g. 20 = pay 20% now). Also set custom.enable_partial_payment."
+      "info": "Set custom.enable_partial_payment, custom.partial_payment_value (%), and custom.deposit_product (product reference). Cart/checkout uses the deposit product; remaining balance is stored on the line."
     },
 
     {

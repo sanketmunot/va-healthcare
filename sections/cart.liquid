@@ -59,9 +59,9 @@
           {% assign item_remaining_cents = item.properties._remaining_amount_cents | default: 0 | times: 1 %}
           {% assign line_booking_cents = item_booking_cents | times: item.quantity %}
           {% assign line_remaining_cents = item_remaining_cents | times: item.quantity %}
-          {% assign partial_pay_now_total = partial_pay_now_total | plus: line_booking_cents %}
+          {% assign partial_pay_now_total = partial_pay_now_total | plus: item.final_line_price %}
           {% assign partial_balance_total = partial_balance_total | plus: line_remaining_cents %}
-          {% assign cart_due_now_total = cart_due_now_total | plus: line_booking_cents %}
+          {% assign cart_due_now_total = cart_due_now_total | plus: item.final_line_price %}
         {% else %}
           {% assign cart_due_now_total = cart_due_now_total | plus: item.final_line_price %}
         {% endif %}
@@ -149,6 +149,13 @@
                       </li>
 
                       {% if item.properties.payment_type == 'partial' %}
+                        {% if item.properties['Original product'] != blank %}
+                          <li class="cart-page__property">
+                            <span>Original product</span>
+                            <strong>{{ item.properties['Original product'] }}</strong>
+                          </li>
+                        {% endif %}
+
                         {% if item.properties['Pay now'] != blank %}
                           <li class="cart-page__property">
                             <span>Pay now</span>
@@ -156,7 +163,12 @@
                           </li>
                         {% endif %}
 
-                        {% if item.properties['Balance due'] != blank %}
+                        {% if item.properties['Remaining to collect'] != blank %}
+                          <li class="cart-page__property cart-page__property--muted">
+                            <span>Remaining to collect</span>
+                            <strong>{{ item.properties['Remaining to collect'] }}</strong>
+                          </li>
+                        {% elsif item.properties['Balance due'] != blank %}
                           <li class="cart-page__property cart-page__property--muted">
                             <span>Balance due</span>
                             <strong>{{ item.properties['Balance due'] }}</strong>
@@ -177,9 +189,7 @@
                     data-line-price
                   >
                     {% if item.properties.payment_type == 'partial' %}
-                      {% assign item_booking_cents = item.properties._booking_amount_cents | default: 0 | times: 1 %}
-                      {% assign line_booking_cents = item_booking_cents | times: item.quantity %}
-                      {{ line_booking_cents | money }}
+                      {{ item.final_line_price | money }}
                     {% else %}
                       {{ item.final_line_price | money }}
                     {% endif %}
@@ -1217,11 +1227,7 @@
     const getLineDisplayPrice = (item) => {
 
       if (item.properties?.payment_type === 'partial') {
-        const bookingCents = Number(
-          item.properties._booking_amount_cents || 0
-        );
-
-        return bookingCents * item.quantity;
+        return item.final_line_price;
       }
 
       return item.final_line_price;
