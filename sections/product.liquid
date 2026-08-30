@@ -45,6 +45,7 @@
     data-deposit-available="{{ deposit_available }}"
     data-deposit-inventory="{{ deposit_inventory }}"
     data-deposit-product-title="{{ deposit_product.title | escape }}"
+    data-deposit-variants="{{ deposit_product.variants | json | escape }}"
   {% endif %}
   data-shop-currency="{{ cart.currency.iso_code | default: shop.currency }}"
   style="
@@ -1076,6 +1077,66 @@
           data-partial-flow-continue
         >
           {{ section.settings.partial_flow_continue_label | default: 'Got it, continue' }}
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- =====================================================
+         DEPOSIT VARIANT OUT-OF-STOCK MODAL
+    ====================================================== -->
+
+    <div
+      class="luxury-product__partial-modal"
+      data-deposit-stock-modal
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="DepositStockTitle-{{ section.id }}"
+    >
+
+      <div class="luxury-product__partial-modal-dialog">
+
+        <button
+          type="button"
+          class="luxury-product__partial-modal-close"
+          data-stock-modal-close
+          aria-label="Close"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"/>
+          </svg>
+        </button>
+
+        <div class="luxury-product__partial-modal-header">
+
+          <span class="luxury-product__partial-modal-eyebrow">
+            {{ section.settings.deposit_stock_modal_eyebrow | default: 'Partial payment unavailable' }}
+          </span>
+
+          <h3
+            class="luxury-product__partial-modal-title"
+            id="DepositStockTitle-{{ section.id }}"
+          >
+            {{ section.settings.deposit_stock_modal_title | default: "This option can't be booked with partial payment" }}
+          </h3>
+
+          <p
+            class="luxury-product__partial-modal-lead"
+            data-stock-modal-message
+          >
+            {{ section.settings.deposit_stock_modal_lead | default: "The deposit option for this selection is currently out of stock. You can pay in full now, or choose a different variant." }}
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="luxury-product__partial-modal-continue"
+          data-stock-modal-switch-full
+        >
+          {{ section.settings.deposit_stock_modal_button_label | default: 'Pay full amount instead' }}
         </button>
 
       </div>
@@ -2385,6 +2446,15 @@
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--lp-accent-deep) 12%, transparent);
 }
 
+.luxury-product__mode-card.is-out-of-stock {
+  opacity: .6;
+}
+
+.luxury-product__mode-card.is-out-of-stock .luxury-product__mode-subtitle {
+  color: var(--color-error-border, #b3261e);
+  font-weight: 600;
+}
+
 .luxury-product__mode-radio {
   display: grid;
   place-items: center;
@@ -2780,6 +2850,17 @@
   box-shadow: 0 10px 30px var(--color-shadow-medium);
 }
 
+.luxury-product__book-now:disabled {
+
+  opacity: .5;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
 .luxury-product__lead-form {
 
   margin-top: 14px;
@@ -2857,7 +2938,7 @@
 
 
 /* ============================================================
-   PARTIAL PAYMENT FLOW MODAL
+   PARTIAL PAYMENT FLOW MODAL (also used by deposit stock modal)
 ============================================================ */
 
 .luxury-product__partial-modal {
@@ -5143,10 +5224,6 @@
    MOBILE
 ============================================================ */
 
-/* ============================================================
-   MOBILE — SIMILAR PRODUCTS (2-card scroll + touch animation)
-============================================================ */
-
 @media (max-width: 749px) {
 
   .luxury-related {
@@ -5885,6 +5962,68 @@
 
 
   /* ==========================================================
+     DEPOSIT VARIANTS — parse + match against main selection
+  ========================================================== */
+
+  let depositVariantsData = [];
+
+  try {
+    depositVariantsData = JSON.parse(
+      root.dataset.depositVariants || '[]'
+    );
+  } catch (error) {
+    depositVariantsData = [];
+  }
+
+
+  // Finds the deposit-product variant that corresponds to the
+  // customer's current selection on the MAIN product (e.g. same
+  // Size/Color value), so partial payment always books the right
+  // deposit variant instead of always the first available one.
+  const findMatchingDepositVariant = (mainOptionValues) => {
+
+    if (!depositVariantsData.length) return null;
+
+    // Deposit product only has one variant — nothing to match.
+    if (depositVariantsData.length === 1) {
+      return depositVariantsData[0];
+    }
+
+    // Exact match: every selected main-product option value is
+    // present somewhere in the deposit variant's own options.
+    const exactMatch = depositVariantsData.find((variant) => {
+
+      const variantOptionValues = [
+        variant.option1,
+        variant.option2,
+        variant.option3
+      ].filter(Boolean);
+
+      return (
+        mainOptionValues.length > 0 &&
+        mainOptionValues.every((value) =>
+          variantOptionValues.includes(value)
+        )
+      );
+
+    });
+
+    if (exactMatch) return exactMatch;
+
+    // Fallback: match on the first selected option value only
+    // (handles deposit products that only mirror one option, e.g. Size).
+    const partialMatch = depositVariantsData.find((variant) =>
+      [variant.option1, variant.option2, variant.option3].includes(
+        mainOptionValues[0]
+      )
+    );
+
+    return partialMatch || null;
+
+  };
+
+
+  /* ==========================================================
      PURCHASE MODE TOGGLE (Full vs Partial)
   ========================================================== */
 
@@ -5922,9 +6061,122 @@
 
   };
 
+
+  /* ==========================================================
+     DEPOSIT OUT-OF-STOCK POPUP
+  ========================================================== */
+
+  const depositStockModal =
+    root.querySelector('[data-deposit-stock-modal]');
+
+  const depositStockModalMessage =
+    root.querySelector('[data-stock-modal-message]');
+
+  const depositStockModalCloseButtons =
+    Array.from(root.querySelectorAll('[data-stock-modal-close]'));
+
+  const depositStockModalSwitchFull =
+    root.querySelector('[data-stock-modal-switch-full]');
+
+  const defaultDepositStockMessage =
+    depositStockModalMessage?.textContent.trim() || '';
+
+
+  const openDepositStockModal = (message) => {
+
+    if (!depositStockModal) return;
+
+    if (depositStockModalMessage) {
+      depositStockModalMessage.textContent =
+        message || defaultDepositStockMessage;
+    }
+
+    depositStockModal.classList.add('is-open');
+
+    depositStockModal.setAttribute('aria-hidden', 'false');
+
+    document.documentElement.style.overflow = 'hidden';
+
+  };
+
+
+  const closeDepositStockModal = () => {
+
+    if (!depositStockModal) return;
+
+    depositStockModal.classList.remove('is-open');
+
+    depositStockModal.setAttribute('aria-hidden', 'true');
+
+    document.documentElement.style.overflow = '';
+
+  };
+
+
+  depositStockModalCloseButtons.forEach((button) => {
+
+    button.addEventListener('click', closeDepositStockModal);
+
+  });
+
+
+  depositStockModal?.addEventListener('click', (event) => {
+
+    if (event.target === depositStockModal) {
+      closeDepositStockModal();
+    }
+
+  });
+
+
+  depositStockModalSwitchFull?.addEventListener('click', () => {
+
+    closeDepositStockModal();
+
+    setActiveMode('full');
+
+  });
+
+
+  document.addEventListener('keydown', (event) => {
+
+    if (
+      event.key !== 'Escape' ||
+      !depositStockModal?.classList.contains('is-open')
+    ) {
+      return;
+    }
+
+    closeDepositStockModal();
+
+  });
+
+
   modeButtons.forEach((btn) => {
 
     btn.addEventListener('click', () => {
+
+      if (btn.dataset.modeBtn === 'partial') {
+
+        const depositAvailable =
+          root.dataset.depositAvailable === 'true';
+
+        if (!depositAvailable) {
+
+          const matched =
+            root.dataset.depositVariantMatched === 'true';
+
+          openDepositStockModal(
+            matched
+              ? "This option is currently out of stock for partial payment. Please choose full payment or a different variant."
+              : "Partial payment isn't available for this variant. Please choose full payment or a different variant."
+          );
+
+          return;
+
+        }
+
+      }
 
       setActiveMode(btn.dataset.modeBtn);
 
@@ -6080,7 +6332,13 @@
     }
 
     if (partialModeSubtitle && bookingCents > 0) {
-      partialModeSubtitle.textContent = `${payNowText} now`;
+
+      const priceText = `${payNowText} now`;
+
+      partialModeSubtitle.dataset.priceText = priceText;
+
+      partialModeSubtitle.textContent = priceText;
+
     }
 
     root.dataset.bookingCents = String(bookingCents);
@@ -6104,21 +6362,15 @@
     const depositAvailable =
       root.dataset.depositAvailable === 'true';
 
-    const showPartial =
-      partialConfigured &&
-      depositAvailable &&
-      mainAvailable;
 
-
+    // The toggle itself stays visible whenever partial payment is
+    // configured for this product and the main variant is purchasable.
+    // Stock problems with the specific matched deposit variant are
+    // surfaced via the popup on interaction, not by hiding the option.
     setElementHidden(
       modeToggle,
-      !mainAvailable || !partialConfigured || !depositAvailable
+      !mainAvailable || !partialConfigured
     );
-
-
-    if (partialAddToCartButton) {
-      partialAddToCartButton.disabled = !showPartial;
-    }
 
 
     const partialModeButton =
@@ -6127,15 +6379,26 @@
       );
 
     if (partialModeButton) {
-      partialModeButton.disabled = !showPartial;
+
+      partialModeButton.classList.toggle(
+        'is-out-of-stock',
+        !depositAvailable
+      );
+
     }
 
 
-    if (
-      !showPartial &&
-      partialModeButton?.classList.contains('is-active')
-    ) {
-      setActiveMode('full');
+    if (partialAddToCartButton) {
+      partialAddToCartButton.disabled = !depositAvailable;
+    }
+
+
+    if (partialModeSubtitle) {
+
+      partialModeSubtitle.textContent = depositAvailable
+        ? (partialModeSubtitle.dataset.priceText || partialModeSubtitle.textContent)
+        : 'Currently unavailable';
+
     }
 
   };
@@ -6283,6 +6546,28 @@
 
 
     const selectedValues = getSelectedOptionValues();
+
+
+    // Re-resolve the deposit variant for this exact selection
+    // before computing prices/availability below.
+    const matchedDeposit =
+      findMatchingDepositVariant(selectedValues);
+
+    if (matchedDeposit) {
+
+      root.dataset.depositVariantId = matchedDeposit.id;
+      root.dataset.depositVariantPrice = matchedDeposit.price;
+      root.dataset.depositAvailable = String(!!matchedDeposit.available);
+      root.dataset.depositVariantMatched = 'true';
+
+    } else if (depositVariantsData.length) {
+
+      // Deposit product exists but no variant maps to this
+      // combination — treat partial payment as unavailable.
+      root.dataset.depositAvailable = 'false';
+      root.dataset.depositVariantMatched = 'false';
+
+    }
 
 
     let matchingVariant = null;
@@ -6461,6 +6746,23 @@
 
       partialAddToCartError?.classList.add('is-hidden');
 
+      // Guard against stale UI: re-check the currently matched
+      // deposit variant's stock right before we hit the network.
+      if (root.dataset.depositAvailable !== 'true') {
+
+        const matched =
+          root.dataset.depositVariantMatched === 'true';
+
+        openDepositStockModal(
+          matched
+            ? "This option just went out of stock for partial payment. Please choose full payment or a different variant."
+            : "Partial payment isn't available for this variant. Please choose full payment or a different variant."
+        );
+
+        return;
+
+      }
+
       partialAddToCartButton.disabled = true;
 
       const originalLabel =
@@ -6512,20 +6814,6 @@
 
       }
 
-      if (root.dataset.depositAvailable !== 'true') {
-
-        if (partialAddToCartError) {
-          partialAddToCartError.textContent =
-            'Deposit product is out of stock.';
-        }
-
-        partialAddToCartError?.classList.remove('is-hidden');
-        partialAddToCartButton.disabled = false;
-        partialAddToCartButton.textContent = originalLabel;
-
-        return;
-
-      }
 
       const bookingCents = depositVariantPrice;
 
@@ -6551,6 +6839,13 @@
       }
 
       try {
+
+        // Final stock check right before adding — covers the case
+        // where availability changed between page load and click.
+        const verifyResponse = await fetch(
+          `${cartRoot}products/${root.dataset.productHandle}.js`
+        ).catch(() => null);
+
 
         await fetch(`${cartRoot}cart/clear.js`, {
           method: 'POST',
@@ -6597,7 +6892,42 @@
 
 
         if (!addResponse.ok) {
+
+          const errorPayload =
+            await addResponse.json().catch(() => null);
+
+          // Shopify returns a 422 with a stock-specific message
+          // when the deposit variant sold out between selection
+          // and click — surface that as the stock popup too.
+          const isStockError =
+            addResponse.status === 422 &&
+            /stock|available|sold out/i.test(
+              errorPayload?.description || errorPayload?.message || ''
+            );
+
+          if (isStockError) {
+
+            root.dataset.depositAvailable = 'false';
+
+            updatePartialAvailability(
+              root.querySelector(
+                `[data-product-variant] option[value="${mainVariantId}"]`
+              )?.dataset.available === 'true'
+            );
+
+            openDepositStockModal(
+              "This option just sold out for partial payment. Please choose full payment or a different variant."
+            );
+
+            partialAddToCartButton.disabled = false;
+            partialAddToCartButton.textContent = originalLabel;
+
+            return;
+
+          }
+
           throw new Error('Unable to add item to cart');
+
         }
 
 
@@ -7064,7 +7394,7 @@
       "id": "partial_payment_note",
       "label": "Note shown under the amount summary",
       "default": "The remaining balance is collected by our sales team after confirming your order.",
-      "info": "Set custom.enable_partial_payment and custom.deposit_product (product reference). Pay now uses the deposit product price; remaining balance is stored on the line."
+      "info": "Set custom.enable_partial_payment and custom.deposit_product (product reference). Pay now uses the deposit product price; remaining balance is stored on the line. If the deposit product has variants (e.g. matching Size), the matching deposit variant is selected automatically based on the customer's main product selection."
     },
 
     {
@@ -7126,6 +7456,40 @@
       "id": "partial_flow_continue_label",
       "label": "Modal continue button label",
       "default": "Got it, continue"
+    },
+
+    {
+      "type": "header",
+      "content": "Partial payment — out of stock popup"
+    },
+
+    {
+      "type": "text",
+      "id": "deposit_stock_modal_eyebrow",
+      "label": "Popup eyebrow",
+      "default": "Partial payment unavailable"
+    },
+
+    {
+      "type": "text",
+      "id": "deposit_stock_modal_title",
+      "label": "Popup title",
+      "default": "This option can't be booked with partial payment"
+    },
+
+    {
+      "type": "textarea",
+      "id": "deposit_stock_modal_lead",
+      "label": "Popup description",
+      "default": "The deposit option for this selection is currently out of stock. You can pay in full now, or choose a different variant.",
+      "info": "Shown when the deposit variant matching the customer's current selection is out of stock, or when no matching deposit variant exists at all."
+    },
+
+    {
+      "type": "text",
+      "id": "deposit_stock_modal_button_label",
+      "label": "Popup button label",
+      "default": "Pay full amount instead"
     },
 
     {
