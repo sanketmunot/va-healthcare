@@ -5980,47 +5980,55 @@
   // customer's current selection on the MAIN product (e.g. same
   // Size/Color value), so partial payment always books the right
   // deposit variant instead of always the first available one.
-  const findMatchingDepositVariant = (mainOptionValues) => {
+const findMatchingDepositVariant = (mainOptionValues) => {
+  if (!depositVariantsData.length) return null;
 
-    if (!depositVariantsData.length) return null;
+  const normalize = (value) =>
+    String(value || '').trim().toLowerCase();
 
-    // Deposit product only has one variant — nothing to match.
-    if (depositVariantsData.length === 1) {
-      return depositVariantsData[0];
+  const isRealOptionValue = (value) => {
+    const normalized = normalize(value);
+    return normalized !== '' && normalized !== 'default title';
+  };
+
+  const mainValues = mainOptionValues
+    .filter(Boolean)
+    .map(normalize);
+
+  // Shopify sets option1 to the literal string "Default Title" on
+  // variants of products with no real options configured. Treat
+  // that as "no options" — not a real value to match against —
+  // otherwise a single-variant deposit product never matches any
+  // main-product selection and partial payment looks unavailable.
+  const depositHasOptions = depositVariantsData.some((variant) =>
+    [variant.option1, variant.option2, variant.option3].some(
+      isRealOptionValue
+    )
+  );
+
+  if (!depositHasOptions) {
+    return depositVariantsData[0] || null;
+  }
+
+  return depositVariantsData.find((variant) => {
+    const depositValues = [
+      variant.option1,
+      variant.option2,
+      variant.option3
+    ]
+      .filter(isRealOptionValue)
+      .map(normalize);
+
+    if (depositValues.length !== mainValues.length) {
+      return false;
     }
 
-    // Exact match: every selected main-product option value is
-    // present somewhere in the deposit variant's own options.
-    const exactMatch = depositVariantsData.find((variant) => {
-
-      const variantOptionValues = [
-        variant.option1,
-        variant.option2,
-        variant.option3
-      ].filter(Boolean);
-
-      return (
-        mainOptionValues.length > 0 &&
-        mainOptionValues.every((value) =>
-          variantOptionValues.includes(value)
-        )
-      );
-
-    });
-
-    if (exactMatch) return exactMatch;
-
-    // Fallback: match on the first selected option value only
-    // (handles deposit products that only mirror one option, e.g. Size).
-    const partialMatch = depositVariantsData.find((variant) =>
-      [variant.option1, variant.option2, variant.option3].includes(
-        mainOptionValues[0]
-      )
+    return mainValues.every(
+      (value, index) =>
+        depositValues[index] === value
     );
-
-    return partialMatch || null;
-
-  };
+  }) || null;
+};
 
 
   /* ==========================================================
@@ -6299,59 +6307,53 @@
   };
 
 
-  const updatePartialAmounts = (priceCents) => {
+const updatePartialAmounts = (priceCents) => {
+  const bookingCents = Number(
+    root.dataset.depositVariantPrice || 0
+  );
 
-    const bookingCents = Number(
-      root.dataset.depositVariantPrice || 0
-    );
+  const remainingCents = Math.max(
+    Number(priceCents || 0) - bookingCents,
+    0
+  );
 
-    const remainingCents = Math.max(
-      priceCents - bookingCents,
-      0
-    );
+  const payNowText = formatMoney(bookingCents);
+  const balanceText = formatMoney(remainingCents);
 
-    const payNowText = formatMoney(bookingCents);
+  if (bookingAmountEl) {
+    bookingAmountEl.textContent = payNowText;
+  }
 
-    const balanceText = formatMoney(remainingCents);
+  if (remainingAmountEl) {
+    remainingAmountEl.textContent = balanceText;
+  }
 
+  if (partialModalPayNow) {
+    partialModalPayNow.textContent = payNowText;
+  }
 
-    if (bookingAmountEl) {
-      bookingAmountEl.textContent = payNowText;
-    }
+  if (partialModalBalance) {
+    partialModalBalance.textContent = balanceText;
+  }
 
-    if (remainingAmountEl) {
-      remainingAmountEl.textContent = balanceText;
-    }
+  if (partialModeSubtitle) {
+    const priceText = bookingCents > 0
+      ? `${payNowText} now`
+      : 'Pay advance now';
 
-    if (partialModalPayNow) {
-      partialModalPayNow.textContent = payNowText;
-    }
+    partialModeSubtitle.dataset.priceText = priceText;
+    partialModeSubtitle.textContent = priceText;
+  }
 
-    if (partialModalBalance) {
-      partialModalBalance.textContent = balanceText;
-    }
+  root.dataset.bookingCents = String(bookingCents);
+  root.dataset.remainingCents = String(remainingCents);
+  root.dataset.fullPriceCents = String(priceCents || 0);
 
-    if (partialModeSubtitle && bookingCents > 0) {
-
-      const priceText = `${payNowText} now`;
-
-      partialModeSubtitle.dataset.priceText = priceText;
-
-      partialModeSubtitle.textContent = priceText;
-
-    }
-
-    root.dataset.bookingCents = String(bookingCents);
-
-    root.dataset.remainingCents = String(remainingCents);
-
-    root.dataset.fullPriceCents = String(priceCents);
-
-    if (fullModeSubtitle) {
-      fullModeSubtitle.textContent = `${formatMoney(priceCents)} now`;
-    }
-
-  };
+  if (fullModeSubtitle) {
+    fullModeSubtitle.textContent =
+      `${formatMoney(priceCents)} now`;
+  }
+};
 
 
   const updatePartialAvailability = (mainAvailable) => {
@@ -6553,21 +6555,23 @@
     const matchedDeposit =
       findMatchingDepositVariant(selectedValues);
 
-    if (matchedDeposit) {
-
-      root.dataset.depositVariantId = matchedDeposit.id;
-      root.dataset.depositVariantPrice = matchedDeposit.price;
-      root.dataset.depositAvailable = String(!!matchedDeposit.available);
-      root.dataset.depositVariantMatched = 'true';
-
-    } else if (depositVariantsData.length) {
-
-      // Deposit product exists but no variant maps to this
-      // combination — treat partial payment as unavailable.
-      root.dataset.depositAvailable = 'false';
-      root.dataset.depositVariantMatched = 'false';
-
-    }
+if (matchedDeposit) {
+  root.dataset.depositVariantId =
+    String(matchedDeposit.id);
+  root.dataset.depositVariantPrice =
+    String(matchedDeposit.price || 0);
+  root.dataset.depositAvailable =
+    String(!!matchedDeposit.available);
+  root.dataset.depositVariantMatched = 'true';
+} else {
+  // No deposit variant for this exact selection —
+  // ALWAYS clear old variant data, regardless of
+  // whether depositVariantsData itself is empty.
+  root.dataset.depositVariantId = '';
+  root.dataset.depositVariantPrice = '0';
+  root.dataset.depositAvailable = 'false';
+  root.dataset.depositVariantMatched = 'false';
+}
 
 
     let matchingVariant = null;
@@ -6690,24 +6694,50 @@
       setElementHidden(purchaseNotify, available);
 
 
-      if (available) {
+     if (available) {
 
-        // Restore whichever mode is currently active
-        const activeBtn =
-          modeButtons.find((btn) => btn.classList.contains('is-active'));
+  const activeBtn =
+    modeButtons.find((btn) => btn.classList.contains('is-active'));
 
-        setActiveMode(activeBtn ? activeBtn.dataset.modeBtn : 'full');
+  const activeMode =
+    activeBtn ? activeBtn.dataset.modeBtn : 'full';
 
-      } else {
+  if (
+    activeMode === 'partial' &&
+    root.dataset.depositAvailable !== 'true'
+  ) {
 
-        notifyFormPanel?.classList.add('is-hidden');
-        notifySuccess?.classList.add('is-hidden');
-        notifyError?.classList.add('is-hidden');
+    // Customer was in partial mode, but the newly selected
+    // variant (e.g. switching S -> M) has no usable deposit
+    // variant configured, or it's out of stock. Don't fail
+    // silently — switch back to full payment and tell them why.
+    setActiveMode('full');
 
-        if (notifyEmail) notifyEmail.value = '';
-        if (notifyPhone) notifyPhone.value = '';
+    const matched =
+      root.dataset.depositVariantMatched === 'true';
 
-      }
+    openDepositStockModal(
+      matched
+        ? "This option is currently out of stock for partial payment. We've switched you to full payment — you can also choose a different variant."
+        : "Partial payment isn't available for this variant. We've switched you to full payment — you can also choose a different variant."
+    );
+
+  } else {
+
+    setActiveMode(activeMode);
+
+  }
+
+} else {
+
+  notifyFormPanel?.classList.add('is-hidden');
+  notifySuccess?.classList.add('is-hidden');
+  notifyError?.classList.add('is-hidden');
+
+  if (notifyEmail) notifyEmail.value = '';
+  if (notifyPhone) notifyPhone.value = '';
+
+}
 
     }
 
