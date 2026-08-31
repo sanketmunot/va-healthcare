@@ -1,14 +1,23 @@
 <section class="hero full-width" style="--hero-min-height: {{ section.settings.height }}vh;">
-  <div class="hero__media">
+  {% if section.blocks.size > 0 %}
+    {% for block in section.blocks %}
+      {% liquid
+        if forloop.first
+          assign image_loading = 'eager'
+          assign image_fetchpriority = 'high'
+        else
+          assign image_loading = 'lazy'
+          assign image_fetchpriority = 'auto'
+        endif
+      %}
 
-    {% if section.blocks.size > 0 %}
-
-      {% for block in section.blocks %}
-        {% if block.settings.image != blank %}
-          <div
-            class="hero__slide {% if forloop.first %}is-active{% endif %}"
-            {{ block.shopify_attributes }}
-          >
+      <div
+        class="hero__slide{% if forloop.first %} is-active{% endif %}"
+        data-hero-slide
+        {{ block.shopify_attributes }}
+      >
+        <div class="hero__media">
+          {% if block.settings.image != blank %}
             {{
               block.settings.image
               | image_url: width: 2400
@@ -16,112 +25,109 @@
                 class: 'hero__image',
                 widths: '800, 1200, 1600, 2000, 2400',
                 sizes: '100vw',
-                loading: 'eager',
-                fetchpriority: 'high'
+                loading: image_loading,
+                fetchpriority: image_fetchpriority,
+                alt: block.settings.title
             }}
+          {% else %}
+            <div class="hero__fallback" aria-hidden="true"></div>
+          {% endif %}
+        </div>
+
+        <div
+          class="hero__overlay"
+          style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+        ></div>
+
+        <div class="hero__content page-width">
+          {% if block.settings.subtitle != blank %}
+            <p class="eyebrow">{{ block.settings.subtitle }}</p>
+          {% endif %}
+
+          {% if block.settings.title != blank %}
+            {% if forloop.first %}
+              <h1 class="hero__heading">{{ block.settings.title }}</h1>
+            {% else %}
+              <h2 class="hero__heading">{{ block.settings.title }}</h2>
+            {% endif %}
+          {% endif %}
+
+          {% if block.settings.banner_description != blank %}
+            <p class="hero__text">{{ block.settings.banner_description }}</p>
+          {% endif %}
+
+          <div class="hero__actions">
+            {% if block.settings.button_label != blank %}
+              <a class="button" href="{{ block.settings.button_link }}">
+                {{ block.settings.button_label }}
+              </a>
+            {% endif %}
+
+            {% if section.settings.button_label_2 != blank %}
+              <a
+                class="button button--secondary hero__button-secondary"
+                href="{{ section.settings.button_link_2 }}"
+              >
+                {{ section.settings.button_label_2 }}
+              </a>
+            {% endif %}
           </div>
-        {% endif %}
-      {% endfor %}
-
-    {% else %}
-      <div class="hero__fallback" aria-hidden="true"></div>
-    {% endif %}
-
-    <div
-      class="hero__overlay"
-      style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
-    ></div>
-
-  </div>
-
-  <div class="hero__content page-width animate-in">
-
-    {% if section.settings.eyebrow != blank %}
-      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
-    {% endif %}
-
-    {% if section.settings.heading != blank %}
-      <h1 class="hero__heading">{{ section.settings.heading }}</h1>
-    {% endif %}
-
-    {% if section.settings.text != blank %}
-      <p class="hero__text">{{ section.settings.text }}</p>
-    {% endif %}
-
-    <div class="hero__actions">
-
-      {% if section.settings.button_label != blank %}
-        <a
-          class="button"
-          href="{{ section.settings.button_link }}"
-        >
-          {{ section.settings.button_label }}
-        </a>
-      {% endif %}
-
-      {% if section.settings.button_label_2 != blank %}
-        <a
-          class="button button--secondary hero__button-secondary"
-          href="{{ section.settings.button_link_2 }}"
-        >
-          {{ section.settings.button_label_2 }}
-        </a>
-      {% endif %}
-
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="hero__slide is-active">
+      <div class="hero__media">
+        <div class="hero__fallback" aria-hidden="true"></div>
+      </div>
+      <div
+        class="hero__overlay"
+        style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+      ></div>
     </div>
-
-  </div>
+  {% endif %}
 </section>
 
-
 {% stylesheet %}
-
   .hero {
     position: relative;
     min-height: var(--hero-min-height);
-    display: grid;
-    align-items: end;
     color: var(--color-on-dark);
     overflow: hidden;
   }
 
-  /*
-   * Hero image container
-   */
-  .hero__media {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-
-  /*
-   * Each slide occupies the entire hero
-   */
   .hero__slide {
     position: absolute;
     inset: 0;
+    display: grid;
+    align-items: end;
     width: 100%;
     height: 100%;
-
     opacity: 0;
     visibility: hidden;
-
     transition:
       opacity 1.2s ease-in-out,
       visibility 1.2s ease-in-out;
   }
 
-  /*
-   * Currently visible slide
-   */
   .hero__slide.is-active {
     opacity: 1;
     visibility: visible;
+    z-index: 1;
   }
 
-  /*
-   * Hero images
-   */
+  .hero__media,
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__overlay {
+    background: var(--color-overlay-gradient);
+    z-index: 2;
+    pointer-events: none;
+  }
+
   .hero__image,
   .hero__fallback {
     display: block;
@@ -130,9 +136,6 @@
     object-fit: cover;
   }
 
-  /*
-   * Fallback background when no image exists
-   */
   .hero__fallback {
     background:
       linear-gradient(
@@ -143,59 +146,32 @@
       );
   }
 
-  /*
-   * Dark overlay
-   */
-  .hero__overlay {
-    position: absolute;
-    inset: 0;
-
-    background:
-      var(--color-overlay-gradient);
-
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  /*
-   * Hero text/content
-   */
   .hero__content {
     position: relative;
     z-index: 3;
-
     padding-block: clamp(3rem, 8vw, 6rem);
-
     max-width: 42rem;
   }
 
-  /*
-   * Heading
-   */
   .hero__heading {
+    font-family: var(--font-heading--family);
+    font-style: var(--font-heading--style);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
     font-size: clamp(2.4rem, 6vw, 4.4rem);
-
-    margin-bottom: 1rem;
-
+    margin: 0 0 1rem;
     max-width: 12ch;
+    color: inherit;
   }
 
-  /*
-   * Description
-   */
   .hero__text {
     max-width: 34rem;
-
     font-size: 1.1rem;
-
     color: var(--color-on-dark-muted);
-
     margin-bottom: 1.6rem;
   }
 
-  /*
-   * Buttons
-   */
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
@@ -212,86 +188,115 @@
     color: var(--color-on-dark);
   }
 
-  /*
-   * Eyebrow
-   */
   .hero .eyebrow {
     color: var(--color-hero-accent-text);
   }
-
 {% endstylesheet %}
 
-
 {% javascript %}
-
-  /*
-   * Automatic hero slideshow
-   *
-   * Changes image every 5 seconds.
-   * Uses a smooth fade transition through CSS.
-   */
-
   (() => {
+    const SLIDE_MS = 5000;
 
-    const initHeroSlider = () => {
+    const getSlides = (hero) => hero.querySelectorAll('[data-hero-slide]');
 
-      const heroes = document.querySelectorAll('.hero');
-
-      heroes.forEach((hero) => {
-
-        const slides = hero.querySelectorAll('.hero__slide');
-
-        /*
-         * Don't run slider if there are zero or one images.
-         */
-        if (slides.length <= 1) {
-          return;
-        }
-
-        let currentSlide = 0;
-
-        setInterval(() => {
-
-          /*
-           * Hide current slide
-           */
-          slides[currentSlide].classList.remove('is-active');
-
-          /*
-           * Move to next slide
-           */
-          currentSlide = (currentSlide + 1) % slides.length;
-
-          /*
-           * Show next slide
-           */
-          slides[currentSlide].classList.add('is-active');
-
-        }, 5000);
-
+    const showSlide = (hero, index) => {
+      const slides = getSlides(hero);
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle('is-active', slideIndex === index);
       });
-
+      hero.dataset.heroIndex = String(index);
     };
 
-    /*
-     * Run when page loads
-     */
+    const stopSlider = (hero) => {
+      if (hero.heroTimer) {
+        clearInterval(hero.heroTimer);
+        hero.heroTimer = null;
+      }
+    };
+
+    const startSlider = (hero) => {
+      const slides = getSlides(hero);
+      if (slides.length <= 1) {
+        return;
+      }
+
+      stopSlider(hero);
+
+      hero.heroTimer = setInterval(() => {
+        const slidesNow = getSlides(hero);
+        const current = Number(hero.dataset.heroIndex || 0);
+        showSlide(hero, (current + 1) % slidesNow.length);
+      }, SLIDE_MS);
+    };
+
+    const initHero = (hero) => {
+      if (!hero || hero.dataset.heroReady === 'true') {
+        return;
+      }
+
+      hero.dataset.heroReady = 'true';
+      hero.dataset.heroIndex = '0';
+      startSlider(hero);
+    };
+
+    const initHeroSlider = () => {
+      document.querySelectorAll('.hero').forEach(initHero);
+    };
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initHeroSlider);
     } else {
       initHeroSlider();
     }
 
-  })();
+    if (window.__heroSliderEventsBound) {
+      return;
+    }
 
+    window.__heroSliderEventsBound = true;
+
+    document.addEventListener('shopify:section:load', (event) => {
+      event.target.querySelectorAll('.hero').forEach((hero) => {
+        hero.dataset.heroReady = 'false';
+        initHero(hero);
+      });
+    });
+
+    document.addEventListener('shopify:section:unload', (event) => {
+      event.target.querySelectorAll('.hero').forEach(stopSlider);
+    });
+
+    document.addEventListener('shopify:block:select', (event) => {
+      const slide = event.target.closest('[data-hero-slide]');
+      if (!slide) {
+        return;
+      }
+
+      const hero = slide.closest('.hero');
+      const slides = [...getSlides(hero)];
+      const index = slides.indexOf(slide);
+      if (index < 0) {
+        return;
+      }
+
+      stopSlider(hero);
+      showSlide(hero, index);
+    });
+
+    document.addEventListener('shopify:block:deselect', (event) => {
+      const slide = event.target.closest('[data-hero-slide]');
+      if (!slide) {
+        return;
+      }
+
+      startSlider(slide.closest('.hero'));
+    });
+  })();
 {% endjavascript %}
 
-
 {% schema %}
-
 {
   "name": "Hero banner",
-
   "settings": [
     {
       "type": "range",
@@ -315,35 +320,6 @@
     },
     {
       "type": "text",
-      "id": "eyebrow",
-      "label": "Eyebrow",
-      "default": "Wellness rituals"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Care that feels calm"
-    },
-    {
-      "type": "textarea",
-      "id": "text",
-      "label": "Text",
-      "default": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health."
-    },
-    {
-      "type": "text",
-      "id": "button_label",
-      "label": "Primary button label",
-      "default": "Shop collection"
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "Primary button link"
-    },
-    {
-      "type": "text",
       "id": "button_label_2",
       "label": "Secondary button label",
       "default": "Our story"
@@ -354,7 +330,6 @@
       "label": "Secondary button link"
     }
   ],
-
   "blocks": [
     {
       "type": "slide",
@@ -364,16 +339,56 @@
           "type": "image_picker",
           "id": "image",
           "label": "Image"
+        },
+        {
+          "type": "header",
+          "content": "This slide only"
+        },
+        {
+          "type": "paragraph",
+          "content": "Subtitle, title, description, and primary button apply only to this image."
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Wellness rituals"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Care that feels calm"
+        },
+        {
+          "type": "textarea",
+          "id": "banner_description",
+          "label": "Banner description",
+          "default": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Primary CTA text",
+          "default": "Shop collection"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Primary CTA link"
         }
       ]
     }
   ],
-
   "presets": [
     {
-      "name": "Hero banner"
+      "name": "Hero banner",
+      "blocks": [
+        {
+          "type": "slide"
+        }
+      ]
     }
   ]
 }
-
 {% endschema %}

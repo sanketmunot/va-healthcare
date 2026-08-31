@@ -21,13 +21,23 @@
         "slide_ncdAmh": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/spa-bath.jpg"
+            "image": "shopify://shop_images/spa-bath.jpg",
+            "subtitle": "Wellness rituals",
+            "title": "Care that feels calm",
+            "banner_description": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health.",
+            "button_label": "Shop collection",
+            "button_link": ""
           }
         },
         "slide_KV7FrB": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/person-stands-on-rocks-poking-out-of-the-ocean-shoreline.jpg"
+            "image": "shopify://shop_images/person-stands-on-rocks-poking-out-of-the-ocean-shoreline.jpg",
+            "subtitle": "Recovery outdoors",
+            "title": "Move with more ease",
+            "banner_description": "Support mobility, posture, and everyday strength with clinic-informed tools for home and professional care.",
+            "button_label": "Shop recovery",
+            "button_link": ""
           }
         }
       },
@@ -38,11 +48,6 @@
       "settings": {
         "height": 70,
         "overlay_opacity": 55,
-        "eyebrow": "Wellness rituals",
-        "heading": "Care that feels calm",
-        "text": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health.",
-        "button_label": "Shop collection",
-        "button_link": "",
         "button_label_2": "Our story",
         "button_link_2": "/pages/about-us"
       }
