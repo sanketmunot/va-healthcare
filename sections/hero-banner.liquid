@@ -1,4 +1,4 @@
-<section class="hero full-width" style="--hero-min-height: {{ section.settings.height }}vh;">
+<section class="hero full-width" style="--hero-min-height: {{ section.settings.height }}vh; --hero-fade-end: {{ section.settings.overlay_opacity | minus: 18 | at_least: 24 | at_most: 46 }}%;">
   {% if section.blocks.size > 0 %}
     {% for block in section.blocks %}
       {% liquid
@@ -9,10 +9,31 @@
           assign image_loading = 'lazy'
           assign image_fetchpriority = 'auto'
         endif
+
+        assign show_primary_cta = false
+        if block.settings.button_label != blank and block.settings.button_link != blank
+          assign show_primary_cta = true
+        endif
+
+        assign show_secondary_cta = false
+        if block.settings.button_label_2 != blank and block.settings.button_link_2 != blank
+          assign show_secondary_cta = true
+        endif
+
+        assign has_copy = false
+        if block.settings.subtitle != blank or block.settings.title != blank or block.settings.banner_description != blank or show_primary_cta or show_secondary_cta
+          assign has_copy = true
+        endif
+
+        if has_copy
+          assign image_sizes = '(max-width: 749px) 100vw, 70vw'
+        else
+          assign image_sizes = '100vw'
+        endif
       %}
 
       <div
-        class="hero__slide{% if forloop.first %} is-active{% endif %}"
+        class="hero__slide{% if forloop.first %} is-active{% endif %}{% unless has_copy %} hero__slide--full-image{% endunless %}"
         data-hero-slide
         {{ block.shopify_attributes }}
       >
@@ -24,83 +45,96 @@
               | image_tag:
                 class: 'hero__image',
                 widths: '800, 1200, 1600, 2000, 2400',
-                sizes: '100vw',
+                sizes: image_sizes,
                 loading: image_loading,
                 fetchpriority: image_fetchpriority,
-                alt: block.settings.title
+                alt: block.settings.title,
+                style: 'object-position: 68% center;'
             }}
           {% else %}
             <div class="hero__fallback" aria-hidden="true"></div>
           {% endif %}
         </div>
 
-        <div
-          class="hero__overlay"
-          style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
-        ></div>
+        {% if has_copy %}
+          <div class="hero__overlay"></div>
 
-        <div class="hero__content page-width">
-          {% if block.settings.subtitle != blank %}
-            <p class="eyebrow">{{ block.settings.subtitle }}</p>
-          {% endif %}
-
-          {% if block.settings.title != blank %}
-            {% if forloop.first %}
-              <h1 class="hero__heading">{{ block.settings.title }}</h1>
-            {% else %}
-              <h2 class="hero__heading">{{ block.settings.title }}</h2>
-            {% endif %}
-          {% endif %}
-
-          {% if block.settings.banner_description != blank %}
-            <p class="hero__text">{{ block.settings.banner_description }}</p>
-          {% endif %}
-
-          <div class="hero__actions">
-            {% if block.settings.button_label != blank %}
-              <a class="button" href="{{ block.settings.button_link }}">
-                {{ block.settings.button_label }}
-              </a>
+          <div class="hero__content">
+            {% if block.settings.subtitle != blank %}
+              <p class="eyebrow">{{ block.settings.subtitle }}</p>
             {% endif %}
 
-            {% if section.settings.button_label_2 != blank %}
-              <a
-                class="button button--secondary hero__button-secondary"
-                href="{{ section.settings.button_link_2 }}"
-              >
-                {{ section.settings.button_label_2 }}
-              </a>
+            {% if block.settings.title != blank %}
+              {% if forloop.first %}
+                <h1 class="hero__heading">{{ block.settings.title }}</h1>
+              {% else %}
+                <h2 class="hero__heading">{{ block.settings.title }}</h2>
+              {% endif %}
+            {% endif %}
+
+            {% if block.settings.banner_description != blank %}
+              <p class="hero__text">{{ block.settings.banner_description }}</p>
+            {% endif %}
+
+            {% if show_primary_cta or show_secondary_cta %}
+              <div class="hero__actions">
+                {% if show_primary_cta %}
+                  <a class="button" href="{{ block.settings.button_link }}">
+                    {{ block.settings.button_label }}
+                  </a>
+                {% endif %}
+
+                {% if show_secondary_cta %}
+                  <a
+                    class="button button--secondary hero__button-secondary"
+                    href="{{ block.settings.button_link_2 }}"
+                  >
+                    {{ block.settings.button_label_2 }}
+                  </a>
+                {% endif %}
+              </div>
             {% endif %}
           </div>
-        </div>
+        {% endif %}
       </div>
     {% endfor %}
   {% else %}
-    <div class="hero__slide is-active">
+    <div class="hero__slide is-active hero__slide--full-image">
       <div class="hero__media">
         <div class="hero__fallback" aria-hidden="true"></div>
       </div>
-      <div
-        class="hero__overlay"
-        style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
-      ></div>
     </div>
   {% endif %}
 </section>
 
 {% stylesheet %}
   .hero {
+    --hero-mask:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgb(0 0 0 / 0.06) 7%,
+        rgb(0 0 0 / 0.28) 16%,
+        rgb(0 0 0 / 0.62) calc(var(--hero-fade-end, 34%) - 8%),
+        #000 var(--hero-fade-end, 34%),
+        #000 100%
+      ),
+      radial-gradient(ellipse 42% 58% at 10% 14%, rgb(0 0 0 / 0.42) 0%, transparent 74%),
+      radial-gradient(ellipse 36% 64% at 2% 46%, rgb(0 0 0 / 0.34) 0%, transparent 72%),
+      radial-gradient(ellipse 48% 52% at 14% 78%, rgb(0 0 0 / 0.4) 0%, transparent 76%),
+      radial-gradient(ellipse 30% 40% at 6% 96%, rgb(0 0 0 / 0.28) 0%, transparent 70%);
     position: relative;
     min-height: var(--hero-min-height);
-    color: var(--color-on-dark);
+    color: var(--color-foreground);
     overflow: hidden;
+    background: var(--color-surface);
   }
 
   .hero__slide {
     position: absolute;
     inset: 0;
     display: grid;
-    align-items: end;
+    align-items: center;
     width: 100%;
     height: 100%;
     opacity: 0;
@@ -116,16 +150,67 @@
     z-index: 1;
   }
 
-  .hero__media,
-  .hero__overlay {
+  .hero__media {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 30%;
+    overflow: hidden;
+    -webkit-mask-image: var(--hero-mask);
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: 0 0;
+    -webkit-mask-composite: source-over;
+    mask-image: var(--hero-mask);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    mask-position: 0 0;
+    mask-mode: alpha;
+    mask-composite: add;
+  }
+
+  .hero__media::before {
+    content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)) 0%,
+        color-mix(in srgb, var(--color-surface) 38%, transparent) 22%,
+        transparent 48%
+      );
+  }
+
+  .hero__slide--full-image .hero__media {
+    left: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero__slide--full-image .hero__media::before {
+    display: none;
   }
 
   .hero__overlay {
-    background: var(--color-overlay-gradient);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(46%, 38rem);
     z-index: 2;
     pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        var(--color-surface) 0%,
+        var(--color-surface) 62%,
+        color-mix(in srgb, var(--color-accent) 6%, var(--color-surface)) 84%,
+        transparent 100%
+      );
   }
 
   .hero__image,
@@ -134,6 +219,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 68% center;
   }
 
   .hero__fallback {
@@ -149,8 +235,10 @@
   .hero__content {
     position: relative;
     z-index: 3;
+    width: min(38rem, 46%);
+    margin-left: max(1.25rem, calc((100% - min(var(--page-width), 100% - 3rem)) / 2));
     padding-block: clamp(3rem, 8vw, 6rem);
-    max-width: 42rem;
+    color: var(--color-foreground);
   }
 
   .hero__heading {
@@ -162,13 +250,13 @@
     font-size: clamp(2.4rem, 6vw, 4.4rem);
     margin: 0 0 1rem;
     max-width: 12ch;
-    color: inherit;
+    color: var(--color-foreground);
   }
 
   .hero__text {
     max-width: 34rem;
     font-size: 1.1rem;
-    color: var(--color-on-dark-muted);
+    color: var(--color-muted);
     margin-bottom: 1.6rem;
   }
 
@@ -179,17 +267,68 @@
   }
 
   .hero__button-secondary {
-    border-color: var(--color-hero-btn-outline);
-    color: var(--color-on-dark);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
   }
 
   .hero__button-secondary:hover {
-    border-color: var(--color-on-dark);
-    color: var(--color-on-dark);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
   }
 
   .hero .eyebrow {
-    color: var(--color-hero-accent-text);
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 1099px) {
+    .hero {
+      --hero-mask: none;
+    }
+
+    .hero__slide {
+      align-items: end;
+    }
+
+    .hero__media {
+      inset: 0;
+      left: 0;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .hero__media::before {
+      display: none;
+    }
+
+    .hero__overlay {
+      inset: 0;
+      width: 100%;
+      max-width: none;
+      background:
+        linear-gradient(
+          to top,
+          var(--color-surface) 0%,
+          color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)) 22%,
+          color-mix(in srgb, var(--color-surface) 55%, transparent) 52%,
+          transparent 78%
+        );
+    }
+
+    .hero__content {
+      width: min(40rem, calc(100% - 2.5rem));
+      margin-left: 1.25rem;
+      margin-right: 1.25rem;
+      padding-block: 1.5rem 2rem;
+    }
+
+    .hero__heading {
+      max-width: none;
+    }
+
+    .hero__image {
+      object-position: center;
+    }
   }
 {% endstylesheet %}
 
@@ -315,19 +454,9 @@
       "max": 90,
       "step": 5,
       "unit": "%",
-      "label": "Overlay opacity",
+      "label": "Image reveal",
+      "info": "How much of the photo shows through the left gradient.",
       "default": 55
-    },
-    {
-      "type": "text",
-      "id": "button_label_2",
-      "label": "Secondary button label",
-      "default": "Our story"
-    },
-    {
-      "type": "url",
-      "id": "button_link_2",
-      "label": "Secondary button link"
     }
   ],
   "blocks": [
@@ -346,7 +475,7 @@
         },
         {
           "type": "paragraph",
-          "content": "Subtitle, title, description, and primary button apply only to this image."
+          "content": "Subtitle, title, description, and buttons apply only to this image."
         },
         {
           "type": "text",
@@ -376,6 +505,17 @@
           "type": "url",
           "id": "button_link",
           "label": "Primary CTA link"
+        },
+        {
+          "type": "text",
+          "id": "button_label_2",
+          "label": "Secondary CTA text",
+          "default": "Our story"
+        },
+        {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "Secondary CTA link"
         }
       ]
     }

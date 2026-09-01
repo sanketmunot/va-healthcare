@@ -26,7 +26,9 @@
             "title": "Care that feels calm",
             "banner_description": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health.",
             "button_label": "Shop collection",
-            "button_link": ""
+            "button_link": "",
+            "button_label_2": "Our story",
+            "button_link_2": "/pages/about-us"
           }
         },
         "slide_KV7FrB": {
@@ -37,7 +39,9 @@
             "title": "Move with more ease",
             "banner_description": "Support mobility, posture, and everyday strength with clinic-informed tools for home and professional care.",
             "button_label": "Shop recovery",
-            "button_link": ""
+            "button_link": "",
+            "button_label_2": "Our story",
+            "button_link_2": "/pages/about-us"
           }
         }
       },
@@ -47,9 +51,7 @@
       ],
       "settings": {
         "height": 70,
-        "overlay_opacity": 55,
-        "button_label_2": "Our story",
-        "button_link_2": "/pages/about-us"
+        "overlay_opacity": 55
       }
     },
     "trust": {
