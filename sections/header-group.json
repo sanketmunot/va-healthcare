@@ -15,9 +15,7 @@
       "type": "announcement-bar",
       "settings": {
         "text": "Free shipping on wellness essentials over $75",
-        "link": "",
-        "background": "#073b7a",
-        "text_color": "#ffffff"
+        "link": ""
       }
     },
     "header": {
