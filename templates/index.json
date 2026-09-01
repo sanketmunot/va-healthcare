@@ -43,11 +43,25 @@
             "button_label_2": "Our story",
             "button_link_2": "/pages/about-us"
           }
+        },
+        "slide_KV7FrW": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/person-stands-on-rocks-poking-out-of-the-ocean-shoreline.jpg",
+            "subtitle": "",
+            "title": "",
+            "banner_description": "",
+            "button_label": "",
+            "button_link": "",
+            "button_label_2": "",
+            "button_link_2": ""
+          }
         }
       },
       "block_order": [
         "slide_ncdAmh",
-        "slide_KV7FrB"
+        "slide_KV7FrB",
+        "slide_KV7FrW"
       ],
       "settings": {
         "height": 70,
