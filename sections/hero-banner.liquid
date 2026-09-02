@@ -108,228 +108,698 @@
 </section>
 
 {% stylesheet %}
+.hero {
+  --hero-mask:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(0 0 0 / 0.06) 7%,
+      rgb(0 0 0 / 0.28) 16%,
+      rgb(0 0 0 / 0.62) calc(var(--hero-fade-end, 34%) - 8%),
+      #000 var(--hero-fade-end, 34%),
+      #000 100%
+    ),
+    radial-gradient(
+      ellipse 42% 58% at 10% 14%,
+      rgb(0 0 0 / 0.42) 0%,
+      transparent 74%
+    ),
+    radial-gradient(
+      ellipse 36% 64% at 2% 46%,
+      rgb(0 0 0 / 0.34) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 48% 52% at 14% 78%,
+      rgb(0 0 0 / 0.4) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 30% 40% at 6% 96%,
+      rgb(0 0 0 / 0.28) 0%,
+      transparent 70%
+    );
+
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(var(--hero-min-height), auto);
+  color: var(--color-foreground);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.hero__slide {
+  grid-area: 1 / 1;
+  position: relative;
+  display: grid;
+  align-items: center;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 1.2s ease-in-out,
+    visibility 1.2s ease-in-out;
+}
+
+.hero__slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+}
+
+/* =========================
+   DESKTOP IMAGE
+========================= */
+
+.hero__media {
+  position: absolute;
+  inset: 0 0 0 30%;
+  overflow: hidden;
+
+  -webkit-mask-image: var(--hero-mask);
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: 0 0;
+
+  mask-image: var(--hero-mask);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: 0 0;
+  mask-mode: alpha;
+  mask-composite: add;
+}
+
+.hero__media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(
+        in srgb,
+        var(--color-accent) 12%,
+        var(--color-surface)
+      ) 0%,
+      color-mix(
+        in srgb,
+        var(--color-surface) 38%,
+        transparent
+      ) 22%,
+      transparent 48%
+    );
+}
+
+.hero__slide--full-image .hero__media {
+  left: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.hero__slide--full-image .hero__media::before {
+  display: none;
+}
+
+.hero__image,
+.hero__fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 68% center;
+}
+
+.hero__fallback {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(
+        in srgb,
+        var(--color-foreground) 70%,
+        var(--color-accent)
+      ) 0%,
+      var(--color-accent) 42%,
+      color-mix(
+        in srgb,
+        var(--color-accent) 55%,
+        var(--color-surface)
+      ) 100%
+    );
+}
+
+/* =========================
+   DESKTOP WHITE FADE
+========================= */
+
+.hero__overlay {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(46%, 38rem);
+  z-index: 2;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-surface) 0%,
+      var(--color-surface) 62%,
+      color-mix(
+        in srgb,
+        var(--color-accent) 6%,
+        var(--color-surface)
+      ) 84%,
+      transparent 100%
+    );
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.hero__content {
+  position: relative;
+  z-index: 3;
+
+  width: min(38rem, 46%);
+
+  margin-left:
+    max(
+      1.25rem,
+      calc(
+        (100% - min(var(--page-width), 100% - 3rem)) / 2
+      )
+    );
+
+  padding-block: clamp(3rem, 8vw, 6rem);
+
+  color: var(--color-foreground);
+}
+
+.hero__heading {
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+
+  margin: 0 0 1rem;
+  max-width: 12ch;
+
+  color: var(--color-foreground);
+}
+
+.hero__text {
+  max-width: 34rem;
+
+  font-size: 1.1rem;
+  line-height: 1.5;
+
+  color: var(--color-muted);
+
+  margin: 0 0 1.6rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero__button-secondary {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.hero__button-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--color-accent) 8%,
+      var(--color-surface)
+    );
+}
+
+.hero .eyebrow {
+  color: var(--color-accent);
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1099px) {
+
   .hero {
-    --hero-mask:
-      linear-gradient(
-        90deg,
-        transparent 0%,
-        rgb(0 0 0 / 0.06) 7%,
-        rgb(0 0 0 / 0.28) 16%,
-        rgb(0 0 0 / 0.62) calc(var(--hero-fade-end, 34%) - 8%),
-        #000 var(--hero-fade-end, 34%),
-        #000 100%
-      ),
-      radial-gradient(ellipse 42% 58% at 10% 14%, rgb(0 0 0 / 0.42) 0%, transparent 74%),
-      radial-gradient(ellipse 36% 64% at 2% 46%, rgb(0 0 0 / 0.34) 0%, transparent 72%),
-      radial-gradient(ellipse 48% 52% at 14% 78%, rgb(0 0 0 / 0.4) 0%, transparent 76%),
-      radial-gradient(ellipse 30% 40% at 6% 96%, rgb(0 0 0 / 0.28) 0%, transparent 70%);
-    position: relative;
-    min-height: var(--hero-min-height);
-    color: var(--color-foreground);
-    overflow: hidden;
-    background: var(--color-surface);
+    --hero-mask: none;
+
+    /*
+      Keeps the hero compact instead of allowing the
+      image to create a huge vertical section.
+    */
+    grid-template-rows: minmax(
+      clamp(32rem, 72vw, 42rem),
+      auto
+    );
   }
 
   .hero__slide {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 1.2s ease-in-out,
-      visibility 1.2s ease-in-out;
+    align-items: end;
   }
 
-  .hero__slide.is-active {
-    opacity: 1;
-    visibility: visible;
-    z-index: 1;
+  /* Full image area */
+  .hero__media {
+    inset: 0;
+    left: 0;
+
+    -webkit-mask-image: none;
+    mask-image: none;
+
+    background:
+      linear-gradient(
+        160deg,
+        color-mix(
+          in srgb,
+          var(--color-accent) 6%,
+          var(--color-surface)
+        ) 0%,
+        var(--color-surface) 60%
+      );
+  }
+
+  /*
+    IMPORTANT:
+    Keep the image large enough to look premium.
+    contain prevents important product areas from
+    being cropped.
+  */
+  .hero__image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    object-position: center top;
+  }
+
+  .hero__fallback {
+    height: 100%;
+  }
+
+  /*
+    WHITE FADE ON MOBILE
+
+    Instead of removing the desktop overlay,
+    recreate the fade vertically.
+
+    This gives:
+    image
+       ↓
+    soft fade
+       ↓
+    white
+       ↓
+    text
+  */
+  .hero__overlay {
+    inset: auto 0 0 0;
+
+    top: 38%;
+
+    width: 100%;
+    max-width: none;
+
+    background:
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 12%,
+          transparent
+        ) 18%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 45%,
+          transparent
+        ) 34%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 78%,
+          transparent
+        ) 50%,
+        var(--color-surface) 68%,
+        var(--color-surface) 100%
+      );
+  }
+
+  /*
+    CONTENT
+  */
+  .hero__content {
+    width: min(
+      40rem,
+      calc(100% - 2.5rem)
+    );
+
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+
+    /*
+      Reduced top padding.
+      Most of the mobile vertical space
+      should belong to the image.
+    */
+    padding-block: 0.75rem 1.75rem;
+  }
+
+  .hero .eyebrow {
+    font-size: 0.78rem;
+    line-height: 1.2;
+    margin-bottom: 0.45rem;
+  }
+
+  .hero__heading {
+    max-width: 18ch;
+
+    font-size: clamp(
+      1.75rem,
+      5.8vw,
+      2.5rem
+    );
+
+    line-height: 1.12;
+
+    margin-bottom: 0.55rem;
+  }
+
+  .hero__text {
+    max-width: 32rem;
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+
+    margin-bottom: 1rem;
+  }
+
+  /*
+    RESPONSIVE BUTTONS
+  */
+  .hero__actions {
+    width: 100%;
+
+    display: flex;
+    flex-wrap: nowrap;
+
+    gap: 0.6rem;
+  }
+
+  .hero__actions .button {
+    flex: 1 1 0;
+
+    min-width: 0;
+
+    padding:
+      0.55rem
+      clamp(0.65rem, 3vw, 1rem);
+
+    font-size: 0.8rem;
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    text-align: center;
+  }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 767px) {
+
+  .hero {
+    /*
+      More compact mobile hero.
+      Adjust these values if your product images
+      are particularly tall.
+    */
+    grid-template-rows: minmax(
+      clamp(28rem, 105vw, 36rem),
+      auto
+    );
+  }
+
+  .hero__slide {
+    align-items: end;
   }
 
   .hero__media {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 30%;
-    overflow: hidden;
-    -webkit-mask-image: var(--hero-mask);
-    -webkit-mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: 0 0;
-    -webkit-mask-composite: source-over;
-    mask-image: var(--hero-mask);
-    mask-size: 100% 100%;
-    mask-repeat: no-repeat;
-    mask-position: 0 0;
-    mask-mode: alpha;
-    mask-composite: add;
-  }
-
-  .hero__media::before {
-    content: '';
-    position: absolute;
     inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background:
-      linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)) 0%,
-        color-mix(in srgb, var(--color-surface) 38%, transparent) 22%,
-        transparent 48%
-      );
   }
 
-  .hero__slide--full-image .hero__media {
-    left: 0;
-    -webkit-mask-image: none;
-    mask-image: none;
+  .hero__image {
+    object-fit: contain;
+    object-position: center top;
   }
 
-  .hero__slide--full-image .hero__media::before {
-    display: none;
-  }
-
+  /*
+    Stronger white fade closer to the content.
+    This is the important part for mobile.
+  */
   .hero__overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: min(46%, 38rem);
-    z-index: 2;
-    pointer-events: none;
+    top: 30%;
+
     background:
       linear-gradient(
-        90deg,
-        var(--color-surface) 0%,
-        var(--color-surface) 62%,
-        color-mix(in srgb, var(--color-accent) 6%, var(--color-surface)) 84%,
-        transparent 100%
-      );
-  }
-
-  .hero__image,
-  .hero__fallback {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 68% center;
-  }
-
-  .hero__fallback {
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent)) 0%,
-        var(--color-accent) 42%,
-        color-mix(in srgb, var(--color-accent) 55%, var(--color-surface)) 100%
+        to bottom,
+        transparent 0%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 10%,
+          transparent
+        ) 12%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 38%,
+          transparent
+        ) 27%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 72%,
+          transparent
+        ) 43%,
+        var(--color-surface) 60%,
+        var(--color-surface) 100%
       );
   }
 
   .hero__content {
-    position: relative;
-    z-index: 3;
-    width: min(38rem, 46%);
-    margin-left: max(1.25rem, calc((100% - min(var(--page-width), 100% - 3rem)) / 2));
-    padding-block: clamp(3rem, 8vw, 6rem);
-    color: var(--color-foreground);
-  }
+    width: calc(100% - 2rem);
 
-  .hero__heading {
-    font-family: var(--font-heading--family);
-    font-style: var(--font-heading--style);
-    font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    font-size: clamp(2.4rem, 6vw, 4.4rem);
-    margin: 0 0 1rem;
-    max-width: 12ch;
-    color: var(--color-foreground);
-  }
+    margin-left: 1rem;
+    margin-right: 1rem;
 
-  .hero__text {
-    max-width: 34rem;
-    font-size: 1.1rem;
-    color: var(--color-muted);
-    margin-bottom: 1.6rem;
-  }
-
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .hero__button-secondary {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-
-  .hero__button-secondary:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+    /*
+      Very little top padding.
+    */
+    padding:
+      0.35rem
+      0
+      1.25rem;
   }
 
   .hero .eyebrow {
-    color: var(--color-accent);
+    font-size: 0.7rem;
+    line-height: 1.2;
+
+    margin-bottom: 0.3rem;
   }
 
-  @media (max-width: 1099px) {
-    .hero {
-      --hero-mask: none;
-    }
+  .hero__heading {
+    max-width: 19ch;
 
-    .hero__slide {
-      align-items: end;
-    }
+    font-size: clamp(
+      1.45rem,
+      7vw,
+      1.9rem
+    );
 
-    .hero__media {
-      inset: 0;
-      left: 0;
-      -webkit-mask-image: none;
-      mask-image: none;
-    }
+    line-height: 1.12;
+    letter-spacing: -0.015em;
 
-    .hero__media::before {
-      display: none;
-    }
-
-    .hero__overlay {
-      inset: 0;
-      width: 100%;
-      max-width: none;
-      background:
-        linear-gradient(
-          to top,
-          var(--color-surface) 0%,
-          color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)) 22%,
-          color-mix(in srgb, var(--color-surface) 55%, transparent) 52%,
-          transparent 78%
-        );
-    }
-
-    .hero__content {
-      width: min(40rem, calc(100% - 2.5rem));
-      margin-left: 1.25rem;
-      margin-right: 1.25rem;
-      padding-block: 1.5rem 2rem;
-    }
-
-    .hero__heading {
-      max-width: none;
-    }
-
-    .hero__image {
-      object-position: center;
-    }
+    margin-bottom: 0.4rem;
   }
+
+  .hero__text {
+    max-width: 100%;
+
+    font-size: 0.78rem;
+    line-height: 1.35;
+
+    margin-bottom: 0.75rem;
+  }
+
+  .hero__actions {
+    gap: 0.45rem;
+  }
+
+  .hero__actions .button {
+    flex: 1 1 0;
+
+    min-height: 34px;
+
+    padding:
+      0.45rem
+      0.55rem;
+
+    font-size: 0.7rem;
+    line-height: 1.1;
+
+    white-space: nowrap;
+  }
+}
+
+
+/* =====================================================
+   SMALL PHONES
+===================================================== */
+
+@media (max-width: 480px) {
+
+  .hero {
+    /*
+      Keeps the section from becoming unnecessarily tall
+      on phones such as iPhone SE / small Android devices.
+    */
+    grid-template-rows: minmax(
+      clamp(25rem, 110vw, 32rem),
+      auto
+    );
+  }
+
+  .hero__overlay {
+    top: 27%;
+
+    background:
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 22%,
+          transparent
+        ) 17%,
+        color-mix(
+          in srgb,
+          var(--color-surface) 65%,
+          transparent
+        ) 38%,
+        var(--color-surface) 58%,
+        var(--color-surface) 100%
+      );
+  }
+
+  .hero__content {
+    width: calc(100% - 1.5rem);
+
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+
+    padding-bottom: 1rem;
+  }
+
+  .hero .eyebrow {
+    font-size: 0.65rem;
+  }
+
+  .hero__heading {
+    font-size: clamp(
+      1.3rem,
+      6.8vw,
+      1.7rem
+    );
+
+    margin-bottom: 0.35rem;
+  }
+
+  .hero__text {
+    font-size: 0.72rem;
+    line-height: 1.3;
+
+    margin-bottom: 0.65rem;
+  }
+
+  .hero__actions {
+    gap: 0.4rem;
+  }
+
+  .hero__actions .button {
+    min-height: 32px;
+
+    padding:
+      0.4rem
+      0.45rem;
+
+    font-size: 0.66rem;
+  }
+}
+
+
+/* =====================================================
+   VERY SMALL PHONES
+===================================================== */
+
+@media (max-width: 360px) {
+
+  .hero {
+    grid-template-rows: minmax(24rem, 115vw);
+  }
+
+  .hero__content {
+    padding-bottom: 0.8rem;
+  }
+
+  .hero__heading {
+    font-size: 1.25rem;
+  }
+
+  .hero__text {
+    font-size: 0.68rem;
+  }
+
+  .hero__actions .button {
+    font-size: 0.62rem;
+    padding-inline: 0.35rem;
+  }
+}
+@media (max-width: 767px) {
+  .hero__image {
+    object-fit: contain;
+    object-position: center top;
+    transform: translateY(-30px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__image {
+    transform: translateY(-40px);
+  }
+}
+
+@media (max-width: 360px) {
+  .hero__image {
+    transform: translateY(-45px);
+  }
+}
 {% endstylesheet %}
 
 {% javascript %}
