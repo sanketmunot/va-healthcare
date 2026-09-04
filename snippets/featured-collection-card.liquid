@@ -103,8 +103,8 @@
 
     <p class="featured-collection__price">
       {% if is_placeholder %}
-        <span>₹2,199</span>
-        <s>₹3,499</s>
+        <span>Rs.2,199</span>
+        <s>Rs.3,499</s>
       {% else %}
         <span>{{ product.price | money }}</span>
         {% if product.compare_at_price > product.price %}

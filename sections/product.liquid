@@ -48,6 +48,7 @@
     data-deposit-variants="{{ deposit_product.variants | json | escape }}"
   {% endif %}
   data-shop-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+  data-money-format="{{ shop.money_format | escape }}"
   style="
     --lp-top-space: {{ section.settings.padding_top }}px;
     --lp-bottom-space: {{ section.settings.padding_bottom }}px;
@@ -537,7 +538,7 @@
                     class="luxury-product__mode-subtitle"
                     data-mode-subtitle="full"
                   >
-                    {{ current_variant.price | money }} now
+                      {{ current_variant.price | money }} now
                   </span>
                 </button>
 
@@ -1147,233 +1148,6 @@
 
 </section>
 
-
-<!-- =========================================================
-     CUSTOMER REVIEWS — continuous scrolling ribbon
-========================================================== -->
-
-{% if section.settings.show_reviews %}
-
-  <section class="luxury-reviews" aria-label="Customer reviews">
-
-    <div class="luxury-reviews__container">
-
-      <div class="luxury-reviews__header">
-
-        <span class="luxury-reviews__eyebrow">
-          {{ section.settings.reviews_eyebrow | default: 'In their words' }}
-        </span>
-
-        <h2 class="luxury-reviews__title">
-          {{ section.settings.reviews_title | default: 'Loved, in the details' }}
-        </h2>
-
-      </div>
-
-    </div>
-
-
-    <div class="luxury-reviews__marquee" data-reviews-marquee>
-
-      <div class="luxury-reviews__track" data-reviews-track>
-
-        {% comment %} ============ SET A ============ {% endcomment %}
-        <div class="luxury-reviews__group" aria-hidden="false">
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">The stitching alone tells you this wasn't rushed. Worn it three weeks straight and it still looks brand new.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">AH</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Amelia Hartley</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Ordered expecting "nice." Got something closer to an heirloom. The kind of quality you can feel with your hands before you even read the label.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">JC</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Julian Cross</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars" aria-label="Rated 4 out of 5 stars">
-              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Beautiful piece — sizing ran slightly generous. Reached out and their team sorted an exchange within a day, no hassle at all.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">NS</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Noor Al-Sayed</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Understated until you look closely — then every detail makes sense. Worth the wait on backorder, easily.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">MW</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Marcus Whitfield</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars" aria-label="Rated 5 out of 5 stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">This is the third piece I've bought from them, and the consistency is exactly what keeps me coming back.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">PD</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Priya Devan</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars" aria-label="Rated 4 out of 5 stars">
-              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Packaging alone felt premium — the product matched it. Shipping ran a little slow, otherwise flawless.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">EM</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Elias Moreau</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-        </div>
-
-        {% comment %} ============ SET B — exact duplicate, hidden from AT, closes the loop seamlessly ============ {% endcomment %}
-        <div class="luxury-reviews__group" aria-hidden="true">
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">The stitching alone tells you this wasn't rushed. Worn it three weeks straight and it still looks brand new.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">AH</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Amelia Hartley</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Ordered expecting "nice." Got something closer to an heirloom. The kind of quality you can feel with your hands before you even read the label.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">JC</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Julian Cross</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars">
-              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Beautiful piece — sizing ran slightly generous. Reached out and their team sorted an exchange within a day, no hassle at all.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">NS</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Noor Al-Sayed</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Understated until you look closely — then every detail makes sense. Worth the wait on backorder, easily.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">MW</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Marcus Whitfield</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars">
-              {% for i in (1..5) %}<svg class="is-filled" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">This is the third piece I've bought from them, and the consistency is exactly what keeps me coming back.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">PD</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Priya Devan</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-          <article class="luxury-reviews__card">
-            <span class="luxury-reviews__quote-mark" aria-hidden="true">&#8220;</span>
-            <div class="luxury-reviews__stars">
-              {% for i in (1..5) %}<svg class="{% if i <= 4 %}is-filled{% endif %}" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.8 2.58 5.23 5.77.84-4.18 4.08.99 5.75L12 16.98l-5.16 2.72.99-5.75-4.18-4.08 5.77-.84L12 3.8Z"/></svg>{% endfor %}
-            </div>
-            <p class="luxury-reviews__text">Packaging alone felt premium — the product matched it. Shipping ran a little slow, otherwise flawless.</p>
-            <div class="luxury-reviews__person">
-              <span class="luxury-reviews__avatar">EM</span>
-              <span class="luxury-reviews__person-meta">
-                <strong>Elias Moreau</strong>
-                <small>Verified buyer</small>
-              </span>
-            </div>
-          </article>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-{% endif %}
 {% comment %}
   ============================================================
   SIMILAR PRODUCTS
@@ -1585,8 +1359,6 @@
 
 {% stylesheet %}
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
-
 .luxury-product {
 
   --lp-black: color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent));
@@ -1664,6 +1436,9 @@ font-style: var(--font-body--style);
 
 .luxury-product__gallery {
   min-width: 0;
+  position: sticky;
+  top: 80px;
+  align-self: start;
 }
 
 
@@ -2070,10 +1845,7 @@ font-style: var(--font-body--style);
 
 .luxury-product__details-inner {
 
-  position: sticky;
-
-  top: 80px;
-
+  position: static;
   max-width: 570px;
 }
 
@@ -3083,6 +2855,9 @@ font-style: var(--font-body--style);
 
   margin: 0 0 0.65rem;
 
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+
   font-size: clamp(1.15rem, 2.5vw, 1.35rem);
 
   line-height: 1.25;
@@ -3530,6 +3305,9 @@ font-style: var(--font-body--style);
 
   color: var(--color-foreground);
 
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+
   cursor: pointer;
 
   list-style: none;
@@ -3804,353 +3582,6 @@ font-style: var(--font-body--style);
 
 
 /* ============================================================
-   FOCUS
-============================================================ */
-
-.luxury-product button:focus-visible,
-.luxury-product input:focus-visible,
-.luxury-product summary:focus-visible,
-.luxury-reviews *:focus-visible {
-
-  outline: 2px solid var(--lp-accent, var(--color-accent));
-
-  outline-offset: 3px;
-}
-
-
-/* ============================================================================
-   CUSTOMER REVIEWS — continuous scrolling ribbon (signature element)
-============================================================================ */
-
-.luxury-reviews {
-
-  --rv-ink: color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent));
-  --rv-paper: var(--color-background);
-  --rv-line: var(--color-border);
-  --rv-muted: var(--color-muted);
-  --rv-accent: var(--color-accent);
-
-  width:100vw;
-    margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding: 84px 0 96px;
-
-  background: var(--rv-paper);
-
-  border-top: 1px solid var(--rv-line);
-
-  overflow: hidden;
-
-  font-family: var(--font-body--family);
-font-style: var(--font-body--style);
-}
-
-.luxury-reviews__container {
-
-  width: min(1480px, calc(100% - 80px));
-
-  margin-inline: auto;
-}
-
-.luxury-reviews__header {
-
-  text-align: center;
-
-  margin-bottom: 48px;
-}
-
-.luxury-reviews__eyebrow {
-
-  display: inline-block;
-
-  margin-bottom: 14px;
-
-  color: var(--rv-accent);
-
-  font-family: var(--font-body--family);
-font-style: var(--font-body--style);
-
-  font-size: 10.5px;
-
-  font-weight: 500;
-
-  letter-spacing: .2em;
-
-  text-transform: uppercase;
-}
-
-.luxury-reviews__title {
-
-  margin: 0;
-
-  color: var(--rv-ink);
-
-  font-family: var(--font-heading--family);
-  font-style: var(--font-heading--style);
-
-  font-size: clamp(28px, 3.2vw, 42px);
-
-  font-weight: 500;
-
-  letter-spacing: -.02em;
-  line-height: 1.1;
-}
-
-.luxury-reviews__header::after {
-
-  content: '';
-
-  display: block;
-
-  width: 64px;
-  height: 3px;
-
-  margin: 22px auto 0;
-
-  background: linear-gradient(135deg, color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent)) 0%, var(--color-accent) 42%, color-mix(in srgb, var(--color-accent) 55%, var(--color-surface)) 100%);
-
-  border-radius: 999px;
-}
-
-.luxury-reviews__marquee {
-
-  position: relative;
-
-  width: 100%;
-
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    var(--color-foreground) 6%,
-    var(--color-foreground) 94%,
-    transparent 100%
-  );
-
-  mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    var(--color-foreground) 6%,
-    var(--color-foreground) 94%,
-    transparent 100%
-  );
-}
-
-.luxury-reviews__track {
-
-  display: flex;
-
-  width: max-content;
-
-  animation: reviews-scroll 46s linear infinite;
-}
-
-.luxury-reviews__marquee:hover .luxury-reviews__track,
-.luxury-reviews__marquee:focus-within .luxury-reviews__track {
-
-  animation-play-state: paused;
-}
-
-.luxury-reviews__group {
-
-  display: flex;
-
-  gap: 20px;
-
-  padding: 4px 10px;
-
-  flex-shrink: 0;
-}
-
-@keyframes reviews-scroll {
-
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-
-}
-
-.luxury-reviews__card {
-
-  position: relative;
-
-  flex: 0 0 340px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 16px;
-
-  padding: 28px 26px 24px;
-
-  background: var(--color-surface);
-
-  border: 1px solid var(--rv-line);
-  border-top: 3px solid transparent;
-
-  border-radius: 10px;
-
-  background-image:
-    linear-gradient(var(--color-surface), var(--color-surface)),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent)) 0%, var(--color-accent) 42%, color-mix(in srgb, var(--color-accent) 55%, var(--color-surface)) 100%);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-
-  box-shadow: 0 14px 34px var(--color-shadow-medium);
-}
-
-.luxury-reviews__quote-mark {
-
-  position: absolute;
-
-  top: 10px;
-  right: 20px;
-
-  color: var(--rv-line);
-
-  font-family: var(--font-heading--family);
-font-style: var(--font-heading--style);
-
-  font-size: 52px;
-
-  line-height: 1;
-
-  user-select: none;
-}
-
-.luxury-reviews__stars {
-
-  display: flex;
-
-  gap: 3px;
-
-  color: var(--color-border);
-}
-
-.luxury-reviews__stars svg {
-
-  width: 14px;
-  height: 14px;
-
-  fill: currentColor;
-}
-
-.luxury-reviews__stars svg.is-filled {
-
-  color: var(--rv-accent);
-}
-
-.luxury-reviews__text {
-
-  margin: 0;
-
-  color: var(--color-muted);
-
-  font-size: 13.5px;
-
-  line-height: 1.75;
-
-  min-height: 88px;
-}
-
-.luxury-reviews__person {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  padding-top: 14px;
-
-  border-top: 1px solid var(--rv-line);
-}
-
-.luxury-reviews__avatar {
-
-  flex: 0 0 auto;
-
-  width: 38px;
-  height: 38px;
-
-  display: grid;
-
-  place-items: center;
-
-  color: var(--color-surface);
-
-  background: linear-gradient(135deg, color-mix(in srgb, var(--color-foreground) 70%, var(--color-accent)) 0%, var(--color-accent) 42%, color-mix(in srgb, var(--color-accent) 55%, var(--color-surface)) 100%);
-
-  border-radius: 50%;
-
-   font-family: var(--font-body--family);
-  font-style: var(--font-body--style);
-
-  font-size: 11px;
-
-  font-weight: 500;
-
-  letter-spacing: .02em;
-}
-
-.luxury-reviews__person-meta {
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 2px;
-
-  min-width: 0;
-}
-
-.luxury-reviews__person-meta strong {
-
-  color: var(--rv-ink);
-
-  font-size: 12.5px;
-
-  font-weight: 650;
-}
-
-.luxury-reviews__person-meta small {
-
-  color: var(--rv-muted);
-
-  font-size: 10.5px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  .luxury-reviews__track {
-
-    animation: none;
-  }
-
-  .luxury-reviews__marquee {
-
-    overflow-x: auto;
-
-    scroll-snap-type: x proximity;
-
-    -webkit-mask-image: none;
-
-    mask-image: none;
-  }
-
-  .luxury-reviews__group[aria-hidden="true"] {
-
-    display: none;
-  }
-
-  .luxury-reviews__card {
-
-    scroll-snap-align: start;
-  }
-
-}
-
-
-/* ============================================================
    LARGE TABLET
 ============================================================ */
 
@@ -4176,10 +3607,6 @@ font-style: var(--font-heading--style);
     left: -23px;
   }
 
-  .luxury-reviews__container {
-
-    width: min(100% - 48px, 1000px);
-  }
 
 }
 
@@ -4222,15 +3649,6 @@ font-style: var(--font-heading--style);
     max-width: 700px;
   }
 
-  .luxury-reviews {
-
-    padding: 64px 0 76px;
-  }
-
-  .luxury-reviews__container {
-
-    width: min(100% - 36px, 720px);
-  }
 
 }
 
@@ -4513,105 +3931,7 @@ font-style: var(--font-heading--style);
   }
 
 
-  .luxury-reviews {
-
-    padding: 52px 0 64px;
-  }
-
-  .luxury-reviews__container {
-
-    width: min(100% - 32px, 720px);
-  }
-
-  .luxury-reviews__header {
-
-    margin-bottom: 28px;
-
-    padding-inline: 0;
-  }
-
-  .luxury-reviews__title {
-
-    font-size: clamp(22px, 6vw, 30px);
-  }
-
-  .luxury-reviews__header::after {
-
-    width: 48px;
-
-    height: 2px;
-
-    margin-top: 16px;
-  }
-
-  .luxury-reviews__group {
-
-    gap: 14px;
-
-    padding-inline: 4px;
-  }
-
-  .luxury-reviews__card {
-
-    flex: 0 0 220px;
-
-    gap: 12px;
-
-    padding: 18px 16px 16px;
-  }
-
-  .luxury-reviews__quote-mark {
-
-    top: 8px;
-    right: 14px;
-
-    font-size: 38px;
-  }
-
-  .luxury-reviews__stars svg {
-
-    width: 11px;
-    height: 11px;
-  }
-
-  .luxury-reviews__text {
-
-    font-size: 12px;
-
-    line-height: 1.6;
-
-    min-height: 72px;
-  }
-
-  .luxury-reviews__person {
-
-    gap: 10px;
-
-    padding-top: 10px;
-  }
-
-  .luxury-reviews__avatar {
-
-    width: 30px;
-    height: 30px;
-
-    font-size: 9px;
-  }
-
-  .luxury-reviews__person-meta strong {
-
-    font-size: 11px;
-  }
-
-  .luxury-reviews__person-meta small {
-
-    font-size: 9.5px;
-  }
-
-  .luxury-reviews__track {
-
-    animation-duration: 34s;
-  }
+  
 
 }
 
@@ -4701,13 +4021,12 @@ font-style: var(--font-heading--style);
   display: block;
 
   margin-bottom: 10px;
-
   color: var(--rel-accent);
-
-   font-family: var(--font-body--family);
+  font-family: var(--font-body--family);
   font-style: var(--font-body--style);
 
-  font-size: 10px;
+  font-size: 15px;
+  font-weight:400;
 
   font-weight: 500;
 
@@ -4725,8 +4044,8 @@ font-style: var(--font-heading--style);
 
   color: var(--rel-ink);
 
-   font-family: var(--font-body--family);
-  font-style: var(--font-body--style);
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
   font-size:
     clamp(
       30px,
@@ -5066,10 +4385,10 @@ font-style: var(--font-heading--style);
 
   color: var(--rel-ink);
 
-  font-family: var(--font-body--family);
-  font-style: var(--font-body--style);
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
 
-  font-size: 18px;
+  font-size: 19px;
 
   font-weight: 500;
 
@@ -5385,15 +4704,6 @@ font-style: var(--font-heading--style);
     font-size: 24px;
   }
 
-  .luxury-reviews__card {
-    flex-basis: 200px;
-    padding: 16px 14px 14px;
-  }
-
-  .luxury-reviews__text {
-    font-size: 11.5px;
-    min-height: 64px;
-  }
 }
 
 
@@ -6277,7 +5587,18 @@ const findMatchingDepositVariant = (mainOptionValues) => {
     root.querySelector('[data-partial-flow-continue]');
 
 
+  let moneyPrefix;
+
   const formatMoney = (cents) => {
+    if (moneyPrefix === undefined) {
+      const renderedPrice =
+        root.querySelector('[data-price]')?.textContent.trim() || '';
+
+      moneyPrefix =
+        (renderedPrice.match(/^[^\d]*/)?.[0] || '').trim();
+    }
+
+    let formattedMoney;
 
     if (
       window.Shopify &&
@@ -6285,27 +5606,36 @@ const findMatchingDepositVariant = (mainOptionValues) => {
         'function'
     ) {
 
-      return Shopify.formatMoney(
+      const moneyFormat =
+        root.dataset.moneyFormat ||
+        Shopify.money_format ||
+        '{{ amount }}';
+
+      const amount = Shopify.formatMoney(cents, '{{ amount }}');
+      const amountWithoutDecimals = Shopify.formatMoney(
         cents,
-        Shopify.money_format
+        '{{ amount_no_decimals }}'
       );
 
+      formattedMoney = moneyFormat
+        .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, amountWithoutDecimals)
+        .replace(/\{\{\s*amount\s*\}\}/g, amount);
+
+    } else {
+      formattedMoney = (Number(cents) / 100).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
-    const currency =
-      root.dataset.shopCurrency ||
-      window.Shopify?.currency?.active ||
-      'USD';
+    if (
+      moneyPrefix &&
+      !formattedMoney.trimStart().startsWith(moneyPrefix)
+    ) {
+      return `${moneyPrefix} ${formattedMoney}`;
+    }
 
-    return (
-      Number(cents) / 100
-    ).toLocaleString(
-      undefined,
-      {
-        style: 'currency',
-        currency
-      }
-    );
+    return formattedMoney;
 
   };
 
@@ -7160,8 +6490,6 @@ if (matchedDeposit) {
   );
 
 
-  updateVariant();
-
 })();
 
 
@@ -7603,32 +6931,6 @@ if (matchedDeposit) {
       "id": "trust_3_text",
       "label": "Third benefit description",
       "default": "Simple returns"
-    },
-
-    {
-      "type": "header",
-      "content": "Customer reviews"
-    },
-
-    {
-      "type": "checkbox",
-      "id": "show_reviews",
-      "label": "Show scrolling reviews",
-      "default": true
-    },
-
-    {
-      "type": "text",
-      "id": "reviews_eyebrow",
-      "label": "Eyebrow label",
-      "default": "In their words"
-    },
-
-    {
-      "type": "text",
-      "id": "reviews_title",
-      "label": "Section title",
-      "default": "Loved, in the details"
     }
 
   ],

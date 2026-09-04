@@ -23,6 +23,15 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
+    {% comment %}Keep the global query modal hidden before body styles load.{% endcomment %}
+    <style>
+      .vah-form-overlay {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
