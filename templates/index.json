@@ -12,56 +12,59 @@
     "sticky_socials": {
       "type": "sticky-socials",
       "settings": {
+        "instagram": "",
+        "twitter": "",
+        "facebook": "",
         "whatsapp": "919876543210"
       }
     },
     "hero": {
       "type": "hero-banner",
       "blocks": {
-        "slide_ncdAmh": {
+        "slide_VnJChn": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/spa-bath.jpg",
-            "subtitle": "Wellness rituals",
-            "title": "Care that feels calm",
-            "banner_description": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health.",
-            "button_label": "Shop collection",
-            "button_link": "",
-            "button_label_2": "Our story",
-            "button_link_2": "/pages/about-us"
+            "image": "shopify://shop_images/1.png",
+            "subtitle": "RELIABLE EQUIPMENT. STRONGER CARE.",
+            "title": "Healthcare Equipment Built for Better Care",
+            "banner_description": "Equip your hospital or clinic with dependable healthcare solutions designed for comfort, safety, efficiency, and consistent patient care—from everyday essentials to advanced clinical equipment.",
+            "button_label": "Explore Chart Holders →",
+            "button_link": "shopify://collections/hospital-bed",
+            "button_label_2": "Request a Quote →",
+            "button_link_2": "shopify://pages/contact"
           }
         },
-        "slide_KV7FrB": {
+        "slide_A3YHLW": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/person-stands-on-rocks-poking-out-of-the-ocean-shoreline.jpg",
-            "subtitle": "Recovery outdoors",
-            "title": "Move with more ease",
-            "banner_description": "Support mobility, posture, and everyday strength with clinic-informed tools for home and professional care.",
-            "button_label": "Shop recovery",
-            "button_link": "",
-            "button_label_2": "Our story",
-            "button_link_2": "/pages/about-us"
+            "image": "shopify://shop_images/6.png",
+            "subtitle": "EDUCATE. PRACTICE. EXCEL.",
+            "title": "Training the Healthcare Professionals of Tomorrow.",
+            "banner_description": "High quality medical training manikins, anatomy models and simulation equipment for effective learning and confident care.",
+            "button_label": "View Catalogue →",
+            "button_link": "shopify://collections/modalities-copy",
+            "button_label_2": "Explore Training Solutions",
+            "button_link_2": "shopify://pages/contact"
           }
         },
-        "slide_KV7FrW": {
+        "slide_WN4XjF": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/person-stands-on-rocks-poking-out-of-the-ocean-shoreline.jpg",
-            "subtitle": "",
-            "title": "",
-            "banner_description": "",
-            "button_label": "",
-            "button_link": "",
-            "button_label_2": "",
-            "button_link_2": ""
+            "image": "shopify://shop_images/5.png",
+            "subtitle": "RELIABLE TECHNOLOGY. ACCURATE DECISIONS.",
+            "title": "Reliable Technology for Critical Decisions.",
+            "banner_description": "Advanced medical and diagnostic devices that support accurate monitoring and informed clinical care.",
+            "button_label": "Explore Medical Devices →",
+            "button_link": "shopify://collections/devices",
+            "button_label_2": "View Solutions",
+            "button_link_2": "shopify://pages/contact"
           }
         }
       },
       "block_order": [
-        "slide_ncdAmh",
-        "slide_KV7FrB",
-        "slide_KV7FrW"
+        "slide_VnJChn",
+        "slide_A3YHLW",
+        "slide_WN4XjF"
       ],
       "settings": {
         "height": 70,
@@ -82,9 +85,9 @@
         "badge_2": {
           "type": "badge",
           "settings": {
-            "icon": "shopify://shop_images/search.png",
-            "title": "Dermatologist tested",
-            "text": "Gentle enough for daily use and mindful recovery."
+            "icon": "shopify://shop_images/down-payment.png",
+            "title": "Partial Payment",
+            "text": "Flexible partial payments for a smoother, stress-free purchase."
           }
         },
         "badge_3": {
@@ -177,6 +180,9 @@
         "eyebrow": "Support",
         "heading": "Common questions",
         "text": "Answers about shipping, ingredients, and everyday use.",
+        "show_contact_cta": false,
+        "contact_cta_label": "Still have questions? Contact us",
+        "contact_cta_url": "",
         "padding": 64
       }
     },
@@ -188,6 +194,8 @@
         "text": "New arrivals, seasonal rituals, and gentle routines — no noise.",
         "placeholder": "Email address",
         "button_label": "Subscribe",
+        "bulk_text": "Need a bulk order? Get in touch and we will help with volume pricing.",
+        "bulk_button": "Contact us",
         "padding": 72
       }
     }
