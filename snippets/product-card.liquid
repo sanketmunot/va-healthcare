@@ -13,6 +13,10 @@
   assign show_vendor = show_vendor | default: settings.product_card_show_vendor
   assign show_quick_add = show_quick_add | default: settings.product_card_show_quick_add
   assign featured = product.featured_media.preview_image | default: product.featured_image
+  assign discount_percentage = 0
+  if product.compare_at_price > product.price
+    assign discount_percentage = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round
+  endif
 %}
 
 <article
@@ -51,6 +55,9 @@
         <s>{{ product.compare_at_price | money }}</s>
       {% endif %}
       <span>{{ product.price | money }}</span>
+      {% if product.available and discount_percentage > 0 %}
+        <small class="product-card__discount">{{ discount_percentage }}% off</small>
+      {% endif %}
     </p>
 
     {% if show_quick_add and product.available and product.has_only_default_variant %}
@@ -153,6 +160,7 @@
 
   .product-card__price {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     align-items: baseline;
     color: var(--color-muted);
@@ -166,6 +174,29 @@
 
   .product-card__price span {
     color: var(--color-foreground);
+  }
+
+  .product-card__discount {
+    color: var(--color-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 480px) {
+    .product-card__body {
+      padding-inline: 0.8rem;
+    }
+
+    .product-card__price {
+      column-gap: 0.35rem;
+      row-gap: 0.2rem;
+    }
+
+    .product-card__discount {
+      font-size: 0.68rem;
+    }
   }
 
   .product-card__form {

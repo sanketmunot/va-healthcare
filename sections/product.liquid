@@ -6,6 +6,10 @@
 
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign product_form_id = 'product-form-' | append: section.id %}
+{% assign current_discount_percentage = 0 %}
+{% if current_variant.compare_at_price > current_variant.price %}
+  {% assign current_discount_percentage = current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price | round %}
+{% endif %}
 
 {% assign deposit_product = product.metafields.custom.deposit_product.value %}
 {% assign deposit_variant = nil %}
@@ -327,7 +331,7 @@
                 class="luxury-product__sale"
                 data-sale-badge
               >
-                Sale
+                {{ current_discount_percentage }}% off
               </span>
 
             {% else %}
@@ -350,7 +354,7 @@
                 data-sale-badge
                 hidden
               >
-                Sale
+                0% off
               </span>
 
             {% endif %}
@@ -1257,8 +1261,10 @@
 
                     {% if related_variant.compare_at_price > related_variant.price %}
 
+                      {% assign related_discount_percentage = related_variant.compare_at_price | minus: related_variant.price | times: 100 | divided_by: related_variant.compare_at_price | round %}
+
                       <span class="luxury-related__badge">
-                        Sale
+                        {{ related_discount_percentage }}% off
                       </span>
 
                     {% endif %}
@@ -5985,8 +5991,14 @@ if (matchedDeposit) {
 
     if (saleBadge) {
 
-      saleBadge.hidden =
-        !(comparePrice > price);
+      const hasDiscount = comparePrice > price;
+
+      saleBadge.hidden = !hasDiscount;
+
+      if (hasDiscount) {
+        saleBadge.textContent =
+          `${Math.round((comparePrice - price) * 100 / comparePrice)}% off`;
+      }
 
     }
 

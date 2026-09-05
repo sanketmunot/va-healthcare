@@ -23,7 +23,8 @@
     assign form_id = 'featured-cart-' | append: section.id | append: '-' | append: product.id
     assign usp = product.type | default: product.vendor
     if product.compare_at_price > product.price
-      assign badge = 'Sale'
+      assign discount_percentage = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round
+      assign badge = discount_percentage | append: '% off'
     elsif product.type != blank
       assign badge = product.type
     else

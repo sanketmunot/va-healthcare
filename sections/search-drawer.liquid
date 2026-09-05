@@ -325,6 +325,18 @@
     color: var(--color-muted);
   }
 
+  .search-drawer__price-compare {
+    margin-left: 0.35rem;
+    font-weight: 400;
+    text-decoration: line-through;
+  }
+
+  .search-drawer__discount {
+    margin-left: 0.35rem;
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
   .search-drawer__footer {
     padding: 0 1rem 1rem;
   }
@@ -503,8 +515,19 @@
             ? `<img src="${product.image}" alt="" loading="lazy" width="112" height="112">`
             : '<div class="search-drawer__thumb--placeholder"></div>';
 
-          const priceHtml = product.price
-            ? `<p class="search-drawer__price">${formatMoney(product.price)}</p>`
+          const price = Number(product.price || 0);
+          const compareAtPrice = Number(
+            product.compare_at_price || product.compare_at_price_min || 0
+          );
+          const discountPercentage = compareAtPrice > price
+            ? Math.round((compareAtPrice - price) * 100 / compareAtPrice)
+            : 0;
+          const priceHtml = price
+            ? `<p class="search-drawer__price">
+                ${formatMoney(price)}
+                ${compareAtPrice > price ? `<s class="search-drawer__price-compare">${formatMoney(compareAtPrice)}</s>` : ''}
+                ${discountPercentage ? `<span class="search-drawer__discount">${discountPercentage}% off</span>` : ''}
+              </p>`
             : '';
 
           return `
