@@ -46,22 +46,7 @@
         </div>
       </div>
 
-      {% form 'contact', id: 'vah-lead-form', class: 'vah-form' %}
-        {% if form.posted_successfully? %}
-          <div class="vah-form__success" id="vah-thank-you" data-vah-posted="true">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Thank you! Your query has been submitted successfully.</span>
-          </div>
-        {% endif %}
-
-        {% if form.errors %}
-          <div class="vah-form__error">{{ form.errors | default_errors }}</div>
-        {% endif %}
-
-        {% unless form.posted_successfully? %}
+      <form action="/" method="get" id="vah-lead-form" class="vah-form">
           <div class="vah-form__row">
             <div class="vah-form__field">
               <label for="vah-name">Full name</label>
@@ -70,7 +55,7 @@
                 id="vah-name"
                 name="contact[name]"
                 placeholder="Your name"
-                value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                value="{% if customer %}{{ customer.name }}{% endif %}"
                 required
               >
             </div>
@@ -81,7 +66,8 @@
                 id="vah-phone"
                 name="contact[phone]"
                 placeholder="+91 98765 43210"
-                value="{% if form.phone %}{{ form.phone }}{% endif %}"
+                value=""
+                required
               >
             </div>
           </div>
@@ -93,7 +79,7 @@
               id="vah-email"
               name="contact[email]"
               placeholder="you@example.com"
-              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              value="{% if customer %}{{ customer.email }}{% endif %}"
               required
             >
           </div>
@@ -106,7 +92,7 @@
               rows="4"
               placeholder="Tell us what you're looking for..."
               required
-            >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+            ></textarea>
           </div>
 
           <button type="submit" class="vah-cta vah-cta--form">
@@ -115,9 +101,11 @@
               <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <p class="vah-form__note">Submitted queries are saved to your store's inbox as leads — no app required.</p>
-        {% endunless %}
-      {% endform %}
+          <div class="vah-form__submitted" id="vah-form-submitted" role="status" aria-live="polite" hidden>
+            Query submitted successfully.
+          </div>
+          <p class="vah-form__note">Your query will be sent to our support team.</p>
+      </form>
     </div>
   </div>
 </div>
@@ -317,6 +305,17 @@
     color: var(--vah-muted);
   }
 
+  .vah-form__submitted {
+    padding: 12px 14px;
+    border: 1px solid var(--color-success-border);
+    border-radius: 12px;
+    background: var(--color-success-bg);
+    color: var(--color-foreground);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+  }
+
   .vah-form__success,
   .vah-form__error {
     display: flex;
@@ -361,12 +360,11 @@
 
 <script>
   (function () {
-    if (window.vahLeadFormBound) return;
-    window.vahLeadFormBound = true;
-
     const overlay = document.getElementById('vah-form-overlay');
     const closeButton = document.getElementById('vah-close-form');
-    if (!overlay || !closeButton) return;
+    const leadForm = document.getElementById('vah-lead-form');
+    const submittedMessage = document.getElementById('vah-form-submitted');
+    if (!overlay || !closeButton || !leadForm) return;
 
     const openForm = function () {
       overlay.classList.add('is-open');
@@ -388,6 +386,50 @@
     });
 
     closeButton.addEventListener('click', closeForm);
+
+    if (leadForm.dataset.vahSubmitBound === 'true') return;
+    leadForm.dataset.vahSubmitBound = 'true';
+    leadForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      if (!leadForm.checkValidity()) {
+        leadForm.reportValidity();
+        return;
+      }
+
+      const formData = new FormData(leadForm);
+      const payload = {
+        form_name: 'contact',
+        page_url: window.location.href,
+        submitted_at: new Date().toISOString(),
+        full_name: String(formData.get('contact[name]') || '').trim(),
+        phone_number: String(formData.get('contact[phone]') || '').trim(),
+        email: String(formData.get('contact[email]') || '').trim(),
+        query: String(formData.get('contact[body]') || '').trim()
+      };
+
+      window.dispatchEvent(new CustomEvent('contact_form_submitted', { detail: payload }));
+
+      const publishEvent = window.Shopify?.analytics?.publish;
+      try {
+        if (typeof publishEvent === 'function') {
+          publishEvent.call(window.Shopify.analytics, 'contact_form_submitted', payload);
+        } else {
+          console.warn('Shopify analytics is not available; custom pixel event was not published.');
+        }
+      } finally {
+        if (submittedMessage) submittedMessage.hidden = false;
+        const submitButton = leadForm.querySelector('[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
+
+        setTimeout(function () {
+          leadForm.reset();
+          if (submittedMessage) submittedMessage.hidden = true;
+          if (submitButton) submitButton.disabled = false;
+          closeForm();
+        }, 1200);
+      }
+    }, true);
 
     overlay.addEventListener('click', function (event) {
       if (event.target === overlay) closeForm();
