@@ -105,6 +105,19 @@
       </div>
     </div>
   {% endif %}
+
+  {% if section.blocks.size > 1 %}
+    <button class="hero__control hero__control--previous" type="button" data-hero-previous aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+    </button>
+    <button class="hero__control hero__control--next" type="button" data-hero-next aria-label="Next slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    </button>
+  {% endif %}
 </section>
 
 {% stylesheet %}
@@ -146,6 +159,50 @@
   color: var(--color-foreground);
   overflow: hidden;
   background: var(--color-surface);
+}
+
+.hero__control {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+
+  border: 1px solid color-mix(in srgb, var(--color-foreground) 18%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
+  color: var(--color-foreground);
+  box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 0.12);
+  transform: translateY(-50%);
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.hero__control:hover {
+  background: var(--color-foreground);
+  color: var(--color-surface);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.hero__control svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.hero__control--previous {
+  left: 1rem;
+}
+
+.hero__control--next {
+  right: 1rem;
 }
 
 .hero__slide {
@@ -845,6 +902,23 @@
 
       hero.dataset.heroReady = 'true';
       hero.dataset.heroIndex = '0';
+
+      const changeSlide = (direction) => {
+        const slides = getSlides(hero);
+        if (slides.length <= 1) {
+          return;
+        }
+
+        const current = Number(hero.dataset.heroIndex || 0);
+        const nextIndex = (current + direction + slides.length) % slides.length;
+        stopSlider(hero);
+        showSlide(hero, nextIndex);
+        startSlider(hero);
+      };
+
+      hero.querySelector('[data-hero-previous]')?.addEventListener('click', () => changeSlide(-1));
+      hero.querySelector('[data-hero-next]')?.addEventListener('click', () => changeSlide(1));
+
       startSlider(hero);
     };
 
