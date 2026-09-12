@@ -251,6 +251,71 @@
 
 {% javascript %}
   (() => {
+    const refreshHeaderCartCount = async () => {
+      const response = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
+      if (!response.ok) return;
+
+      const cart = await response.json();
+      const cartLinks = document.querySelectorAll('.site-header__cart');
+
+      cartLinks.forEach((cartLink) => {
+        let count = cartLink.querySelector('.site-header__cart-count');
+
+        if (cart.item_count > 0 && !count) {
+          count = document.createElement('span');
+          count.className = 'site-header__cart-count';
+          cartLink.appendChild(count);
+        }
+
+        if (!count) return;
+
+        count.textContent = cart.item_count;
+        count.hidden = cart.item_count === 0;
+      });
+
+      window.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+    };
+
+    document.addEventListener('submit', async (event) => {
+      const form = event.target.closest('.product-card__form');
+      if (!form || form.dataset.quickAddSubmitting === 'true') return;
+
+      event.preventDefault();
+      form.dataset.quickAddSubmitting = 'true';
+
+      const button = form.querySelector('.product-card__quick-add');
+      const originalLabel = button?.textContent;
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Adding...';
+      }
+
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form)
+        });
+
+        if (!response.ok) throw new Error('Unable to add product');
+
+        await refreshHeaderCartCount();
+
+        if (button) button.textContent = 'Added';
+      } catch (error) {
+        if (button) button.textContent = 'Try again';
+      } finally {
+        window.setTimeout(() => {
+          form.dataset.quickAddSubmitting = 'false';
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalLabel;
+          }
+        }, 1400);
+      }
+    });
+
     const initializeProductCardSwaps = (root = document) => {
       root.querySelectorAll('[data-product-card-image-swap]').forEach((media) => {
         if (media.dataset.imageSwapReady === 'true') return;

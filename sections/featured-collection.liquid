@@ -461,6 +461,40 @@
     if (root.dataset.tabsReady === 'true') return;
     root.dataset.tabsReady = 'true';
 
+    root.addEventListener('submit', async (event) => {
+      const form = event.target.closest('.featured-collection__form');
+      if (!form || form.dataset.submitting === 'true') return;
+
+      event.preventDefault();
+      form.dataset.submitting = 'true';
+
+      const button = form.querySelector('.featured-collection__atc');
+      const originalLabel = button?.textContent;
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Adding...';
+      }
+
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form)
+        });
+
+        if (!response.ok) throw new Error('Unable to add product');
+
+        window.location.href = '/cart';
+      } catch (error) {
+        form.dataset.submitting = 'false';
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
+      }
+    });
+
     const tabs = root.querySelectorAll('[data-tab-target]');
     const panels = root.querySelectorAll('[data-tab-panel]');
     const allPanel = root.querySelector('[data-shuffle]');
