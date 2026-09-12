@@ -364,15 +364,6 @@
           </div>
 
 
-          {% if product.description != blank and section.settings.show_description %}
-
-            <div class="luxury-product__description rte">
-              {{ product.description }}
-            </div>
-
-          {% endif %}
-
-
           <!-- PRODUCT FORM -->
 
           {% form 'product',
@@ -398,13 +389,6 @@
 
   <span class="luxury-product__option-name">
     {{ option.name }}
-  </span>
-
-  <span
-    class="luxury-product__option-selected"
-    data-option-value
-  >
-    {{ option.selected_value }}
   </span>
 
 </legend>
@@ -780,6 +764,15 @@
 
 
           {% endform %}
+
+
+          {% if product.description != blank and section.settings.show_description %}
+
+            <div class="luxury-product__description rte">
+              {{ product.description }}
+            </div>
+
+          {% endif %}
 
 
           <!-- =================================================
@@ -1904,7 +1897,7 @@ font-style: var(--font-body--style);
   font-family: var(--font-heading--family);
   font-style: var(--font-heading--style);
 
-  font-size: clamp(34px, 3.6vw, 54px);
+  font-size: clamp(31px, 3.3vw, 50px);
 
   line-height: 1.05;
 
@@ -2028,7 +2021,9 @@ font-style: var(--font-body--style);
 
   color: var(--lp-muted);
 
-  font-size: 13px;
+  font-size: 14px;
+
+  font-weight: 600;
 
   line-height: 1.4;
 }
@@ -3799,7 +3794,7 @@ font-style: var(--font-body--style);
 
   .luxury-product__title {
 
-    font-size: clamp(1.55rem, 5vw, 1.8rem);
+    font-size: clamp(1.4rem, 4.5vw, 1.65rem);
 
     line-height: 1.08;
   }
