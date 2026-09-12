@@ -76,9 +76,9 @@
         "badge_1": {
           "type": "badge",
           "settings": {
-            "icon": "shopify://shop_images/express-delivery.png",
+            "icon": "shopify://shop_images/transport.png",
             "title": "Free shipping",
-            "text": "On orders over $75 within the contiguous US."
+            "text": "On orders over Rs.750 within the contiguous US."
           }
         },
         "badge_2": {
@@ -92,7 +92,7 @@
         "badge_3": {
           "type": "badge",
           "settings": {
-            "icon": "shopify://shop_images/physical-therapy.png",
+            "icon": "shopify://shop_images/superior.png",
             "title": "Best Service",
             "text": "Always on your side"
           }
@@ -100,7 +100,7 @@
         "badge_4": {
           "type": "badge",
           "settings": {
-            "icon": "shopify://shop_images/secure.png",
+            "icon": "shopify://shop_images/credit-card.png",
             "title": "Secure checkout",
             "text": "Encrypted payments with trusted providers."
           }
@@ -135,7 +135,6 @@
     "story": {
       "type": "image-with-text",
       "settings": {
-        "image": "shopify://shop_images/handful-of-acorns.jpg",
         "layout": "image_first",
         "eyebrow": "Our approach",
         "heading": "Formulated for everyday recovery",

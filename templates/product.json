@@ -14,6 +14,7 @@
       "blocks": {
         "ingredients": {
           "type": "tab",
+          "disabled": true,
           "settings": {
             "title": "Ingredients",
             "content": "<p>Add ingredient details for this product in the theme editor.</p>"
@@ -21,6 +22,7 @@
         },
         "usage": {
           "type": "tab",
+          "disabled": true,
           "settings": {
             "title": "How to use",
             "content": "<p>Share simple usage guidance for daily routines.</p>"
@@ -40,10 +42,41 @@
         "shipping"
       ],
       "settings": {
+        "padding_top": 48,
+        "padding_bottom": 72,
+        "image_radius": 14,
         "show_vendor": true,
         "show_description": true,
+        "show_rating": false,
+        "rating_text": "4.9 · 128 reviews",
         "add_to_cart_label": "Add to cart",
-        "show_dynamic_checkout": true
+        "show_dynamic_checkout": true,
+        "full_payment_toggle_label": "Pay Full Amount",
+        "partial_payment_toggle_label": "Book with Partial",
+        "partial_payment_toggle_subtitle": "Pay advance now",
+        "partial_payment_note": "The remaining balance is collected by our sales team after confirming your order.",
+        "book_now_button_label": "Add to cart",
+        "partial_flow_modal_eyebrow": "Partial payment",
+        "partial_flow_modal_title": "How your payment works",
+        "partial_flow_modal_lead": "You'll pay part of the amount now to book your order. The remaining balance is collected later after confirmation.",
+        "partial_flow_step_now_label": "Pay now",
+        "partial_flow_step_later_label": "Pay later",
+        "partial_flow_step_later_hint": "After order confirmation",
+        "partial_flow_continue_label": "Got it, continue",
+        "deposit_stock_modal_eyebrow": "Partial payment unavailable",
+        "deposit_stock_modal_title": "This option can't be booked with partial payment",
+        "deposit_stock_modal_lead": "The deposit option for this selection is currently out of stock. You can pay in full now, or choose a different variant.",
+        "deposit_stock_modal_button_label": "Pay full amount instead",
+        "notify_button_label": "Notify me when available",
+        "notify_text": "Leave your email or phone number and we'll let you know as soon as this is back in stock.",
+        "notify_success_message": "Thanks — we'll notify you as soon as it's back!",
+        "show_trust_items": true,
+        "trust_1_title": "Secure checkout",
+        "trust_1_text": "Protected payment",
+        "trust_2_title": "Fast delivery",
+        "trust_2_text": "Carefully packed",
+        "trust_3_title": "Easy returns",
+        "trust_3_text": "Simple returns"
       }
     }
   },
