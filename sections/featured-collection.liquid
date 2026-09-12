@@ -240,21 +240,22 @@
     aspect-ratio: 1;
     overflow: hidden;
     border-radius: 1rem;
-    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+    background: #fff;
     text-decoration: none;
   }
 
-    .featured-collection__image,
+  .featured-collection__image,
   .featured-collection__placeholder {
     width: 100%;
     height: 100%;
     max-width: none;
-    object-fit: cover;
   }
 
   .featured-collection__image {
     position: absolute;
     inset: 0;
+    padding: 0.7rem;
+    object-fit: contain;
     opacity: 0;
     transition: opacity 450ms ease;
   }

@@ -359,6 +359,8 @@
 
             {% endif %}
 
+            <span class="luxury-product__tax-note">Inclusive of all taxes.</span>
+
           </div>
 
 
@@ -1233,19 +1235,26 @@
                   <!-- IMAGE -->
                   <div class="luxury-related__image-wrap">
 
-                    {% if related_product.featured_image != blank %}
+                    {% if related_product.images.size > 0 %}
 
-                      {{
-                        related_product.featured_image
-                        | image_url: width: 800
-                        | image_tag:
-                          loading: 'lazy',
-                          widths: '320, 480, 640, 800',
-                          sizes: '(min-width: 1200px) 20vw, (min-width: 750px) 33vw, 78vw',
-                          class: 'luxury-related__image',
-                          alt: related_product.featured_image.alt
-                            | default: related_product.title
-                      }}
+                      {% for related_image in related_product.images limit: 3 %}
+                        {% liquid
+                          assign related_image_class = 'luxury-related__image'
+                          if forloop.first
+                            assign related_image_class = related_image_class | append: ' is-visible'
+                          endif
+                        %}
+                        {{
+                          related_image
+                          | image_url: width: 800
+                          | image_tag:
+                            loading: 'lazy',
+                            widths: '320, 480, 640, 800',
+                            sizes: '(min-width: 1200px) 20vw, (min-width: 750px) 33vw, 78vw',
+                            class: related_image_class,
+                            alt: related_image.alt | default: related_product.title
+                        }}
+                      {% endfor %}
 
                     {% else %}
 
@@ -1454,7 +1463,7 @@ font-style: var(--font-body--style);
 
   overflow: hidden;
 
-  background: var(--lp-soft);
+  background: #fff;
 
   border-radius: var(--lp-radius);
 
@@ -1519,6 +1528,13 @@ font-style: var(--font-body--style);
   display: block;
 
   object-fit: cover;
+}
+
+.luxury-product__image {
+
+  padding: clamp(16px, 3vw, 36px);
+
+  object-fit: contain;
 }
 
 
@@ -1795,7 +1811,9 @@ font-style: var(--font-body--style);
 
   display: block;
 
-  object-fit: cover;
+  padding: 4px;
+
+  object-fit: contain;
 }
 
 
@@ -1964,9 +1982,9 @@ font-style: var(--font-body--style);
   font-family: var(--font-body--family);
 font-style: var(--font-body--style);
 
-  font-size: 19px;
+  font-size: 24px;
 
-  font-weight: 500;
+  font-weight: 700;
 
   letter-spacing: -.01em;
 }
@@ -1979,7 +1997,7 @@ font-style: var(--font-body--style);
   font-family: var(--font-body--family);
 font-style: var(--font-body--style);
 
-  font-size: 13px;
+  font-size: 17px;
 
   text-decoration: line-through;
 }
@@ -1995,13 +2013,24 @@ font-style: var(--font-body--style);
 
   border-radius: 999px;
 
-  font-size: 9px;
+  font-size: 11px;
 
   font-weight: 700;
 
   letter-spacing: .08em;
 
   text-transform: uppercase;
+}
+
+.luxury-product__tax-note {
+
+  flex-basis: 100%;
+
+  color: var(--lp-muted);
+
+  font-size: 13px;
+
+  line-height: 1.4;
 }
 
 
@@ -3202,7 +3231,7 @@ font-style: var(--font-body--style);
 
   grid-template-columns: repeat(3, 1fr);
 
-  gap: 20px;
+  gap: 10px;
 
   margin-top: 32px;
 
@@ -3228,8 +3257,8 @@ font-style: var(--font-body--style);
 
 .luxury-product__benefit-icon {
 
-  width: 32px;
-  height: 32px;
+  width: 46px;
+  height: 46px;
 
   display: grid;
 
@@ -3245,8 +3274,8 @@ font-style: var(--font-body--style);
 
 .luxury-product__benefit-icon svg {
 
-  width: 15px;
-  height: 15px;
+  width: 22px;
+  height: 22px;
 
   fill: none;
 
@@ -3269,7 +3298,7 @@ font-style: var(--font-body--style);
 
   color: var(--color-foreground);
 
-  font-size: 10.5px;
+  font-size: 13px;
 
   font-weight: 650;
 }
@@ -3279,7 +3308,7 @@ font-style: var(--font-body--style);
 
   color: var(--lp-muted);
 
-  font-size: 9.5px;
+  font-size: 12px;
 
   line-height: 1.45;
 }
@@ -3770,7 +3799,7 @@ font-style: var(--font-body--style);
 
   .luxury-product__title {
 
-    font-size: 33px;
+    font-size: clamp(1.55rem, 5vw, 1.8rem);
 
     line-height: 1.08;
   }
@@ -3846,20 +3875,25 @@ font-style: var(--font-body--style);
 
   .luxury-product__benefit-icon {
 
-    width: 28px;
-    height: 28px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .luxury-product__benefit-icon svg {
+    width: 19px;
+    height: 19px;
   }
 
 
   .luxury-product__benefit strong {
 
-    font-size: 9px;
+    font-size: 11.5px;
   }
 
 
   .luxury-product__benefit small {
 
-    font-size: 8px;
+    font-size: 10.5px;
   }
 
 
@@ -4181,12 +4215,7 @@ font-style: var(--font-body--style);
 
   aspect-ratio: 4 / 5;
 
-  background:
-    color-mix(
-      in srgb,
-      var(--color-background) 92%,
-      var(--color-foreground)
-    );
+  background: #fff;
 
   border-radius: 10px;
 
@@ -4196,19 +4225,27 @@ font-style: var(--font-body--style);
 
 .luxury-related__image {
 
+  position: absolute;
+
+  inset: 0;
+
   width: 100%;
 
   height: 100%;
 
   display: block;
 
-  object-fit: cover;
+  padding: .7rem;
 
-  transform: scale(1);
+  object-fit: contain;
 
-  transition:
-    transform .65s
-      cubic-bezier(.2,.65,.2,1);
+  opacity: 0;
+
+  transition: opacity 450ms ease;
+}
+
+.luxury-related__image.is-visible {
+  opacity: 1;
 }
 
 
@@ -4217,7 +4254,7 @@ font-style: var(--font-body--style);
 .luxury-related__card.is-card-active
 .luxury-related__image {
 
-  transform: scale(1.045);
+  transform: none;
 }
 
 
@@ -6521,8 +6558,6 @@ if (matchedDeposit) {
     relatedSection.querySelectorAll('.luxury-related__card')
   );
 
-  if (cards.length < 2) return;
-
   const hoverMedia = window.matchMedia(
     '(hover: hover) and (pointer: fine)'
   );
@@ -6622,6 +6657,47 @@ if (matchedDeposit) {
   };
 
   cards.forEach((card, index) => {
+
+    const images = Array.from(
+      card.querySelectorAll('.luxury-related__image')
+    );
+
+    let imageHoverTimer = null;
+
+    const setRelatedImage = (imageIndex) => {
+      images.forEach((image, currentIndex) => {
+        image.classList.toggle(
+          'is-visible',
+          currentIndex === imageIndex
+        );
+      });
+    };
+
+    card.addEventListener('mouseenter', () => {
+      if (!hoverMedia.matches || images.length < 2) return;
+
+      if (imageHoverTimer) {
+        window.clearTimeout(imageHoverTimer);
+      }
+
+      setRelatedImage(1);
+
+      if (images.length > 2) {
+        imageHoverTimer = window.setTimeout(
+          () => setRelatedImage(2),
+          1000
+        );
+      }
+    });
+
+    card.addEventListener('mouseleave', () => {
+      if (imageHoverTimer) {
+        window.clearTimeout(imageHoverTimer);
+        imageHoverTimer = null;
+      }
+
+      setRelatedImage(0);
+    });
 
     card.addEventListener(
       'touchstart',
