@@ -220,6 +220,43 @@
         </div>
       {% endif %}
 
+
+      <!-- GST NUMBER -->
+      {% if section.settings.gst_number != blank %}
+        <div class="vah-item vah-item--static">
+
+          <span class="vah-item__icon vah-icon--gst">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+              <rect
+                x="4"
+                y="3"
+                width="16"
+                height="18"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+
+              <path
+                d="M8 8h8M8 12h8M8 16h5"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+
+          <span class="vah-item__text">
+            <span class="vah-item__label">GST number</span>
+
+            <span class="vah-item__value">
+              {{ section.settings.gst_number }}
+            </span>
+          </span>
+
+        </div>
+      {% endif %}
+
     </div>
 
 
@@ -1239,6 +1276,12 @@
       "id": "hours",
       "label": "Working hours",
       "default": "Mon - Sat, 9:00 AM - 7:00 PM"
+    },
+
+    {
+      "type": "text",
+      "id": "gst_number",
+      "label": "GST number"
     },
 
     {
