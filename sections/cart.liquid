@@ -55,9 +55,7 @@
       {% for item in cart.items %}
         {% if item.properties.payment_type == 'partial' %}
           {% assign has_partial_items = true %}
-          {% assign item_booking_cents = item.properties._booking_amount_cents | default: 0 | times: 1 %}
           {% assign item_remaining_cents = item.properties._remaining_amount_cents | default: 0 | times: 1 %}
-          {% assign line_booking_cents = item_booking_cents | times: item.quantity %}
           {% assign line_remaining_cents = item_remaining_cents | times: item.quantity %}
           {% assign partial_pay_now_total = partial_pay_now_total | plus: item.final_line_price %}
           {% assign partial_balance_total = partial_balance_total | plus: line_remaining_cents %}

@@ -82,15 +82,6 @@
             </div>
           {% endfor %}
 
-          {% assign has_type_filter = false %}
-          {% for filter in collection.filters %}
-            {% for value in filter.values limit: 1 %}
-              {% if value.param_name == 'filter.p.product_type' %}
-                {% assign has_type_filter = true %}
-              {% endif %}
-            {% endfor %}
-          {% endfor %}
-
           {% assign has_active_category = false %}
           {% unless collection.handle == 'all' %}
             {% assign has_active_category = true %}

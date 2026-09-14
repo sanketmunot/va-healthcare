@@ -2,6 +2,7 @@
   Catalog-style featured collection card.
 
   @param {product} [product] - Live product, omitted for placeholders
+  @param {string} [section_id] - Parent section id for unique form ids
   @param {number} [placeholder_index] - Sample card number when product is blank
 {% enddoc %}
 
@@ -17,10 +18,9 @@
     assign badge = 'Featured'
     assign available = true
   else
-    assign featured = product.featured_media.preview_image | default: product.featured_image
     assign title = product.title
     assign available = product.available
-    assign form_id = 'featured-cart-' | append: section.id | append: '-' | append: product.id
+    assign form_id = 'featured-cart-' | append: section_id | append: '-' | append: product.id
     assign usp = product.type | default: product.vendor
     if product.compare_at_price > product.price
       assign discount_percentage = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round

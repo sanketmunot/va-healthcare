@@ -5649,15 +5649,18 @@ const findMatchingDepositVariant = (mainOptionValues) => {
         'function'
     ) {
 
+      const amountToken = '{' + '{ amount }}';
+      const amountNoDecimalsToken = '{' + '{ amount_no_decimals }}';
+
       const moneyFormat =
         root.dataset.moneyFormat ||
         Shopify.money_format ||
-        '{{ amount }}';
+        amountToken;
 
-      const amount = Shopify.formatMoney(cents, '{{ amount }}');
+      const amount = Shopify.formatMoney(cents, amountToken);
       const amountWithoutDecimals = Shopify.formatMoney(
         cents,
-        '{{ amount_no_decimals }}'
+        amountNoDecimalsToken
       );
 
       formattedMoney = moneyFormat

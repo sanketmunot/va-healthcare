@@ -88,7 +88,7 @@
             {% if taken == skip %}
               {% assign id_token = ',' | append: product.id | append: ',' %}
               {% unless shown_ids contains id_token %}
-                {% render 'featured-collection-card', product: product %}
+                {% render 'featured-collection-card', product: product, section_id: section.id %}
                 {% assign shown_count = shown_count | plus: 1 %}
                 {% assign shown_ids = shown_ids | append: product.id | append: ',' %}
               {% endunless %}
@@ -112,7 +112,7 @@
           {% assign id_token = ',' | append: product.id | append: ',' %}
 
           {% unless shown_ids contains id_token %}
-            {% render 'featured-collection-card', product: product %}
+            {% render 'featured-collection-card', product: product, section_id: section.id %}
             {% assign shown_count = shown_count | plus: 1 %}
             {% assign shown_ids = shown_ids | append: product.id | append: ',' %}
           {% endunless %}
@@ -121,7 +121,7 @@
 
       {% if shown_count == 0 %}
         {% for i in (1..columns) %}
-          {% render 'featured-collection-card', placeholder_index: i %}
+          {% render 'featured-collection-card', placeholder_index: i, section_id: section.id %}
         {% endfor %}
       {% endif %}
     </div>
@@ -141,7 +141,7 @@
           {% assign shown_in_panel = 0 %}
           {% for product in collection.products %}
             {% if product.available %}
-              {% render 'featured-collection-card', product: product %}
+              {% render 'featured-collection-card', product: product, section_id: section.id %}
               {% assign shown_in_panel = shown_in_panel | plus: 1 %}
               {% if shown_in_panel >= cards_limit %}
                 {% break %}
