@@ -1,4 +1,4 @@
-# VA Wellness
+# Modern Wellness
 
 An original Shopify theme for wellness and healthcare storefronts. Inspired by calm, modern health-and-mindfulness layouts — built from scratch on Shopify’s Skeleton architecture (not a copy of any paid Theme Store theme).
 
