@@ -14,7 +14,7 @@
 
   if is_placeholder
     assign title = 'Sample product'
-    assign usp = 'Hospital grade accuracy'
+    assign usp = 'Sample product line'
     assign badge = 'Featured'
     assign available = true
   else
@@ -38,7 +38,19 @@
 <article class="featured-collection__card"{% if is_placeholder %} aria-hidden="true"{% endif %}>
   {% if is_placeholder %}
     <div class="featured-collection__media">
-      <div class="featured-collection__placeholder"></div>
+      {% liquid
+        assign placeholder_images = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png,https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-2_large.png,https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-3_large.png,https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-4_large.png,https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-5_large.png' | split: ','
+        assign placeholder_offset = placeholder_index | default: 1 | minus: 1 | modulo: placeholder_images.size
+        assign placeholder_src = placeholder_images[placeholder_offset]
+      %}
+      <img
+        class="featured-collection__image is-visible"
+        src="{{ placeholder_src }}"
+        alt=""
+        width="640"
+        height="800"
+        loading="lazy"
+      >
       <span class="featured-collection__badge">{{ badge }}</span>
     </div>
   {% else %}
@@ -104,8 +116,8 @@
 
     <p class="featured-collection__price">
       {% if is_placeholder %}
-        <span>Rs.2,199</span>
-        <s>Rs.3,499</s>
+        <span>$24.00</span>
+        <s>$32.00</s>
       {% else %}
         <span>{{ product.price | money }}</span>
         {% if product.compare_at_price > product.price %}

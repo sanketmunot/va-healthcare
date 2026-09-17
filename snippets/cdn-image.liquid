@@ -1,0 +1,64 @@
+{% doc %}
+  Renders a theme image picker value, a raw CDN URL, or a Shopify placeholder file.
+
+  Shopify's public placeholder files live on the 0533/2089 files bucket used in theme docs.
+
+  @param {object} [image] - image_picker setting (media object or URL string)
+  @param {string} [fallback] - Shopify CDN URL when no image is set
+  @param {string} class - CSS class for the img
+  @param {string} [alt]
+  @param {string} [loading]
+  @param {string} [fetchpriority]
+  @param {string} [sizes]
+  @param {string} [style]
+  @param {number} [width]
+{% enddoc %}
+
+{% liquid
+  assign cdn_src = fallback
+  assign is_media = false
+
+  if image != blank
+    if image.src != blank
+      assign is_media = true
+    else
+      assign cdn_src = image
+    endif
+  endif
+
+  assign img_width = width | default: 1600
+  assign img_loading = loading | default: 'lazy'
+%}
+
+{% if is_media %}
+  {{
+    image
+    | image_url: width: img_width
+    | image_tag:
+      class: class,
+      alt: alt,
+      loading: img_loading,
+      fetchpriority: fetchpriority,
+      sizes: sizes,
+      style: style,
+      widths: '480, 800, 1200, 1600, 2400'
+  }}
+{% elsif cdn_src != blank %}
+  <img
+    class="{{ class }}"
+    src="{{ cdn_src }}"
+    alt="{{ alt | escape }}"
+    loading="{{ img_loading }}"
+    {% if fetchpriority != blank %}
+      fetchpriority="{{ fetchpriority }}"
+    {% endif %}
+    {% if sizes != blank %}
+      sizes="{{ sizes }}"
+    {% endif %}
+    {% if style != blank %}
+      style="{{ style }}"
+    {% endif %}
+    width="{{ img_width }}"
+    height="{{ img_width | divided_by: 1.5 | round }}"
+  >
+{% endif %}

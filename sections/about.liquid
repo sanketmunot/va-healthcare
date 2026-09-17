@@ -25,21 +25,16 @@
     style="--about-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --about-min-height: {{ section.settings.height }}vh;"
   >
     <div class="about__media">
-      {% if section.settings.image != blank %}
-        {{
-          section.settings.image
-          | image_url: width: 2400
-          | image_tag:
-            class: 'about__image',
-            widths: '800, 1200, 1600, 2000, 2400',
-            sizes: '100vw',
-            loading: 'eager',
-            fetchpriority: 'high',
-            alt: heading
-        }}
-      {% else %}
-        <div class="about__fallback" aria-hidden="true"></div>
-      {% endif %}
+      {% render 'cdn-image',
+        image: section.settings.image,
+        fallback: 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-lifestyle-2_large.png',
+        class: 'about__image',
+        alt: heading,
+        loading: 'eager',
+        fetchpriority: 'high',
+        sizes: '100vw',
+        width: 2400
+      %}
       <div class="about__overlay"></div>
     </div>
 
@@ -254,7 +249,7 @@
       "type": "textarea",
       "id": "intro",
       "label": "Intro",
-      "default": "VA Wellness creates calm, thoughtful care for recovery, sleep, and everyday balance — without the clinical coldness."
+      "default": "Northvale Supply is a hypothetical shop used to fill this theme with sample copy. None of the names, stats, or stories refer to a real business."
     },
     {
       "type": "text",
@@ -299,7 +294,7 @@
           "type": "text",
           "id": "label",
           "label": "Label",
-          "default": "Customers cared for"
+          "default": "Demo orders this month"
         }
       ]
     }

@@ -16,8 +16,8 @@
           "type": "tab",
           "disabled": true,
           "settings": {
-            "title": "Ingredients",
-            "content": "<p>Add ingredient details for this product in the theme editor.</p>"
+            "title": "Details",
+            "content": "<p>Add product details in the theme editor. This is placeholder copy.</p>"
           }
         },
         "usage": {
@@ -25,7 +25,7 @@
           "disabled": true,
           "settings": {
             "title": "How to use",
-            "content": "<p>Share simple usage guidance for daily routines.</p>"
+            "content": "<p>Share simple usage notes for this sample product.</p>"
           }
         },
         "shipping": {

@@ -13,15 +13,24 @@
   endif
 %}
 
+{% liquid
+  assign hero_bg = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-lifestyle-1_large.png'
+  if section.settings.hero_image != blank
+    if section.settings.hero_image.src != blank
+      assign hero_bg = section.settings.hero_image | image_url: width: 1600
+    else
+      assign hero_bg = section.settings.hero_image
+    endif
+  endif
+%}
+
 {% unless about_page %}
 <div class="vah-page">
 
   <!-- HERO -->
   <div
     class="vah-hero"
-    {% if section.settings.hero_image %}
-      style="background-image: var(--color-overlay-gradient), url('{{ section.settings.hero_image | image_url: width: 1600 }}'); background-size: cover; background-position: center;"
-    {% endif %}
+    style="background-image: var(--color-overlay-gradient), url('{{ hero_bg }}'); background-size: cover; background-position: center;"
   >
     <div class="vah-hero__glow"></div>
 
@@ -30,7 +39,7 @@
     </p>
 
     <h1 class="vah-hero__title">
-      {{ section.settings.company_name | default: 'VA Health Care' }}
+      {{ section.settings.company_name | default: 'Northvale Supply' }}
     </h1>
 
     {% if section.settings.tagline != blank %}
@@ -76,7 +85,7 @@
 
       <div>
         <h2 class="vah-card__title">
-          {{ section.settings.company_name | default: 'VA Health Care' }}
+          {{ section.settings.company_name | default: 'Northvale Supply' }}
         </h2>
 
         <p class="vah-card__subtitle">
@@ -92,7 +101,7 @@
 
       <!-- ADDRESS -->
       <a
-        href="https://maps.google.com/?q={{ section.settings.address | default: 'Block 3, Office No. 98, Shanti Nagar, Delhi' | url_encode }}"
+        href="https://maps.google.com/?q={{ section.settings.address | default: '100 Example Avenue, Faketown' | url_encode }}"
         target="_blank"
         rel="noopener"
         class="vah-item"
@@ -118,7 +127,7 @@
           <span class="vah-item__label">Address</span>
 
           <span class="vah-item__value">
-            {{ section.settings.address | default: 'Block 3, Office No. 98, Shanti Nagar, Delhi' }}
+            {{ section.settings.address | default: '100 Example Avenue, Faketown, FT 00000' }}
           </span>
         </span>
       </a>
@@ -126,7 +135,7 @@
 
       <!-- PHONE -->
       <a
-        href="tel:{{ section.settings.phone | default: '+919876543210' }}"
+        href="tel:{{ section.settings.phone | default: '+15555550100' }}"
         class="vah-item"
       >
         <span class="vah-item__icon vah-icon--phone">
@@ -144,7 +153,7 @@
           <span class="vah-item__label">Call us</span>
 
           <span class="vah-item__value">
-            {{ section.settings.phone | default: '+91 98765 43210' }}
+            {{ section.settings.phone | default: '+1 555 555 0100' }}
           </span>
         </span>
       </a>
@@ -152,7 +161,7 @@
 
       <!-- EMAIL -->
       <a
-        href="mailto:{{ section.settings.email | default: 'contact@vahealthcare.com' }}"
+        href="mailto:{{ section.settings.email | default: 'hello@northvale.example' }}"
         class="vah-item"
       >
         <span class="vah-item__icon vah-icon--mail">
@@ -180,7 +189,7 @@
           <span class="vah-item__label">Email</span>
 
           <span class="vah-item__value">
-            {{ section.settings.email | default: 'contact@vahealthcare.com' }}
+            {{ section.settings.email | default: 'hello@northvale.example' }}
           </span>
         </span>
       </a>
@@ -1184,14 +1193,14 @@
       "type": "text",
       "id": "company_name",
       "label": "Company name",
-      "default": "VA Health Care"
+      "default": "Northvale Supply"
     },
 
     {
       "type": "text",
       "id": "tagline",
       "label": "Tagline",
-      "default": "Compassionate care, trusted every step of the way."
+      "default": "A fictional shop used to preview this theme."
     },
 
     {
@@ -1217,21 +1226,21 @@
       "type": "text",
       "id": "address",
       "label": "Address",
-      "default": "Shanti Nagar Bengaluru Karnataka"
+      "default": "100 Example Avenue, Faketown, FT 00000"
     },
 
     {
       "type": "text",
       "id": "phone",
       "label": "Phone number",
-      "default": "+91 98765 43210"
+      "default": "+1 555 555 0100"
     },
 
     {
       "type": "text",
       "id": "email",
       "label": "Email",
-      "default": "contact@vahealthcare.com"
+      "default": "hello@northvale.example"
     },
 
     {
@@ -1245,7 +1254,7 @@
       "type": "text",
       "id": "whatsapp",
       "label": "WhatsApp number (digits only, with country code)",
-      "default": "919876543210"
+      "default": "15555550100"
     },
 
 

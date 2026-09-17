@@ -38,22 +38,27 @@
         {{ block.shopify_attributes }}
       >
         <div class="hero__media">
-          {% if block.settings.image != blank %}
-            {{
-              block.settings.image
-              | image_url: width: 2400
-              | image_tag:
-                class: 'hero__image',
-                widths: '800, 1200, 1600, 2000, 2400',
-                sizes: image_sizes,
-                loading: image_loading,
-                fetchpriority: image_fetchpriority,
-                alt: block.settings.title,
-                style: 'object-position: 68% center;'
-            }}
-          {% else %}
-            <div class="hero__fallback" aria-hidden="true"></div>
-          {% endif %}
+          {% liquid
+            case forloop.index0
+              when 0
+                assign hero_fallback = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-lifestyle-1_large.png'
+              when 1
+                assign hero_fallback = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-lifestyle-2_large.png'
+              else
+                assign hero_fallback = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-collection-1_large.png'
+            endcase
+          %}
+          {% render 'cdn-image',
+            image: block.settings.image,
+            fallback: hero_fallback,
+            class: 'hero__image',
+            alt: block.settings.title,
+            loading: image_loading,
+            fetchpriority: image_fetchpriority,
+            sizes: image_sizes,
+            style: 'object-position: 68% center;',
+            width: 2400
+          %}
         </div>
 
         {% if has_copy %}
@@ -1025,19 +1030,19 @@
           "type": "text",
           "id": "subtitle",
           "label": "Subtitle",
-          "default": "Wellness rituals"
+          "default": "Northvale Supply"
         },
         {
           "type": "text",
           "id": "title",
           "label": "Title",
-          "default": "Care that feels calm"
+          "default": "Everyday goods for a fictional shop"
         },
         {
           "type": "textarea",
           "id": "banner_description",
           "label": "Banner description",
-          "default": "Discover mindful essentials for recovery, sleep, and everyday balance — designed for a quieter kind of health."
+          "default": "Placeholder copy for a demo storefront. Swap this text in the theme editor when you are ready."
         },
         {
           "type": "text",

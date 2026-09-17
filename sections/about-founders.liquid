@@ -34,29 +34,29 @@
       {% for block in section.blocks %}
         <li class="about-founders__card" {{ block.shopify_attributes }}>
           <div class="about-founders__media">
-            {% if block.settings.image != blank %}
-              {{
-                block.settings.image
-                | image_url: width: 480
-                | image_tag:
-                  loading: 'lazy',
-                  widths: '240, 360, 480',
-                  sizes: '(min-width: 800px) 192px, 120px',
-                  class: 'about-founders__image',
-                  alt: block.settings.name
-              }}
-            {% elsif block.settings.fallback_image != blank %}
-              <img
-                class="about-founders__image"
-                src="{{ block.settings.fallback_image | asset_url }}"
-                alt="{{ block.settings.name | escape }}"
-                width="192"
-                height="256"
-                loading="lazy"
-              >
-            {% else %}
-              <div class="about-founders__placeholder" aria-hidden="true"></div>
-            {% endif %}
+            {% liquid
+              if forloop.first
+                assign founder_fallback = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png'
+              else
+                assign founder_fallback = 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-2_large.png'
+              endif
+              if block.settings.fallback_image != blank
+                if block.settings.fallback_image contains 'http'
+                  assign founder_fallback = block.settings.fallback_image
+                else
+                  assign founder_fallback = block.settings.fallback_image | asset_url
+                endif
+              endif
+            %}
+            {% render 'cdn-image',
+              image: block.settings.image,
+              fallback: founder_fallback,
+              class: 'about-founders__image',
+              alt: block.settings.name,
+              loading: 'lazy',
+              sizes: '(min-width: 800px) 192px, 120px',
+              width: 480
+            %}
           </div>
 
           <div class="about-founders__body">
@@ -193,13 +193,13 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Clinic care, meet India sales"
+      "default": "The people behind the demo"
     },
     {
       "type": "textarea",
       "id": "text",
       "label": "Text",
-      "default": "A physiotherapist and a medical-sales operator — building the products and the reach India actually needs."
+      "default": "Two fictional operators of made-up shops. These profiles exist only so the about page has faces and copy."
     },
     {
       "type": "range",
@@ -232,25 +232,25 @@
           "type": "text",
           "id": "name",
           "label": "Name",
-          "default": "Ananya Rao"
+          "default": "Jordan Hale"
         },
         {
           "type": "text",
           "id": "role",
           "label": "Role",
-          "default": "Co-founder & Clinical Lead"
+          "default": "Co-founder, Northvale Supply"
         },
         {
           "type": "text",
           "id": "credential",
           "label": "Education / credential",
-          "default": "MPT, Manipal College of Health Professions"
+          "default": "B.A., Fictional State University"
         },
         {
           "type": "textarea",
           "id": "bio",
           "label": "Bio",
-          "default": "Twelve years treating musculoskeletal and sports injuries in Bengaluru hospitals. Ran community physio camps in rural Karnataka before starting VA Healthcare."
+          "default": "Invented a catalog of household goods for this theme preview. Previously ran Harbor & Pine, another imaginary storefront."
         }
       ]
     }
@@ -263,21 +263,21 @@
         {
           "type": "founder",
           "settings": {
-            "fallback_image": "founder-ananya.png",
-            "name": "Ananya Rao",
-            "role": "Co-founder & Clinical Lead",
-            "credential": "MPT, Manipal College of Health Professions",
-            "bio": "Twelve years treating musculoskeletal and sports injuries in Bengaluru hospitals. Ran community physio camps in rural Karnataka before starting VA Healthcare to put rehab tools in more hands."
+            "fallback_image": "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png",
+            "name": "Jordan Hale",
+            "role": "Co-founder, Northvale Supply",
+            "credential": "B.A., Fictional State University",
+            "bio": "Invented a catalog of household goods for this theme preview. Previously ran Harbor & Pine, another imaginary storefront."
           }
         },
         {
           "type": "founder",
           "settings": {
-            "fallback_image": "founder-vikram.png",
-            "name": "Vikram Mehta",
-            "role": "Co-founder & Commercial Lead",
-            "credential": "MBA, IIM Ahmedabad · B.Pharm, Manipal Academy of Higher Education",
-            "bio": "Fourteen years in medical-device and hospital sales across South and West India. Built rehab-equipment distribution through 120+ clinics before partnering to grow VA Healthcare’s India network."
+            "fallback_image": "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-2_large.png",
+            "name": "Sam Ortega",
+            "role": "Co-founder, Maple Finch Market",
+            "credential": "Certificate in Imaginary Retail",
+            "bio": "Writes seasonal product stories for shops that do not exist. Partnered with Jordan to fill this demo with plausible-looking bios."
           }
         }
       ]

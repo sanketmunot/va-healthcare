@@ -25,7 +25,7 @@
         assign featured = collection.image | default: collection.featured_image
         assign description = collection.description | strip_html | strip
         if description == blank
-          assign description = 'Explore curated products from this collection.'
+          assign description = 'Sample collection copy for a hypothetical shop. Replace this in the collection description.'
         endif
       %}
 
@@ -50,7 +50,14 @@
                   class: 'shop-categories__image'
               }}
             {% else %}
-              <div class="shop-categories__fallback"></div>
+              {% render 'cdn-image',
+                fallback: 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-collection-1_large.png',
+                class: 'shop-categories__image',
+                alt: collection.title,
+                loading: 'lazy',
+                sizes: '(min-width: 900px) 55vw, 100vw',
+                width: 1400
+              %}
             {% endif %}
           </div>
 

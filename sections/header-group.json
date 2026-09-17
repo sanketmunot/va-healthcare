@@ -14,14 +14,13 @@
     "announcement": {
       "type": "announcement-bar",
       "settings": {
-        "text": "Free shipping on wellness essentials over Rs.750",
+        "text": "Free shipping on orders over $75 — sample announcement copy",
         "link": ""
       }
     },
     "header": {
       "type": "header",
       "settings": {
-        "logo": "shopify://shop_images/3367b2c9-5a39-427f-b042-c50a4669348c.png",
         "menu": "main-menu",
         "sticky": true
       }

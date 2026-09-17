@@ -19,22 +19,22 @@
         "stat_1": {
           "type": "stat",
           "settings": {
-            "number": "200M+",
-            "label": "Indians living with MSK pain"
+            "number": "12k+",
+            "label": "Demo catalog views this week"
           }
         },
         "stat_2": {
           "type": "stat",
           "settings": {
-            "number": "1 in 6",
-            "label": "People affected nationwide"
+            "number": "48",
+            "label": "Fictional products in the story"
           }
         },
         "stat_3": {
           "type": "stat",
           "settings": {
-            "number": "53%",
-            "label": "Adults 45+ reporting MSDs"
+            "number": "3",
+            "label": "Imaginary shop names on this site"
           }
         }
       },
@@ -46,9 +46,9 @@
       "settings": {
         "height": 50,
         "overlay_opacity": 55,
-        "eyebrow": "About VA Healthcare",
-        "heading": "Physiotherapy, within reach across India",
-        "intro": "Clinic-grade recovery tools and a sales network built for Indian hospitals, physio centres, and homes — so fewer people have to live with preventable pain.",
+        "eyebrow": "About this demo",
+        "heading": "Northvale Supply, a shop that is not real",
+        "intro": "This page is filled with hypothetical businesses so the theme has copy and photos. Swap every line in the editor when you have a real brand.",
         "button_label": "Shop collection",
         "button_link": "/collections/all",
         "show_page_content": true,
@@ -61,53 +61,53 @@
         "impact_1": {
           "type": "impact",
           "settings": {
-            "number": "200M+",
-            "label": "Indians with MSK pain",
-            "note": "About 1 in 6 people, from COPCORD community studies."
+            "number": "12k+",
+            "label": "Demo catalog views",
+            "note": "A made-up weekly total for layout only."
           }
         },
         "impact_2": {
           "type": "impact",
           "settings": {
-            "number": "20%",
-            "label": "Rural prevalence",
-            "note": "Roughly double the urban rate — care is hardest where specialists are fewest."
+            "number": "48",
+            "label": "Fictional SKUs",
+            "note": "How many placeholder products this story pretends to carry."
           }
         },
         "impact_3": {
           "type": "impact",
           "settings": {
-            "number": "53%",
-            "label": "Adults 45+ with MSDs",
-            "note": "Joint and back pain dominate; about 60% of those over 60 are affected."
+            "number": "3",
+            "label": "Imaginary brands",
+            "note": "Northvale, Harbor & Pine, and Maple Finch."
           }
         },
         "help_1": {
           "type": "help",
           "settings": {
-            "title": "Cut the pain cycle",
-            "text": "Guided movement and the right supports reduce chronic pain without depending only on medication."
+            "title": "Fill the homepage",
+            "text": "Hero slides, badges, and tiles need copy. This is that copy."
           }
         },
         "help_2": {
           "type": "help",
           "settings": {
-            "title": "Recover after injury and surgery",
-            "text": "Stroke, fracture, delivery, and post-op patients regain strength faster with structured physio."
+            "title": "Show a catalog",
+            "text": "Sample products stand in until you connect a real collection."
           }
         },
         "help_3": {
           "type": "help",
           "settings": {
-            "title": "Keep India working",
-            "text": "Desk strain, farm labour, and factory shifts all create MSK injury. Rehab returns people to work."
+            "title": "Keep details generic",
+            "text": "No real clinics, cities, or phone numbers belong in this preview."
           }
         },
         "help_4": {
           "type": "help",
           "settings": {
-            "title": "Age with independence",
-            "text": "Balance, gait, and joint care help older families stay mobile at home instead of losing years to stiffness."
+            "title": "Hand it over later",
+            "text": "When the design is approved, replace every sentence with your brand."
           }
         }
       },
@@ -122,11 +122,11 @@
       ],
       "settings": {
         "eyebrow": "Our vision",
-        "heading": "A more mobile India",
-        "lead": "Physiotherapy should not be a last resort in a metro clinic. It should be everyday care that clinics, caregivers, and households across India can actually get.",
-        "text": "<p>Nearly one in six people in India lives with musculoskeletal pain. Community studies put that close to 200 million people — and the burden is heavier in rural districts than in cities. Among Indians over 45, more than half report joint or back pain. Osteoarthritis alone touches tens of millions of knees and spines.</p><p>Pain keeps farmers from fields, nurses from shifts, and older parents from walking without help. India still has far too few rehab specialists for this scale. Rest and painkillers are often the only options on offer. Surgery, when it happens, is rarely followed by proper recovery.</p><p>Physiotherapy changes the outcome. Guided movement reduces pain, rebuilds strength, and can delay or avoid surgery. After a stroke, a fracture, a delivery, or years at a desk, the right routine restores independence. When trusted physio tools reach clinics and homes beyond a handful of cities, recovery stops being a privilege.</p><p>VA Healthcare exists to put clinic-grade physiotherapy products into India’s medical sales network — so more people can move again, work again, and age with dignity.</p>",
-        "help_heading": "How physiotherapy helps",
-        "caption": "Impact figures drawn from COPCORD India community studies (~16% MSK pain; ~200 million people) and national surveys of adults 45+ (over half report musculoskeletal disorders).",
+        "heading": "Shops that only exist on this page",
+        "lead": "Northvale Supply, Harbor & Pine, and Maple Finch Market are placeholder businesses. Use this section to describe your real company later.",
+        "text": "<p>This theme is filled with invented companies so you can judge layout without real brand copy. Northvale Supply sells imaginary housewares. Harbor &amp; Pine is a made-up studio shop. Maple Finch Market is a fictional seasonal stall.</p><p>None of the numbers below are research. They are demo figures so the cards have something to show.</p>",
+        "help_heading": "What these demo shops pretend to do",
+        "caption": "Sample figures only. They are not statistics from a real market or study.",
         "padding": 72
       }
     },
@@ -136,21 +136,21 @@
         "founder_1": {
           "type": "founder",
           "settings": {
-            "fallback_image": "founder-ananya.png",
-            "name": "Ananya Rao",
-            "role": "Co-founder & Clinical Lead",
-            "credential": "MPT, Manipal College of Health Professions",
-            "bio": "Twelve years treating musculoskeletal and sports injuries in Bengaluru hospitals. Ran community physio camps in rural Karnataka before starting VA Healthcare to put rehab tools in more hands."
+            "fallback_image": "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-1_large.png",
+            "name": "Jordan Hale",
+            "role": "Co-founder, Northvale Supply",
+            "credential": "B.A., Fictional State University",
+            "bio": "Invented a catalog of household goods for this theme preview. Previously ran Harbor & Pine, another imaginary storefront."
           }
         },
         "founder_2": {
           "type": "founder",
           "settings": {
-            "fallback_image": "founder-vikram.png",
-            "name": "Vikram Mehta",
-            "role": "Co-founder & Commercial Lead",
-            "credential": "MBA, IIM Ahmedabad · B.Pharm, Manipal Academy of Higher Education",
-            "bio": "Fourteen years in medical-device and hospital sales across South and West India. Built rehab-equipment distribution through 120+ clinics before partnering to grow VA Healthcare’s India network."
+            "fallback_image": "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-product-2_large.png",
+            "name": "Sam Ortega",
+            "role": "Co-founder, Maple Finch Market",
+            "credential": "Certificate in Imaginary Retail",
+            "bio": "Writes seasonal product stories for shops that do not exist. Partnered with Jordan to fill this demo with plausible-looking bios."
           }
         }
       },
@@ -160,8 +160,8 @@
       ],
       "settings": {
         "eyebrow": "Founders",
-        "heading": "Clinic care, meet India sales",
-        "text": "A physiotherapist and a medical-sales operator — building the products and the reach India actually needs.",
+        "heading": "The people behind the demo",
+        "text": "Two fictional operators of made-up shops. These profiles exist only so the about page has faces and copy.",
         "padding": 72
       }
     }
