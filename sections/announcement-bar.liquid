@@ -1,42 +1,529 @@
-{% if section.settings.text != blank %}
+{% if section.settings.text != blank or section.settings.coupon_text != blank %}
   <div
     class="announcement-bar full-width"
     style="--announcement-bg: var(--color-accent); --announcement-fg: var(--color-accent-contrast);"
   >
     <div class="announcement-bar__inner page-width">
-      {% if section.settings.link != blank %}
-        <a href="{{ section.settings.link }}">{{ section.settings.text }}</a>
-      {% else %}
-        <p>{{ section.settings.text }}</p>
-      {% endif %}
+      <div class="announcement-bar__track" data-announcement-track>
+        {% if section.settings.coupon_text != blank %}
+          <p class="announcement-bar__message is-active" data-announcement-message>
+            <button type="button" class="announcement-bar__coupon" data-open-coupon-modal>
+              <span class="announcement-bar__coupon-copy">{{ section.settings.coupon_text }}</span>
+              <span class="announcement-bar__coupon-action" aria-hidden="true">Claim now</span>
+            </button>
+          </p>
+        {% endif %}
+
+        {% if section.settings.text != blank %}
+          <p class="announcement-bar__message{% if section.settings.coupon_text == blank %} is-active{% endif %}" data-announcement-message>
+            {% if section.settings.link != blank %}
+              <a href="{{ section.settings.link }}">{{ section.settings.text }}</a>
+            {% else %}
+              {{ section.settings.text }}
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
     </div>
   </div>
 {% endif %}
+
+<div class="coupon-modal" data-coupon-modal aria-hidden="true">
+  <div class="coupon-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="coupon-modal-title">
+    <button type="button" class="coupon-modal__close" data-close-coupon-modal aria-label="Close coupon form">&times;</button>
+
+    <div class="coupon-modal__intro">
+      <span class="coupon-modal__spark" aria-hidden="true">%</span>
+      <p class="coupon-modal__eyebrow">A little something for you</p>
+      <h2 id="coupon-modal-title">Unlock your coupon now</h2>
+    </div>
+
+    <form class="coupon-modal__form" data-coupon-form action="#" method="post">
+      <input type="hidden" name="form_type" value="contact">
+      <input type="hidden" name="utf8" value="✓">
+      <input type="hidden" name="contact[body]" value="Coupon claim: onlinepay - online payment coupon request">
+
+      <label>
+        <span>Full name</span>
+        <input type="text" name="contact[name]" autocomplete="name" placeholder="Your name" required>
+      </label>
+
+      <label>
+        <span>Mobile number</span>
+        <input type="tel" name="contact[phone]" autocomplete="tel" inputmode="numeric" placeholder="9876543210" pattern="[6-9][0-9]{9}" maxlength="10" title="Enter a valid 10-digit Indian mobile number" required>
+      </label>
+
+      <button type="submit" class="coupon-modal__submit">Get your coupon</button>
+    </form>
+
+    <div class="coupon-modal__success" data-coupon-success hidden>
+      <p class="coupon-modal__success-title">Your 20% off coupon is ready</p>
+      <p class="coupon-modal__success-copy">Use this code at checkout for your online payment discount.</p>
+      <div class="coupon-modal__code-row">
+        <code class="coupon-modal__code" data-coupon-code>EXCLUSIVE200</code>
+        <button type="button" class="coupon-modal__copy" data-copy-coupon>Copy code</button>
+      </div>
+      <span class="coupon-modal__copy-status" data-copy-status role="status" aria-live="polite"></span>
+    </div>
+  </div>
+</div>
 
 {% stylesheet %}
   .announcement-bar {
     background: var(--announcement-bg);
     color: var(--announcement-fg);
     font-size: 0.9rem;
+    overflow: hidden;
   }
 
   .announcement-bar__inner {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 2.4rem;
+    min-height: 2.7rem;
     text-align: center;
   }
 
-  .announcement-bar a {
+  .announcement-bar__track {
+    position: relative;
+    display: grid;
+    width: 100%;
+    min-height: 2.7rem;
+    place-items: center;
+  }
+
+  .announcement-bar__message {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+
+  .announcement-bar__message.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .announcement-bar a,
+  .announcement-bar__coupon {
     color: inherit;
     text-decoration: none;
   }
 
-  .announcement-bar a:hover {
-    text-decoration: underline;
+  .announcement-bar__coupon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .announcement-bar__coupon-action {
+    padding-bottom: 1px;
+    border-bottom: 1px solid currentColor;
+    color: #ffe08a;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .announcement-bar__coupon:hover .announcement-bar__coupon-action,
+  .announcement-bar__coupon:focus-visible .announcement-bar__coupon-action {
+    color: #fff;
+    border-color: #fff;
+    transform: translateX(2px);
+  }
+
+  .coupon-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(12, 31, 42, 0.58);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .coupon-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .coupon-modal__dialog {
+    position: relative;
+    width: min(100%, 440px);
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 1.25rem;
+    background: var(--color-surface);
+    box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, 0.28);
+    transform: translateY(1rem) scale(0.97);
+    transition: transform 0.25s ease;
+  }
+
+  .coupon-modal.is-open .coupon-modal__dialog {
+    transform: translateY(0) scale(1);
+  }
+
+  .coupon-modal__close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    z-index: 3;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-input-bg-muted);
+    color: var(--color-foreground);
+    font-size: 1.45rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .coupon-modal__close:hover,
+  .coupon-modal__close:focus-visible {
+    background: var(--color-foreground);
+    color: var(--color-surface);
+    outline: none;
+  }
+
+  .coupon-modal__intro {
+    padding-right: 1.75rem;
+  }
+
+  .coupon-modal__spark {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+    place-items: center;
+    border-radius: 0.8rem;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .coupon-modal__eyebrow {
+    margin: 0 0 0.35rem;
+    color: var(--color-accent);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .coupon-modal h2 {
+    margin: 0;
+    color: var(--color-foreground);
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    line-height: 1.1;
+  }
+
+  .coupon-modal__intro > p:last-child {
+    margin: 0.85rem 0 1.5rem;
+    color: var(--color-muted);
+    line-height: 1.55;
+  }
+
+  .coupon-modal__form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .coupon-modal__form label {
+    display: grid;
+    gap: 0.4rem;
+    color: var(--color-foreground);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .coupon-modal__form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.65rem;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font: inherit;
+  }
+
+  .coupon-modal__form input:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .coupon-modal__submit {
+    margin-top: 0.25rem;
+    padding: 0.85rem 1rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: var(--color-foreground);
+    color: var(--color-surface);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .coupon-modal__submit:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+
+  .coupon-modal__success {
+    margin: 1rem 0 0;
+    padding: 1.15rem;
+    border: 1px solid var(--color-success-border);
+    border-radius: 0.65rem;
+    background: var(--color-success-bg);
+    color: var(--color-foreground);
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .coupon-modal.has-success .coupon-modal__intro {
+    display: none;
+  }
+
+  .coupon-modal.has-success .coupon-modal__success {
+    margin-top: 0;
+    padding-top: 0.5rem;
+  }
+
+  .coupon-modal__success-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  .coupon-modal__success-copy {
+    margin: 0.35rem 0 1rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .coupon-modal__code-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .coupon-modal__code {
+    flex: 1;
+    min-width: 0;
+    padding: 0.8rem 0.75rem;
+    border: 1px dashed var(--color-accent);
+    border-radius: 0.55rem;
+    background: var(--color-surface);
+    color: var(--color-foreground);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+
+  .coupon-modal__copy {
+    border: 0;
+    border-radius: 0.55rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .coupon-modal__copy {
+    padding: 0.75rem 0.9rem;
+    background: var(--color-foreground);
+    color: var(--color-surface);
+  }
+
+  .coupon-modal__copy:hover {
+    opacity: 0.86;
+  }
+
+  .coupon-modal__copy-status {
+    display: block;
+    min-height: 1.2em;
+    margin-top: 0.45rem;
+    color: var(--color-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  body.coupon-modal-open {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar__message,
+    .coupon-modal,
+    .coupon-modal__dialog {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .announcement-bar {
+      font-size: 0.78rem;
+    }
+
+    .announcement-bar__coupon {
+      gap: 0.3rem;
+    }
+
+    .announcement-bar__coupon-action {
+      font-size: 0.68rem;
+    }
+
+    .coupon-modal__dialog {
+      border-radius: 1rem;
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    document.querySelectorAll('input[type="tel"]').forEach((phoneInput) => {
+      phoneInput.setAttribute('inputmode', 'numeric');
+      phoneInput.setAttribute('pattern', '[6-9][0-9]{9}');
+      phoneInput.setAttribute('maxlength', '10');
+      phoneInput.setAttribute('title', 'Enter a valid 10-digit Indian mobile number');
+
+      phoneInput.addEventListener('input', () => {
+        phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '').slice(0, 10);
+      });
+    });
+
+    const announcementMessages = Array.from(
+      document.querySelectorAll('[data-announcement-message]')
+    );
+    const couponModal = document.querySelector('[data-coupon-modal]');
+    const couponForm = couponModal?.querySelector('[data-coupon-form]');
+    const couponSuccess = couponModal?.querySelector('[data-coupon-success]');
+    const couponCode = couponModal?.querySelector('[data-coupon-code]');
+    const copyCouponButton = couponModal?.querySelector('[data-copy-coupon]');
+    const copyStatus = couponModal?.querySelector('[data-copy-status]');
+
+    if (!couponModal || !couponForm) return;
+
+    let activeMessage = 0;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const setMessage = (index) => {
+      announcementMessages.forEach((message, messageIndex) => {
+        message.classList.toggle('is-active', messageIndex === index);
+      });
+      activeMessage = index;
+    };
+
+    if (announcementMessages.length > 1 && !reduceMotion) {
+      window.setInterval(() => {
+        setMessage((activeMessage + 1) % announcementMessages.length);
+      }, 4200);
+    }
+
+    const openModal = () => {
+      couponModal.classList.add('is-open');
+      couponModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('coupon-modal-open');
+      couponModal.querySelector('input:not([type="hidden"])')?.focus();
+    };
+
+    const closeModal = () => {
+      couponModal.classList.remove('is-open');
+      couponModal.classList.remove('has-success');
+      couponModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('coupon-modal-open');
+      couponForm.reset();
+      couponForm.hidden = false;
+      couponSuccess.hidden = true;
+      const submitButton = couponForm.querySelector('[type="submit"]');
+      submitButton.disabled = false;
+      submitButton.hidden = false;
+      submitButton.textContent = 'Get your coupon';
+    };
+
+    document.addEventListener('click', (event) => {
+      if (event.target.closest('[data-open-coupon-modal]')) openModal();
+      if (event.target.closest('[data-close-coupon-modal]') || event.target === couponModal) closeModal();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && couponModal.classList.contains('is-open')) closeModal();
+    });
+
+    copyCouponButton?.addEventListener('click', async () => {
+      const code = couponCode?.textContent.trim() || 'EXCLUSIVE200';
+
+      try {
+        await navigator.clipboard.writeText(code);
+        copyStatus.textContent = 'Coupon copied';
+      } catch (error) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(couponCode);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        copyStatus.textContent = 'Select and copy the highlighted code';
+      }
+    });
+
+    couponForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!couponForm.checkValidity()) {
+        couponForm.reportValidity();
+        return;
+      }
+
+      const submitButton = couponForm.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.hidden = true;
+      submitButton.textContent = 'Sending...';
+
+      const formData = new FormData(couponForm);
+      const payload = {
+        form_name: 'coupon_claim',
+        page_url: window.location.href,
+        submitted_at: new Date().toISOString(),
+        full_name: String(formData.get('contact[name]') || '').trim(),
+        phone_number: String(formData.get('contact[phone]') || '').trim(),
+        coupon_code: 'onlinepay'
+      };
+
+      couponForm.hidden = true;
+      couponModal.classList.add('has-success');
+      couponSuccess.hidden = false;
+
+      window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('contact_form_submitted', { detail: payload }));
+
+        const publishEvent = window.Shopify?.analytics?.publish;
+        if (typeof publishEvent === 'function') {
+          Promise.resolve(
+            publishEvent.call(window.Shopify.analytics, 'contact_form_submitted', payload)
+          ).catch(() => {});
+        }
+      }, 0);
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
@@ -52,6 +539,12 @@
       "type": "url",
       "id": "link",
       "label": "Link"
+    },
+    {
+      "type": "text",
+      "id": "coupon_text",
+      "label": "Coupon message",
+      "default": "Claim your coupon for 20% off products"
     }
   ]
 }

@@ -732,10 +732,13 @@
 
                     <input
                       type="tel"
-                      inputmode="tel"
+                      inputmode="numeric"
                       placeholder="Phone number"
                       data-notify-phone
                       autocomplete="tel"
+                      pattern="[6-9][0-9]{9}"
+                      maxlength="10"
+                      title="Enter a valid 10-digit Indian mobile number"
                     >
 
                   </div>
@@ -6439,6 +6442,19 @@ if (matchedDeposit) {
 
       }
 
+      if (phone && !/^[6-9][0-9]{9}$/.test(phone)) {
+
+        notifyError.textContent =
+          'Enter a valid 10-digit Indian mobile number.';
+
+        notifyError?.classList.remove(
+          'is-hidden'
+        );
+
+        return;
+
+      }
+
 
       notifyError?.classList.add(
         'is-hidden'
@@ -6461,46 +6477,34 @@ if (matchedDeposit) {
           selectedVariant?.textContent.trim() ||
           '';
 
-        const body =
-          new URLSearchParams();
+        const payload = {
+          form_name: 'back_in_stock_request',
+          page_url: window.location.href,
+          submitted_at: new Date().toISOString(),
+          full_name: '',
+          phone_number: phone,
+          email,
+          product: document.title,
+          variant: variantTitle,
+          variant_id: variantSelect?.value || 'n/a'
+        };
 
-        body.append(
-          'form_type',
-          'contact'
+        window.dispatchEvent(
+          new CustomEvent(
+            'contact_form_submitted',
+            { detail: payload }
+          )
         );
 
-        body.append(
-          'utf8',
-          '✓'
-        );
+        const publishEvent = window.Shopify?.analytics?.publish;
 
-        body.append(
-          'contact[email]',
-          email
-        );
-
-        body.append(
-          'contact[phone]',
-          phone
-        );
-
-        body.append(
-          'contact[body]',
-          `Back-in-stock request — Product: ${document.title} | Variant: ${variantTitle} | Variant ID: ${variantSelect?.value || 'n/a'} | Email: ${email || 'n/a'} | Phone: ${phone || 'n/a'}`
-        );
-
-
-        await fetch(
-          '/contact',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type':
-                'application/x-www-form-urlencoded'
-            },
-            body: body.toString()
-          }
-        );
+        if (typeof publishEvent === 'function') {
+          publishEvent.call(
+            window.Shopify.analytics,
+            'contact_form_submitted',
+            payload
+          );
+        }
 
 
         notifyFormPanel?.classList.add(

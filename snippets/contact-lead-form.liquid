@@ -65,7 +65,11 @@
                 type="tel"
                 id="vah-phone"
                 name="contact[phone]"
-                placeholder="+91 98765 43210"
+                placeholder="9876543210"
+                inputmode="numeric"
+                pattern="[6-9][0-9]{9}"
+                maxlength="10"
+                title="Enter a valid 10-digit Indian mobile number"
                 value=""
                 required
               >
