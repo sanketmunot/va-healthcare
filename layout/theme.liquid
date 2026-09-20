@@ -3,7 +3,16 @@
   <head>
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
+    {%- if template contains 'product' and product.handle contains 'partial-' -%}
+  {%- assign main_handle = product.handle | remove_first: 'partial-' -%}
+  {%- assign main_product = all_products[main_handle] -%}
 
+  {%- if main_product != blank -%}
+    <script>window.location.replace("{{ main_product.url }}");</script>
+    <noscript><meta http-equiv="refresh" content="0; url={{ main_product.url }}"></noscript>
+    <style>body{display:none !important;}</style>
+  {%- endif -%}
+{%- endif -%}
     {% comment %}
       Font preloading:
       1. Preconnect to font CDN for faster connection
