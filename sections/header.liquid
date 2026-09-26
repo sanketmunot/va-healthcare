@@ -1128,84 +1128,167 @@ html.header-menu-open {
 
 (() => {
 
-  document.addEventListener('click', (event) => {
+  const initHeader = () => {
 
-    /* MOBILE MENU TOGGLE */
-    const menuButton = event.target.closest('.site-header__menu-button');
-    if (menuButton) {
+    document
+      .querySelectorAll('.site-header')
+      .forEach((header) => {
 
-      const header = menuButton.closest('.site-header');
-      const mobileMenu = header?.querySelector('.site-header__mobile');
-      if (!header || !mobileMenu) return;
+        if (header.dataset.initialized === 'true') return;
 
-      const open = header.classList.toggle('is-open');
-
-      document.documentElement.classList.toggle('header-menu-open', open);
-
-      menuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
-      menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      mobileMenu.setAttribute('aria-hidden', open ? 'false' : 'true');
-
-      return;
-    }
-
-    /* MOBILE SUBMENU EXPAND */
-    const expandButton = event.target.closest('.site-header__mobile-expand');
-    if (expandButton) {
-
-      const item = expandButton.closest('.site-header__mobile-item');
-      if (!item) return;
-
-      const expanded = item.classList.toggle('expanded');
-      expandButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-
-      return;
-    }
-
-    /* CLOSE AFTER NAVIGATING VIA A MOBILE LINK */
-    const mobileLink = event.target.closest('.site-header__mobile a');
-    if (mobileLink) {
-
-      const header = mobileLink.closest('.site-header');
-      if (!header) return;
-
-      header.classList.remove('is-open');
-      document.documentElement.classList.remove('header-menu-open');
-
-      const menuButton = header.querySelector('.site-header__menu-button');
-      const mobileMenu = header.querySelector('.site-header__mobile');
-
-      if (menuButton) {
-        menuButton.setAttribute('aria-expanded', 'false');
-        menuButton.setAttribute('aria-label', 'Open menu');
-      }
-
-      if (mobileMenu) mobileMenu.setAttribute('aria-hidden', 'true');
-
-    }
-
-  });
+        header.dataset.initialized = 'true';
 
 
-  /* ESC closes any open header */
-  document.addEventListener('keydown', (event) => {
+        const menuButton =
+          header.querySelector('.site-header__menu-button');
 
-    if (event.key !== 'Escape') return;
+        const mobileMenu =
+          header.querySelector('.site-header__mobile');
 
-    document.querySelectorAll('.site-header.is-open').forEach((header) => {
 
-      header.classList.remove('is-open');
-      document.documentElement.classList.remove('header-menu-open');
+        /* MOBILE MENU */
 
-      const menuButton = header.querySelector('.site-header__menu-button');
-      if (menuButton) {
-        menuButton.setAttribute('aria-expanded', 'false');
-        menuButton.setAttribute('aria-label', 'Open menu');
-      }
+        if (menuButton && mobileMenu) {
 
-    });
+          menuButton.addEventListener('click', () => {
 
-  });
+            const open =
+              header.classList.toggle('is-open');
+
+            document.documentElement.classList.toggle('header-menu-open', open);
+
+            menuButton.setAttribute(
+              'aria-expanded',
+              open ? 'true' : 'false'
+            );
+
+            menuButton.setAttribute(
+              'aria-label',
+              open ? 'Close menu' : 'Open menu'
+            );
+
+            mobileMenu.setAttribute(
+              'aria-hidden',
+              open ? 'false' : 'true'
+            );
+
+          });
+
+        }
+
+
+        /* MOBILE SUBMENUS */
+
+        header
+          .querySelectorAll('.site-header__mobile-expand')
+          .forEach((button) => {
+
+            button.addEventListener('click', () => {
+
+              const item =
+                button.closest('.site-header__mobile-item');
+
+              if (!item) return;
+
+              const expanded =
+                item.classList.toggle('expanded');
+
+              button.setAttribute(
+                'aria-expanded',
+                expanded ? 'true' : 'false'
+              );
+
+            });
+
+          });
+
+
+        /* CLOSE AFTER NAVIGATION */
+
+        header
+          .querySelectorAll('.site-header__mobile a')
+          .forEach((link) => {
+
+            link.addEventListener('click', () => {
+
+              header.classList.remove('is-open');
+              document.documentElement.classList.remove('header-menu-open');
+
+              if (menuButton) {
+
+                menuButton.setAttribute(
+                  'aria-expanded',
+                  'false'
+                );
+
+                menuButton.setAttribute(
+                  'aria-label',
+                  'Open menu'
+                );
+
+              }
+
+              if (mobileMenu) {
+
+                mobileMenu.setAttribute(
+                  'aria-hidden',
+                  'true'
+                );
+
+              }
+
+            });
+
+          });
+
+
+        /* ESC */
+
+        document.addEventListener('keydown', (event) => {
+
+          if (
+            event.key === 'Escape' &&
+            header.classList.contains('is-open')
+          ) {
+
+            header.classList.remove('is-open');
+            document.documentElement.classList.remove('header-menu-open');
+
+            if (menuButton) {
+
+              menuButton.setAttribute(
+                'aria-expanded',
+                'false'
+              );
+
+              menuButton.setAttribute(
+                'aria-label',
+                'Open menu'
+              );
+
+            }
+
+          }
+
+        });
+
+      });
+
+  };
+
+
+  if (document.readyState === 'loading') {
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      initHeader
+    );
+
+  } else {
+
+    initHeader();
+
+  }
 
 })();
 
