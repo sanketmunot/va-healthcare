@@ -106,7 +106,6 @@
         type="button"
         class="site-header__action"
         data-search-open
-        data-search-url="{{ routes.search_url }}"
         aria-label="Search"
       >
 
@@ -283,7 +282,6 @@
           type="button"
           class="site-header__mobile-footer-link"
           data-search-open
-          data-search-url="{{ routes.search_url }}"
         >
 
           <svg viewBox="0 0 24 24">
@@ -302,6 +300,8 @@
   </div>
 
 </header>
+
+{% render 'search-drawer' %}
 
 {% stylesheet %}
 
@@ -1288,17 +1288,6 @@ html.header-menu-open {
 
   };
 
-
-  const openSearch = (event) => {
-    const button = event.target.closest('[data-search-open]');
-
-    if (!button || document.querySelector('[data-search-drawer]')) return;
-
-    event.preventDefault();
-    window.location.assign(button.dataset.searchUrl || '/search');
-  };
-
-  document.addEventListener('click', openSearch);
 
   if (document.readyState === 'loading') {
 
