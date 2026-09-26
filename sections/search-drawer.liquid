@@ -410,18 +410,6 @@
 
 {% javascript %}
   (() => {
-    const drawer = document.querySelector('[data-search-drawer]');
-
-    if (!drawer) return;
-
-    const form = drawer.querySelector('[data-search-form]');
-    const input = drawer.querySelector('[data-search-input]');
-    const results = drawer.querySelector('[data-search-results]');
-    const status = drawer.querySelector('[data-search-status]');
-    const hint = drawer.querySelector('[data-search-hint]');
-    const openButtons = document.querySelectorAll('[data-search-open]');
-    const closeButtons = drawer.querySelectorAll('[data-search-close]');
-
     const root = window.Shopify?.routes?.root || '/';
     let debounceTimer = null;
     let activeController = null;
@@ -456,7 +444,24 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
+    const getDrawer = () => document.querySelector('[data-search-drawer]');
+
+    const getParts = (drawer = getDrawer()) => {
+      if (!drawer) return null;
+
+      return {
+        drawer,
+        form: drawer.querySelector('[data-search-form]'),
+        input: drawer.querySelector('[data-search-input]'),
+        results: drawer.querySelector('[data-search-results]'),
+        status: drawer.querySelector('[data-search-status]'),
+        hint: drawer.querySelector('[data-search-hint]')
+      };
+    };
+
     const setStatus = (message, visible = true) => {
+      const status = getParts()?.status;
+
       if (!status) return;
 
       status.textContent = message;
@@ -464,6 +469,8 @@
     };
 
     const clearResults = () => {
+      const results = getParts()?.results;
+
       if (!results) return;
 
       results.innerHTML = '';
@@ -471,29 +478,38 @@
     };
 
     const openDrawer = () => {
-      drawer.classList.add('is-open');
-      drawer.setAttribute('aria-hidden', 'false');
+      const parts = getParts();
+
+      if (!parts) return;
+
+      parts.drawer.classList.add('is-open');
+      parts.drawer.setAttribute('aria-hidden', 'false');
       document.documentElement.style.overflow = 'hidden';
-      window.setTimeout(() => input?.focus(), 50);
+      window.setTimeout(() => parts.input?.focus(), 50);
     };
 
     const closeDrawer = () => {
-      drawer.classList.remove('is-open');
-      drawer.setAttribute('aria-hidden', 'true');
+      const parts = getParts();
+
+      if (!parts) return;
+
+      parts.drawer.classList.remove('is-open');
+      parts.drawer.setAttribute('aria-hidden', 'true');
       document.documentElement.style.overflow = '';
       clearResults();
       setStatus('', false);
+      parts.hint?.classList.remove('is-hidden');
 
-      if (hint) {
-        hint.classList.remove('is-hidden');
-      }
-
-      if (input) {
-        input.value = '';
+      if (parts.input) {
+        parts.input.value = '';
       }
     };
 
     const renderProducts = (products, query) => {
+      const parts = getParts();
+      const results = parts?.results;
+      const hint = parts?.hint;
+
       if (!results) return;
 
       if (!products.length) {
@@ -588,7 +604,9 @@
       );
     };
 
-    const handleInput = () => {
+    const handleInput = (event) => {
+      const input = event.target.closest('[data-search-input]');
+      const hint = getParts()?.hint;
       const query = input?.value.trim() || '';
 
       window.clearTimeout(debounceTimer);
@@ -596,18 +614,11 @@
       if (query.length < 2) {
         clearResults();
         setStatus('', false);
-
-        if (hint) {
-          hint.classList.toggle('is-hidden', query.length > 0);
-        }
-
+        hint?.classList.toggle('is-hidden', query.length > 0);
         return;
       }
 
-      if (hint) {
-        hint.classList.add('is-hidden');
-      }
-
+      hint?.classList.add('is-hidden');
       setStatus('Searching…');
 
       debounceTimer = window.setTimeout(async () => {
@@ -623,30 +634,40 @@
       }, 220);
     };
 
-    openButtons.forEach((button) => {
-      button.addEventListener('click', (event) => {
+    document.addEventListener('click', (event) => {
+      if (event.target.closest('[data-search-open]')) {
+        if (!getDrawer()) return;
+
         event.preventDefault();
         openDrawer();
-      });
-    });
+        return;
+      }
 
-    closeButtons.forEach((button) => {
-      button.addEventListener('click', closeDrawer);
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (
-        event.key === 'Escape' &&
-        drawer.classList.contains('is-open')
-      ) {
+      if (event.target.closest('[data-search-close]')) {
         closeDrawer();
       }
     });
 
-    input?.addEventListener('input', handleInput);
+    document.addEventListener('keydown', (event) => {
+      const drawer = getDrawer();
 
-    form?.addEventListener('submit', (event) => {
-      const query = input?.value.trim() || '';
+      if (event.key === 'Escape' && drawer?.classList.contains('is-open')) {
+        closeDrawer();
+      }
+    });
+
+    document.addEventListener('input', (event) => {
+      if (event.target.closest('[data-search-input]')) {
+        handleInput(event);
+      }
+    });
+
+    document.addEventListener('submit', (event) => {
+      const form = event.target.closest('[data-search-form]');
+
+      if (!form) return;
+
+      const query = form.querySelector('[data-search-input]')?.value.trim() || '';
 
       if (!query) {
         event.preventDefault();
