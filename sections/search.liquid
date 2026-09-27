@@ -2,16 +2,20 @@
   Full search results page. Used on the search template.
 {% endcomment %}
 
-<div class="search-page">
+<div class="search-page" data-search-page>
   <h1 class="search-page__title">{{ 'search.title' | t }}</h1>
 
-  <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+  <form action="{{ routes.search_url }}" method="get" role="search" class="search-form" data-search-page-form>
+    <input type="hidden" name="type" value="product">
     <input
       type="search"
       name="q"
       value="{{ search.terms | escape }}"
       placeholder="{{ 'search.placeholder' | t }}"
       class="search-form__input"
+      autocomplete="off"
+      required
+      minlength="2"
     >
     <button type="submit" class="search-form__submit">{{ 'search.submit' | t }}</button>
   </form>
@@ -20,10 +24,10 @@
     {% if search.results_count == 0 %}
       <p class="search-page__empty">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
     {% else %}
-      <p class="search-page__count">{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
+      <p class="search-page__count" data-search-count>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
 
-      <div class="search-results">
-        {% paginate search.results by 20 %}
+      {% paginate search.results by 20 %}
+        <div class="search-results" data-search-grid>
           {% for result in search.results %}
             <div class="search-result">
               {% assign featured_image = result.featured_image | default: result.image %}
@@ -54,14 +58,28 @@
               </div>
             </div>
           {% endfor %}
-        {% endpaginate %}
-      </div>
+        </div>
 
-      <div class="search-pagination">
-        {% paginate search.results by 20 %}
-          {{ paginate | default_pagination }}
-        {% endpaginate %}
-      </div>
+        <div
+          class="search-page__sentinel"
+          data-search-sentinel
+          data-next-url="{% if paginate.next %}{{ paginate.next.url }}{% endif %}"
+          aria-hidden="true"
+        ></div>
+
+        <div class="search-page__loader is-hidden" data-search-loader>
+          <span class="search-page__spinner" aria-hidden="true"></span>
+          Loading more results…
+        </div>
+
+        <noscript>
+          {% if paginate.pages > 1 %}
+            <div class="search-pagination">
+              {{ paginate | default_pagination }}
+            </div>
+          {% endif %}
+        </noscript>
+      {% endpaginate %}
     {% endif %}
   {% endif %}
 </div>
@@ -219,6 +237,41 @@
     color: var(--color-foreground);
   }
 
+  .search-page__sentinel {
+    width: 100%;
+    height: 1px;
+    margin-top: 1rem;
+  }
+
+  .search-page__loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 2rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .search-page__loader.is-hidden {
+    display: none;
+  }
+
+  .search-page__spinner {
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-foreground);
+    border-radius: 50%;
+    animation: search-page-spin 700ms linear infinite;
+  }
+
+  @keyframes search-page-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .search-pagination {
     margin-top: 2.5rem;
     display: flex;
@@ -272,6 +325,91 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const root = document.querySelector('[data-search-page]');
+
+    if (!root) return;
+
+    let isFetching = false;
+    let observer = null;
+
+    const loadMore = async (nextUrl) => {
+      if (!nextUrl || isFetching) return;
+
+      isFetching = true;
+
+      const loader = root.querySelector('[data-search-loader]');
+      loader?.classList.remove('is-hidden');
+
+      try {
+        const response = await fetch(nextUrl);
+
+        if (!response.ok) {
+          throw new Error('Failed to load more results');
+        }
+
+        const html = await response.text();
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const newGrid = parsed.querySelector('[data-search-grid]');
+        const newSentinel = parsed.querySelector('[data-search-sentinel]');
+        const grid = root.querySelector('[data-search-grid]');
+        const sentinel = root.querySelector('[data-search-sentinel]');
+
+        if (newGrid && grid) {
+          newGrid.querySelectorAll('.search-result').forEach((card) => {
+            grid.appendChild(card);
+          });
+        }
+
+        if (sentinel && newSentinel) {
+          sentinel.dataset.nextUrl = newSentinel.dataset.nextUrl || '';
+        }
+
+        bindInfiniteScroll();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isFetching = false;
+        loader?.classList.add('is-hidden');
+      }
+    };
+
+    const bindInfiniteScroll = () => {
+      const sentinel = root.querySelector('[data-search-sentinel]');
+
+      if (!sentinel) return;
+
+      if (observer) {
+        observer.disconnect();
+      }
+
+      const nextUrl = sentinel.dataset.nextUrl;
+
+      if (!nextUrl) return;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting || isFetching) return;
+
+            const url = sentinel.dataset.nextUrl;
+
+            if (url) {
+              loadMore(url);
+            }
+          });
+        },
+        { rootMargin: '0px 0px 20% 0px' }
+      );
+
+      observer.observe(sentinel);
+    };
+
+    bindInfiniteScroll();
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

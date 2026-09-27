@@ -23,7 +23,6 @@
         role="search"
         class="search-drawer__form"
         data-search-form
-        onsubmit="return false;"
       >
         <label class="visually-hidden" for="SearchDrawerInput-header-search">
           {{ 'search.placeholder' | t }}
@@ -667,18 +666,42 @@
         })
         .join('');
 
-      const viewAllUrl = `${root}search?q=${encodeURIComponent(query)}&type=product`;
-
-      results.innerHTML = `
-        ${itemsHtml}
-        <div class="search-drawer__footer">
-          <a class="search-drawer__view-all" href="${viewAllUrl}">
-            View all results
-          </a>
-        </div>
-      `;
-
+      results.innerHTML = itemsHtml;
       results.hidden = false;
+    };
+
+    const navigateToSearchResults = async (query) => {
+      const trimmed = (query || '').trim();
+
+      if (!trimmed) {
+        setStatus('Please enter a search term.');
+        return;
+      }
+
+      if (trimmed.length < 2) {
+        setStatus('Type at least 2 characters to search.');
+        return;
+      }
+
+      setStatus('Searching…');
+
+      try {
+        const products = await fetchSuggestions(trimmed);
+
+        if (!products.length) {
+          clearResults();
+          setStatus(`No products found for "${trimmed}"`);
+          return;
+        }
+
+        window.location.assign(
+          `${root}search?q=${encodeURIComponent(trimmed)}&type=product`
+        );
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+
+        setStatus('Something went wrong. Please try again.');
+      }
     };
 
     const fetchSuggestions = async (query) => {
@@ -780,9 +803,7 @@
 
       const input = form.querySelector('[data-search-input]');
 
-      if (input) {
-        handleInput({ target: input });
-      }
+      navigateToSearchResults(input?.value || '');
     });
   })();
 
