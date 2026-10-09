@@ -11,7 +11,8 @@
     <h2 class="section-heading shop-categories__heading">{{ section.settings.heading }}</h2>
   {% endif %}
 
-  <ul class="shop-categories__list" role="list">
+  <div class="shop-categories__viewport">
+    <ul class="shop-categories__list" role="list">
     {% for collection in collections %}
       {% if collection.handle == 'all' or collection.products_count == 0 %}
         {% continue %}
@@ -29,13 +30,13 @@
         endif
       %}
 
-      <li class="shop-categories__item{% if category_count == 1 %} is-active{% endif %}">
+      <li class="shop-categories__item">
         <div
           class="shop-categories__card"
           role="button"
           tabindex="0"
           data-collection-url="{{ collection.url }}"
-          aria-expanded="{% if category_count == 1 %}true{% else %}false{% endif %}"
+          aria-expanded="false"
           aria-label="Show {{ collection.title | escape }} collection"
         >
           <div class="shop-categories__media" aria-hidden="true">
@@ -46,7 +47,7 @@
                 | image_tag:
                   loading: 'lazy',
                   widths: '400, 720, 960, 1200, 1400',
-                  sizes: '(min-width: 900px) 55vw, 100vw',
+                  sizes: '(min-width: 900px) 40vw, 100vw',
                   class: 'shop-categories__image'
               }}
             {% else %}
@@ -92,7 +93,8 @@
         </div>
       </li>
     {% endfor %}
-  </ul>
+    </ul>
+  </div>
 
   {% if category_count == 0 %}
     <p class="shop-categories__empty">No collections to display yet. Add collections in Shopify admin to populate this section.</p>
@@ -101,7 +103,7 @@
 
 {% stylesheet %}
   .shop-categories {
-    overflow-x: clip;
+    overflow: hidden;
   }
 
   .shop-categories__heading {
@@ -112,14 +114,27 @@
     color: var(--color-muted);
   }
 
+  .shop-categories__viewport {
+    --sc-closed: 5.15rem;
+    --sc-gap: 0.7rem;
+    --sc-open: 40cqi;
+    container-type: inline-size;
+    overflow: hidden;
+    width: 100%;
+    height: min(62vh, 32rem);
+  }
+
   .shop-categories__list {
     display: flex;
+    flex-wrap: nowrap;
     align-items: stretch;
-    gap: 0.7rem;
-    height: min(62vh, 32rem);
+    gap: var(--sc-gap);
+    height: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
+    will-change: transform;
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .shop-categories__item {
@@ -158,6 +173,8 @@
   }
 
   .shop-categories__image {
+    object-fit: cover;
+    object-position: center;
     transform: scale(1.08);
     filter: saturate(0.85);
     transition:
@@ -166,7 +183,7 @@
   }
 
   .shop-categories__item.is-active .shop-categories__image {
-    transform: scale(1);
+    transform: scale(1.04);
     filter: none;
   }
 
@@ -324,13 +341,30 @@
 
   @media (min-width: 900px) {
     .shop-categories__item {
-      flex: 0.001 1 5rem;
-      min-width: 5rem;
-      transition: flex-grow 700ms cubic-bezier(0.16, 1, 0.3, 1);
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      transition:
+        flex 700ms cubic-bezier(0.16, 1, 0.3, 1),
+        flex-basis 700ms cubic-bezier(0.16, 1, 0.3, 1),
+        width 700ms cubic-bezier(0.16, 1, 0.3, 1),
+        min-width 700ms cubic-bezier(0.16, 1, 0.3, 1),
+        max-width 700ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .shop-categories__item.is-active {
-      flex-grow: 4.6;
+    .shop-categories__list.has-active .shop-categories__item {
+      flex: 0 0 var(--sc-closed);
+      width: var(--sc-closed);
+      min-width: var(--sc-closed);
+      max-width: var(--sc-closed);
+    }
+
+    .shop-categories__list.has-active .shop-categories__item.is-active {
+      flex: 0 0 var(--sc-open-px, var(--sc-open));
+      width: var(--sc-open-px, var(--sc-open));
+      min-width: var(--sc-open-px, var(--sc-open));
+      max-width: var(--sc-open-px, var(--sc-open));
     }
 
     .shop-categories__card {
@@ -339,10 +373,17 @@
   }
 
   @media (max-width: 899px) {
+    .shop-categories__viewport {
+      height: auto;
+      overflow: visible;
+    }
+
     .shop-categories__list {
       flex-direction: column;
+      flex-wrap: nowrap;
       height: auto;
       gap: 0.65rem;
+      transform: none !important;
     }
 
     .shop-categories__item {
@@ -399,7 +440,8 @@
     .shop-categories__item,
     .shop-categories__image,
     .shop-categories__rail,
-    .shop-categories__panel {
+    .shop-categories__panel,
+    .shop-categories__list {
       transition: none !important;
     }
   }
@@ -410,24 +452,49 @@
     if (root.dataset.ready === 'true') return;
     root.dataset.ready = 'true';
 
+    const viewport = root.querySelector('.shop-categories__viewport');
     const list = root.querySelector('.shop-categories__list');
     const items = Array.from(root.querySelectorAll('.shop-categories__item'));
-    if (!list || !items.length) return;
+    if (!viewport || !list || !items.length) return;
 
-    const first = items[0];
     const hoverMedia = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const desktopMedia = window.matchMedia('(min-width: 900px)');
     let hoverTimer = 0;
 
-    const setActive = (next) => {
-      const target = next || first;
+    const alignTrack = (target) => {
+      if (!desktopMedia.matches || !target) {
+        list.style.transform = 'translateX(0)';
+        return;
+      }
+
+      const styles = getComputedStyle(viewport);
+      const gap = parseFloat(styles.getPropertyValue('--sc-gap')) || 0;
+      const closed = parseFloat(styles.getPropertyValue('--sc-closed')) || 0;
+      const openRatio = parseFloat(styles.getPropertyValue('--sc-open')) / 100 || 0.4;
+      const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const gapPx = gap * rootSize;
+      const closedPx = closed * rootSize;
+      const openPx = viewport.clientWidth * openRatio;
+      viewport.style.setProperty('--sc-open-px', `${openPx}px`);
+      const index = Math.max(items.indexOf(target), 0);
+      const left = index * (closedPx + gapPx);
+      const overflow = left + openPx - viewport.clientWidth;
+      const shift = overflow > 0 ? overflow : 0;
+
+      list.style.transform = `translateX(-${shift}px)`;
+    };
+
+    const setActive = (target) => {
       items.forEach((item) => {
-        const active = item === target;
+        const active = Boolean(target) && item === target;
         item.classList.toggle('is-active', active);
         item.querySelector('.shop-categories__card')?.setAttribute(
           'aria-expanded',
           active ? 'true' : 'false'
         );
       });
+      list.classList.toggle('has-active', Boolean(target));
+      alignTrack(target);
     };
 
     const activateSoon = (item) => {
@@ -475,13 +542,22 @@
       });
     });
 
-    list.addEventListener('pointerleave', () => {
+    viewport.addEventListener('pointerleave', () => {
       if (!hoverMedia.matches) return;
       window.clearTimeout(hoverTimer);
-      if (!list.contains(document.activeElement)) {
-        setActive(first);
+      if (!viewport.contains(document.activeElement)) {
+        setActive(null);
       }
     });
+
+    const syncTrack = () => {
+      const active = items.find((item) => item.classList.contains('is-active')) || null;
+      alignTrack(active);
+    };
+
+    setActive(null);
+    window.addEventListener('resize', syncTrack);
+    desktopMedia.addEventListener('change', syncTrack);
   });
 {% endjavascript %}
 
