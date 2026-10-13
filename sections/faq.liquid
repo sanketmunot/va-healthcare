@@ -19,6 +19,12 @@
         <h2 class="faq__heading">{{ section.settings.heading }}</h2>
       {% endif %}
 
+      {% if section.settings.desktop_image != blank %}
+        <div class="faq__desktop-image">
+          {{ section.settings.desktop_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: section.settings.desktop_image.alt }}
+        </div>
+      {% endif %}
+
       {% if section.settings.text != blank %}
         <p class="faq__text">{{ section.settings.text }}</p>
       {% endif %}
@@ -117,6 +123,17 @@
   font-size: clamp(28px, 3vw, 40px);
   line-height: 1.1;
   letter-spacing: -0.01em;
+}
+
+.faq__desktop-image {
+  display: none;
+}
+
+.faq__desktop-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius, 8px);
 }
 
 .faq__text {
@@ -285,7 +302,23 @@
   .faq__layout {
     grid-template-columns: 0.85fr 1.15fr;
     gap: 3.5rem;
-    align-items: start;
+    align-items: stretch;
+  }
+
+  .faq__list {
+    margin-top: 56px;
+  }
+
+  .faq__intro {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq__desktop-image {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
   }
 
 }
@@ -544,6 +577,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "Common questions"
+    },
+
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
     },
 
     {
