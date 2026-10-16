@@ -42,7 +42,7 @@
       "settings": {
         "height": 50,
         "overlay_opacity": 55,
-        "eyebrow": "About VA Healthcare",
+        "eyebrow": "About Wecareforyou",
         "heading": "Physiotherapy, within reach across India",
         "intro": "Clinic-grade recovery tools and a sales network built for Indian hospitals, physio centres, and homes — so fewer people have to live with preventable pain.",
         "button_label": "Shop collection",
@@ -120,7 +120,7 @@
         "eyebrow": "Our vision",
         "heading": "A more mobile India",
         "lead": "Physiotherapy should not be a last resort in a metro clinic. It should be everyday care that clinics, caregivers, and households across India can actually get.",
-        "text": "<p>Nearly one in six people in India lives with musculoskeletal pain. Community studies put that close to 200 million people — and the burden is heavier in rural districts than in cities. Among Indians over 45, more than half report joint or back pain. Osteoarthritis alone touches tens of millions of knees and spines.</p><p>Pain keeps farmers from fields, nurses from shifts, and older parents from walking without help. India still has far too few rehab specialists for this scale. Rest and painkillers are often the only options on offer. Surgery, when it happens, is rarely followed by proper recovery.</p><p>Physiotherapy changes the outcome. Guided movement reduces pain, rebuilds strength, and can delay or avoid surgery. After a stroke, a fracture, a delivery, or years at a desk, the right routine restores independence. When trusted physio tools reach clinics and homes beyond a handful of cities, recovery stops being a privilege.</p><p>VA Healthcare exists to put clinic-grade physiotherapy products into India’s medical sales network — so more people can move again, work again, and age with dignity.</p>",
+        "text": "<p>Nearly one in six people in India lives with musculoskeletal pain. Community studies put that close to 200 million people — and the burden is heavier in rural districts than in cities. Among Indians over 45, more than half report joint or back pain. Osteoarthritis alone touches tens of millions of knees and spines.</p><p>Pain keeps farmers from fields, nurses from shifts, and older parents from walking without help. India still has far too few rehab specialists for this scale. Rest and painkillers are often the only options on offer. Surgery, when it happens, is rarely followed by proper recovery.</p><p>Physiotherapy changes the outcome. Guided movement reduces pain, rebuilds strength, and can delay or avoid surgery. After a stroke, a fracture, a delivery, or years at a desk, the right routine restores independence. When trusted physio tools reach clinics and homes beyond a handful of cities, recovery stops being a privilege.</p><p>Wecareforyou exists to put clinic-grade physiotherapy products into India’s medical sales network — so more people can move again, work again, and age with dignity.</p>",
         "help_heading": "How physiotherapy helps",
         "caption": "Impact figures drawn from COPCORD India community studies (~16% MSK pain; ~200 million people) and national surveys of adults 45+ (over half report musculoskeletal disorders).",
         "padding": 72
@@ -136,7 +136,7 @@
             "name": "Ananya Rao",
             "role": "Co-founder & Clinical Lead",
             "credential": "MPT, Manipal College of Health Professions",
-            "bio": "Twelve years treating musculoskeletal and sports injuries in Bengaluru hospitals. Ran community physio camps in rural Karnataka before starting VA Healthcare to put rehab tools in more hands."
+            "bio": "Twelve years treating musculoskeletal and sports injuries in Bengaluru hospitals. Ran community physio camps in rural Karnataka before starting Wecareforyou to put rehab tools in more hands."
           }
         },
         "founder_2": {
@@ -146,7 +146,7 @@
             "name": "Vikram Mehta",
             "role": "Co-founder & Commercial Lead",
             "credential": "MBA, IIM Ahmedabad · B.Pharm, Manipal Academy of Higher Education",
-            "bio": "Fourteen years in medical-device and hospital sales across South and West India. Built rehab-equipment distribution through 120+ clinics before partnering to grow VA Healthcare’s India network."
+            "bio": "Fourteen years in medical-device and hospital sales across South and West India. Built rehab-equipment distribution through 120+ clinics before partnering to grow Wecareforyou’s India network."
           }
         }
       },
@@ -167,7 +167,7 @@
         "q1": {
           "type": "question",
           "settings": {
-            "question": "Who is VA Healthcare for?",
+            "question": "Who is Wecareforyou for?",
             "answer": "<p>Physiotherapists, hospitals, and households across India who need trusted rehab products — from metro clinics to smaller towns where specialists are scarce.</p>"
           }
         },
